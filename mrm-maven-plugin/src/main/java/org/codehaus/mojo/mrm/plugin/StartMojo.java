@@ -26,6 +26,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.DiskArtifactStore;
+import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.configuration.PlexusConfigurationException;
 
@@ -122,6 +123,7 @@ public class StartMojo
                             ? new File( pathname )
                             : new File( project.getBasedir(), pathname );
                         getLog().info( "  Mock content (root: " + root + ")" );
+                        stores.add( new MockArtifactStore( getLog(), root ) );
                     }
                     else if ( "local".equals( type.getName() ) )
                     {

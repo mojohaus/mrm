@@ -17,7 +17,6 @@
 package org.codehaus.mojo.mrm.impl;
 
 import org.apache.maven.model.Model;
-import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -77,25 +76,18 @@ public final class Utils
      *          if things go wrong.
      */
     public static byte[] newEmptyJarContent()
-        throws MojoExecutionException
+        throws IOException
     {
         byte[] emptyJar;
-        try
-        {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            final Manifest manifest = new Manifest();
-            manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-            manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
-            manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
-            JarOutputStream jos = new JarOutputStream( bos, manifest );
-            jos.close();
-            bos.close();
-            emptyJar = bos.toByteArray();
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not create empty jar file", e );
-        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+        JarOutputStream jos = new JarOutputStream( bos, manifest );
+        jos.close();
+        bos.close();
+        emptyJar = bos.toByteArray();
         return emptyJar;
     }
 
