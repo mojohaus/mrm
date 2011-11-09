@@ -197,6 +197,6 @@ public class MRMThread
 
     String getUrl()
     {
-        return "http://localhost:" + getPort() + "/";
+        return "http://localhost:" + getPort();
     }
 }

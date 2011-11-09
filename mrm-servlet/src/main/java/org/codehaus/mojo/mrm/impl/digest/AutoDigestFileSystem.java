@@ -16,6 +16,7 @@
 
 package org.codehaus.mojo.mrm.impl.digest;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
@@ -30,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeMap;
 
 public class AutoDigestFileSystem
@@ -93,6 +95,117 @@ public class AutoDigestFileSystem
         return backing.getLastModified( equivalent( backing, entry ) );
     }
 
+    public Entry get( String path )
+    {
+        Entry entry = backing.get( path );
+        if ( entry == null )
+        {
+            if ( path.startsWith( "/" ) )
+            {
+                path = path.substring( 1 );
+            }
+            if ( path.length() == 0 )
+            {
+                return getRoot();
+            }
+            String[] parts = path.split( "/" );
+            if ( parts.length == 0 )
+            {
+                return getRoot();
+            }
+            DirectoryEntry parent = getRoot();
+            for ( int i = 0; i < parts.length - 1; i++ )
+            {
+                parent = new DefaultDirectoryEntry( this, parent, parts[i] );
+            }
+            String name = parts[parts.length - 1];
+            if ( name.endsWith( ".md5" ) )
+            {
+                Entry shadow = backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( name, ".md5" ) );
+                if ( shadow instanceof FileEntry )
+                {
+                    return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
+                }
+            }
+            if ( name.endsWith( ".sha1" ) )
+            {
+                Entry shadow = backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( name, ".sha1" ) );
+                if ( shadow instanceof FileEntry )
+                {
+                    return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
+                }
+            }
+            return get( parent, name );
+        }
+        else
+        {
+            if ( path.startsWith( "/" ) )
+            {
+                path = path.substring( 1 );
+            }
+            if ( path.length() == 0 )
+            {
+                return getRoot();
+            }
+            String[] parts = path.split( "/" );
+            if ( parts.length == 0 )
+            {
+                return getRoot();
+            }
+            DirectoryEntry parent = getRoot();
+            for ( int i = 0; i < parts.length - 1; i++ )
+            {
+                parent = new DefaultDirectoryEntry( this, parent, parts[i] );
+            }
+            if ( entry instanceof FileEntry )
+            {
+                // repair filesystems that lie to us because they are caching
+                if ( entry.getName().endsWith( ".md5" ) )
+                {
+                    Entry shadow =
+                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
+                    if ( shadow instanceof FileEntry )
+                    {
+                        return new AutoMD5DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
+                    }
+                }
+                if ( entry.getName().endsWith( ".sha1" ) )
+                {
+                    Entry shadow =
+                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
+                    if ( shadow instanceof FileEntry )
+                    {
+                        return new AutoSHA1DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
+                    }
+                }
+                return new LinkFileEntry( this, parent, (FileEntry) entry );
+            }
+            else if ( entry instanceof DirectoryEntry )
+            {
+                if ( entry.getName().endsWith( ".md5" ) )
+                {
+                    Entry shadow =
+                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
+                    if ( shadow instanceof FileEntry )
+                    {
+                        return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
+                    }
+                }
+                if ( entry.getName().endsWith( ".sha1" ) )
+                {
+                    Entry shadow =
+                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
+                    if ( shadow instanceof FileEntry )
+                    {
+                        return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
+                    }
+                }
+                return new DefaultDirectoryEntry( this, parent, entry.getName() );
+            }
+        }
+        return null;
+    }
+
     private DirectoryEntry equivalent( FileSystem target, DirectoryEntry directory )
     {
         if ( directory.getParent() == null )
@@ -101,4 +214,23 @@ public class AutoDigestFileSystem
         }
         return new DefaultDirectoryEntry( target, equivalent( target, directory.getParent() ), directory.getName() );
     }
+
+    private String toPath( Entry entry )
+    {
+        Stack stack = new Stack();
+        Entry root = getRoot();
+        while ( entry != null && !root.equals( entry ) )
+        {
+            stack.push( entry.getName() );
+            entry = entry.getParent();
+        }
+        StringBuffer buf = new StringBuffer();
+        while ( !stack.empty() )
+        {
+            buf.append( '/' );
+            buf.append( stack.pop() );
+        }
+        return buf.toString();
+    }
+
 }

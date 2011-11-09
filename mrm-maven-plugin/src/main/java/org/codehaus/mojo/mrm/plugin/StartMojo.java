@@ -21,9 +21,17 @@ import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStoreFileSystem;
-import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
+import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
+import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
+import org.codehaus.mojo.mrm.impl.maven.DiskArtifactStore;
+import org.codehaus.plexus.configuration.PlexusConfiguration;
+import org.codehaus.plexus.configuration.PlexusConfigurationException;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,13 +75,81 @@ public class StartMojo
      */
     private int port;
 
+    /**
+     * The repositories to serve if none specified then a proxy of the invoking maven's repositories will be served.
+     *
+     * @parameter
+     */
+    private PlexusConfiguration repositories;
+
     public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
-        ProxyArtifactStore proxyArtifactStore = null;
+        ArtifactStore artifactStore = null;
         try
         {
-            proxyArtifactStore = createProxyArtifactStore();
+            if ( repositories == null )
+            {
+                getLog().info( "Configuring Mock Repository Manager to proxy through this Maven instance" );
+                artifactStore = createProxyArtifactStore();
+            }
+            else
+            {
+                getLog().info( "Configuring Mock Repository Manager..." );
+                List stores = new ArrayList();
+                int count = repositories.getChildCount();
+                for ( int i = 0; i < count; i++ )
+                {
+                    PlexusConfiguration type = repositories.getChild( i );
+                    if ( "proxy".equals( type.getName() ) )
+                    {
+                        getLog().info( "  Proxy (through this Maven instance)" );
+                        stores.add( createProxyArtifactStore() );
+                    }
+                    else if ( "mock".equals( type.getName() ) )
+                    {
+                        String pathname = null;
+                        try
+                        {
+                            pathname = type.getValue();
+                        }
+                        catch ( PlexusConfigurationException e )
+                        {
+                            throw new MojoExecutionException(
+                                "You must specify the root of the mock repository content" );
+                        }
+                        File root = pathname.startsWith( "/" )
+                            ? new File( pathname )
+                            : new File( project.getBasedir(), pathname );
+                        getLog().info( "  Mock content (root: " + root + ")" );
+                    }
+                    else if ( "local".equals( type.getName() ) )
+                    {
+                        String pathname = null;
+                        try
+                        {
+                            pathname = type.getValue();
+                        }
+                        catch ( PlexusConfigurationException e )
+                        {
+                            throw new MojoExecutionException(
+                                "You must specify the root of the local repository content" );
+                        }
+                        File root = pathname.startsWith( "/" )
+                            ? new File( pathname )
+                            : new File( project.getBasedir(), pathname );
+                        getLog().info( "  Locally hosted (root: " + root + ")" );
+                        stores.add( new DiskArtifactStore( root ) );
+                    }
+                    else
+                    {
+                        throw new MojoExecutionException(
+                            "Unknown configuration element: repositories/" + type.getName() );
+                    }
+                }
+                artifactStore =
+                    new CompositeArtifactStore( (ArtifactStore[]) stores.toArray( new ArtifactStore[stores.size()] ) );
+            }
         }
         catch ( InvalidVersionSpecificationException e )
         {
@@ -81,7 +157,7 @@ public class StartMojo
         }
         MRMThread mrm = new MRMThread( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
                                        Math.max( 0, Math.min( port, 65535 ) ),
-                                       new ArtifactStoreFileSystem( proxyArtifactStore ) );
+                                       new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ) );
         getLog().info( "Starting Mock Repository Manager" );
         try
         {
