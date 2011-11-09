@@ -45,7 +45,8 @@
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1.5</version> <!-- last version to run on JVM 1.4 -->
+      <version>6.1.5</version>
+      <!-- last version to run on JVM 1.4 -->
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>

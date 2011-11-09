@@ -1,22 +1,30 @@
+/*
+ * Copyright 2011 Stephen Connolly
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.codehaus.mojo.mrm.plugin;
 
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: stephenc
- * Date: 09/11/2011
- * Time: 10:02
- * To change this template use File | Settings | File Templates.
- */
 public class MRMThread
     extends Thread
 {
@@ -71,18 +79,20 @@ public class MRMThread
     {
         try
         {
-            Server server = new Server(requestedPort);
+            Server server = new Server( requestedPort );
             try
             {
                 Context root = new Context( server, "/", Context.SESSIONS );
-                root.addServlet( new ServletHolder( new FileSystemServlet(fileSystem) ), "/*" );
+                root.addServlet( new ServletHolder( new FileSystemServlet( fileSystem ) ), "/*" );
                 server.start();
                 synchronized ( lock )
                 {
                     boundPort = 0;
                     Connector[] connectors = server.getConnectors();
-                    for (int i = 0; i < connectors.length; i++) {
-                        if (connectors[i].getLocalPort() > 0) {
+                    for ( int i = 0; i < connectors.length; i++ )
+                    {
+                        if ( connectors[i].getLocalPort() > 0 )
+                        {
                             boundPort = connectors[i].getLocalPort();
                             break;
                         }
@@ -179,8 +189,9 @@ public class MRMThread
 
     public int getPort()
     {
-        synchronized ( lock ) {
-        return started ? boundPort : requestedPort;
+        synchronized ( lock )
+        {
+            return started ? boundPort : requestedPort;
         }
     }
 
