@@ -316,6 +316,7 @@ public class MockArtifactStore
         throws IOException, MetadataNotFoundException
     {
         Metadata metadata = new Metadata();
+        boolean foundMetadata = false;
         path = StringUtils.stripEnd( StringUtils.stripStart( path, "/" ), "/" );
         String groupId = path.replace( '/', '.' );
         Set pluginArtifactIds = getArtifactIds( groupId );
@@ -378,6 +379,7 @@ public class MockArtifactStore
                             plugin.setPrefix( artifactId );
                         }
                         plugins.add( plugin );
+                        foundMetadata = true;
                         break;
                     }
                     catch ( ArtifactNotFoundException e )
@@ -437,6 +439,7 @@ public class MockArtifactStore
                     }
                 }
                 metadata.setVersioning( versioning );
+                foundMetadata = true;
             }
         }
 
@@ -504,9 +507,14 @@ public class MockArtifactStore
                     }
                     versioning.setLastUpdatedTimestamp( new Date( lastUpdated ) );
                     metadata.setVersioning( versioning );
+                    foundMetadata = true;
                 }
             }
 
+        }
+        if ( !foundMetadata )
+        {
+            throw new MetadataNotFoundException( path );
         }
         return metadata;
     }
@@ -561,7 +569,7 @@ public class MockArtifactStore
         groupId = index2 == -1 ? groupId : groupId.substring( 0, index2 ).replace( '/', '.' );
         artifactId = index2 == -1 ? artifactId : path.substring( index2 + 1, index );
         String version = index2 == -1 ? null : path.substring( index + 1 );
-        if ( version != null )
+        if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
             artifactMap = (Map) contents.get( groupId );
             Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );

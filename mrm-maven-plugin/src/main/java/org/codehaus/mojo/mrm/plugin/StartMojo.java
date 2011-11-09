@@ -149,8 +149,9 @@ public class StartMojo
                             "Unknown configuration element: repositories/" + type.getName() );
                     }
                 }
+                ArtifactStore[] artifactStores = (ArtifactStore[]) stores.toArray( new ArtifactStore[stores.size()] );
                 artifactStore =
-                    new CompositeArtifactStore( (ArtifactStore[]) stores.toArray( new ArtifactStore[stores.size()] ) );
+                    artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore( artifactStores );
             }
         }
         catch ( InvalidVersionSpecificationException e )
