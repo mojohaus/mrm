@@ -54,90 +54,17 @@ public class FileSystemServlet
     extends HttpServlet
 {
 
-    private FileSystem fileSystem;
-
-    public void init( ServletConfig config )
-        throws ServletException
+    public FileSystemServlet()
     {
-        super.init( config );
-
-        // TODO rip out this and instantiate via configuration
-
-        FileSystem fs1 = new MemoryFileSystem();
-        DirectoryEntry root = fs1.getRoot();
-        DirectoryEntry foo = fs1.mkdir( root, "foo" );
-        try
-        {
-            fs1.put( root, "README", "This is a file".getBytes() );
-            fs1.put( foo, "README.txt", "This is another file".getBytes() );
-        }
-        catch ( IOException e )
-        {
-            // ignore
-        }
-        FileSystem fs2 = new MemoryFileSystem();
-        root = fs2.getRoot();
-        foo = fs2.mkdir( root, "foo" );
-        try
-        {
-            fs2.put( root, "README", "This is a hidden file".getBytes() );
-            fs2.put( root, "HELP", "This is a lower layer file".getBytes() );
-            fs2.put( foo, "README.txt", "This is a hidden file".getBytes() );
-            fs2.put( foo, "HELP", "This is a lower layer file".getBytes() );
-        }
-        catch ( IOException e )
-        {
-            // ignore
-        }
-        ArtifactStore store = new MemoryArtifactStore();
-        try
-        {
-            store.set( new Artifact( "foo.bar.manchu", "manchu-impl", "1.0", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>1.0</version></project>".getBytes() ) );
-            store.set( new Artifact( "foo.bar.manchu", "manchu-impl", "1.1", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>1.1</version></project>".getBytes() ) );
-            store.set( new Artifact( "foo.bar.manchu", "manchu-impl", "1.2", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>1.2</version></project>".getBytes() ) );
-            store.set( new Artifact( "foo.bar.manchu", "manchu-maven-plugin", "1-SNAPSHOT", "pom" ),
-                       new ByteArrayInputStream(
-                           "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-maven-plugin</artifactId><version>1-SNAPSHOT</version><packaging>maven-plugin</packaging></project>".getBytes() ) );
-        }
-        catch ( IOException e )
-        {
-            // ignore
-        }
-        ArtifactStore store2 = new MemoryArtifactStore();
-        try
-        {
-            store2.set( new Artifact( "foo.bar.manchu", "manchu-impl", "0.9", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>0.9</version></project>".getBytes() ) );
-            store2.set( new Artifact( "foo.bar.manchu", "manchu-impl", "1.0", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>1.0</version></project>".getBytes() ) );
-            store2.set( new Artifact( "foo.bar.manchu", "manchu-impl", "1.3", "pom" ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-impl</artifactId><version>1.3</version></project>".getBytes() ) );
-            store2.set( new Artifact( "foo.bar.manchu", "manchu-maven-plugin", "2-SNAPSHOT", "pom",
-                                      System.currentTimeMillis() - 2000, 1 ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-maven-plugin</artifactId><version>2-SNAPSHOT</version><packaging>maven-plugin</packaging></project>".getBytes() ) );
-            store2.set( new Artifact( "foo.bar.manchu", "manchu-maven-plugin", "2-SNAPSHOT", "pom",
-                                      System.currentTimeMillis() - 1000, 2 ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-maven-plugin</artifactId><version>2-SNAPSHOT</version><packaging>maven-plugin</packaging></project>".getBytes() ) );
-            store2.set(
-                new Artifact( "foo.bar.manchu", "manchu-maven-plugin", "2-SNAPSHOT", "pom", System.currentTimeMillis(),
-                              3 ), new ByteArrayInputStream(
-                "<project><groupId>foo.bar.machu</groupId><artifactId>manchu-maven-plugin</artifactId><version>2-SNAPSHOT</version><packaging>maven-plugin</packaging></project>".getBytes() ) );
-            store2.set( new Artifact( "foo.bar.manchu", "manchu2-maven-plugin", "1.0", "pom" ),
-                        new ByteArrayInputStream(
-                            "<project><groupId>foo.bar.machu</groupId><artifactId>manchu2-maven-plugin</artifactId><version>2-SNAPSHOT</version><packaging>maven-plugin</packaging></project>".getBytes() ) );
-        }
-        catch ( IOException e )
-        {
-            // ignore
-        }
-        fileSystem = new AutoDigestFileSystem( new CompositeFileSystem( new FileSystem[]{ fs1, fs2,
-            new ArtifactStoreFileSystem( new CompositeArtifactStore( new ArtifactStore[]{ store, store2,
-                new FileSystemArtifactStore(
-                    new DiskFileSystem( new File( "/Users/stephenc/.m2/repository" ) ) ) } ) ) } ) );
+        this.fileSystem = new MemoryFileSystem();
     }
+
+    public FileSystemServlet( FileSystem fileSystem )
+    {
+        this.fileSystem = fileSystem;
+    }
+
+    private FileSystem fileSystem;
 
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
         throws ServletException, IOException

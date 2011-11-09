@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -83,7 +84,28 @@ public class ArtifactStoreFileSystem
             return result;
         }
         List/*<Entry>*/ result = new ArrayList();
+        Set names = new HashSet();
         String path = toPath( directory ).substring( 1 ); // skip initial '/'
+
+        try
+        {
+            store.getMetadataLastModified( path );
+            MetadataFileEntry entry = new MetadataFileEntry( this, directory, path, store );
+            if ( !names.contains( entry.getName() ) )
+            {
+                result.add( entry );
+                names.add( entry.getName() );
+            }
+        }
+        catch ( MetadataNotFoundException e )
+        {
+            // ignore
+        }
+        catch ( IOException e )
+        {
+            // ignore
+        }
+
         String groupId = path.replace( '/', '.' );
 
         // get all the groupId's that start with this groupId
@@ -91,13 +113,23 @@ public class ArtifactStoreFileSystem
         Set groupIds = new TreeSet( store.getGroupIds( groupId ) );
         for ( Iterator i = groupIds.iterator(); i.hasNext(); )
         {
-            result.add( new DefaultDirectoryEntry( this, directory, (String) i.next() ) );
+            String name = (String) i.next();
+            if ( !names.contains( name ) )
+            {
+                result.add( new DefaultDirectoryEntry( this, directory, name ) );
+                names.add( name );
+            }
         }
 
         // get all the artifactIds that belong to this groupId
         for ( Iterator i = store.getArtifactIds( groupId ).iterator(); i.hasNext(); )
         {
-            result.add( new DefaultDirectoryEntry( this, directory, (String) i.next() ) );
+            String name = (String) i.next();
+            if ( !names.contains( name ) )
+            {
+                result.add( new DefaultDirectoryEntry( this, directory, name ) );
+                names.add( name );
+            }
         }
 
         DirectoryEntry parent = directory.getParent();
@@ -108,7 +140,12 @@ public class ArtifactStoreFileSystem
             String artifactId = directory.getName();
             for ( Iterator i = store.getVersions( groupId, artifactId ).iterator(); i.hasNext(); )
             {
-                result.add( new DefaultDirectoryEntry( this, directory, (String) i.next() ) );
+                String name = (String) i.next();
+                if ( !names.contains( name ) )
+                {
+                    result.add( new DefaultDirectoryEntry( this, directory, name ) );
+                    names.add( name );
+                }
             }
             DirectoryEntry grandParent = parent.getParent();
             if ( grandParent != null && !getRoot().equals( grandParent ) )
@@ -119,23 +156,14 @@ public class ArtifactStoreFileSystem
                 String version = directory.getName();
                 for ( Iterator i = store.getArtifacts( groupId, artifactId, version ).iterator(); i.hasNext(); )
                 {
-                    result.add( new ArtifactFileEntry( this, directory, (Artifact) i.next(), store ) );
+                    ArtifactFileEntry entry = new ArtifactFileEntry( this, directory, (Artifact) i.next(), store );
+                    if ( !names.contains( entry.getName() ) )
+                    {
+                        result.add( entry );
+                        names.add( entry.getName() );
+                    }
                 }
             }
-        }
-
-        try
-        {
-            store.getMetadataLastModified( path );
-            result.add( new MetadataFileEntry( this, directory, path, store ) );
-        }
-        catch ( MetadataNotFoundException e )
-        {
-            // ignore
-        }
-        catch ( IOException e )
-        {
-            // ignore
         }
 
         // sort
@@ -154,6 +182,10 @@ public class ArtifactStoreFileSystem
 
         String path = toPath( parent ) + "/" + name;
 
+        if ( "favicon.ico".equals( name ) )
+        {
+            return null;
+        }
         if ( METADATA.matcher( path ).matches() )
         {
             return new MetadataFileEntry( this, parent, toPath( parent ), store );
