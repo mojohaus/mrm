@@ -242,19 +242,26 @@ public class CompositeArtifactStore
                             rVers.setSnapshot( snapshot );
                         }
                     }
-                    if ( pVers.getSnapshotVersions() != null && !pVers.getSnapshotVersions().isEmpty() )
+                    try
                     {
-                        for ( Iterator j = pVers.getSnapshotVersions().iterator(); j.hasNext(); )
+                        if ( pVers.getSnapshotVersions() != null && !pVers.getSnapshotVersions().isEmpty() )
                         {
-                            SnapshotVersion snapshotVersion = (SnapshotVersion) j.next();
-                            String key = snapshotVersion.getVersion() + "-" + snapshotVersion.getClassifier() + "."
-                                + snapshotVersion.getExtension();
-                            if ( !snapshotVersions.contains( key ) )
+                            for ( Iterator j = pVers.getSnapshotVersions().iterator(); j.hasNext(); )
                             {
-                                rVers.addSnapshotVersion( snapshotVersion );
-                                snapshotVersions.add( key );
+                                SnapshotVersion snapshotVersion = (SnapshotVersion) j.next();
+                                String key = snapshotVersion.getVersion() + "-" + snapshotVersion.getClassifier() + "."
+                                    + snapshotVersion.getExtension();
+                                if ( !snapshotVersions.contains( key ) )
+                                {
+                                    rVers.addSnapshotVersion( snapshotVersion );
+                                    snapshotVersions.add( key );
+                                }
                             }
                         }
+                    }
+                    catch ( NoSuchMethodError e )
+                    {
+                        // Maven 2
                     }
 
                     result.setVersioning( rVers );

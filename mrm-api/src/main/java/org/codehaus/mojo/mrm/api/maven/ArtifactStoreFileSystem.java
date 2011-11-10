@@ -188,7 +188,16 @@ public class ArtifactStoreFileSystem
         }
         if ( METADATA.matcher( path ).matches() )
         {
-            return new MetadataFileEntry( this, parent, toPath( parent ), store );
+            MetadataFileEntry entry = new MetadataFileEntry( this, parent, toPath( parent ), store );
+            try
+            {
+                entry.getLastModified();
+                return entry;
+            }
+            catch ( IOException e )
+            {
+                return null;
+            }
         }
         else
         {

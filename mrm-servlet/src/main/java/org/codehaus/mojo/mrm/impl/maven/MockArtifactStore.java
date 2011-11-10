@@ -458,19 +458,23 @@ public class MockArtifactStore
                 int maxBuildNumber = 0;
                 long lastUpdated = 0;
                 String timestamp = null;
+                boolean found = false;
                 for ( Iterator i = filesMap.entrySet().iterator(); i.hasNext(); )
                 {
                     final Map.Entry entry = (Map.Entry) i.next();
                     final Artifact artifact = (Artifact) entry.getKey();
                     final Content content = (Content) entry.getValue();
-                    SnapshotVersion snapshotVersion = new SnapshotVersion();
-                    snapshotVersion.setExtension( artifact.getType() );
-                    snapshotVersion.setClassifier( artifact.getClassifier() == null ? "" : artifact.getClassifier() );
-                    snapshotVersion.setVersion( artifact.getTimestampVersion() );
                     SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss" );
                     fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                    snapshotVersion.setUpdated( fmt.format( new Date( content.getLastModified() ) ) );
-                    snapshotVersions.add( snapshotVersion );
+                    String lastUpdatedTime = fmt.format( new Date( content.getLastModified() ) );
+                    try
+                    {
+                        Maven3.addSnapshotVersion( snapshotVersions, artifact, lastUpdatedTime );
+                    }
+                    catch ( LinkageError e )
+                    {
+                        // Maven 2
+                    }
                     if ( "pom".equals( artifact.getType() ) )
                     {
                         if ( artifact.getBuildNumber() != null
@@ -478,12 +482,17 @@ public class MockArtifactStore
                         {
                             maxBuildNumber = artifact.getBuildNumber().intValue();
                             timestamp = artifact.getTimestampString();
-                            lastUpdated = Math.max( lastUpdated, content.getLastModified() );
                         }
+                        else
+                        {
+                            maxBuildNumber = Math.max( 1, maxBuildNumber );
+                        }
+                        lastUpdated = Math.max( lastUpdated, content.getLastModified() );
+                        found = true;
                     }
                 }
 
-                if ( !snapshotVersions.isEmpty() )
+                if ( !snapshotVersions.isEmpty() || found )
                 {
                     Versioning versioning = metadata.getVersioning();
                     if ( versioning == null )
@@ -493,10 +502,13 @@ public class MockArtifactStore
                     metadata.setGroupId( groupId );
                     metadata.setArtifactId( artifactId );
                     metadata.setVersion( version );
-                    for ( Iterator i = snapshotVersions.iterator(); i.hasNext(); )
+                    try
                     {
-                        SnapshotVersion snapshotVersion = (SnapshotVersion) i.next();
-                        versioning.addSnapshotVersion( snapshotVersion );
+                        Maven3.addSnapshotVersions( versioning, snapshotVersions );
+                    }
+                    catch ( LinkageError e )
+                    {
+                        // Maven 2
                     }
                     if ( maxBuildNumber > 0 )
                     {
@@ -698,6 +710,42 @@ public class MockArtifactStore
         public long getLength()
         {
             return file.length();
+        }
+    }
+
+    private static class Maven3
+    {
+        private static void addSnapshotVersion( List snapshotVersions, Artifact artifact, String lastUpdatedTime )
+        {
+            try
+            {
+                SnapshotVersion snapshotVersion = new SnapshotVersion();
+                snapshotVersion.setExtension( artifact.getType() );
+                snapshotVersion.setClassifier( artifact.getClassifier() == null ? "" : artifact.getClassifier() );
+                snapshotVersion.setVersion( artifact.getTimestampVersion() );
+                snapshotVersion.setUpdated( lastUpdatedTime );
+                snapshotVersions.add( snapshotVersion );
+            }
+            catch ( NoClassDefFoundError e )
+            {
+                // Maven 2
+            }
+        }
+
+        private static void addSnapshotVersions( Versioning versioning, List snapshotVersions )
+        {
+            try
+            {
+                for ( Iterator i = snapshotVersions.iterator(); i.hasNext(); )
+                {
+                    SnapshotVersion snapshotVersion = (SnapshotVersion) i.next();
+                    versioning.addSnapshotVersion( snapshotVersion );
+                }
+            }
+            catch ( NoClassDefFoundError e )
+            {
+                // Maven 2
+            }
         }
     }
 }
