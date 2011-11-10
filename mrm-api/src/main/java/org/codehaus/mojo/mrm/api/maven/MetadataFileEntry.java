@@ -37,7 +37,7 @@ public class MetadataFileEntry
 
     public MetadataFileEntry( FileSystem fileSystem, DirectoryEntry parent, String path, ArtifactStore store )
     {
-        super( fileSystem, parent, "metadata.xml" );
+        super( fileSystem, parent, "maven-metadata.xml" );
         this.path = path;
         this.store = store;
     }

@@ -27,10 +27,10 @@ public class ArtifactStoreFileSystemTest
     public void testGroupMetadataRegex()
         throws Exception
     {
-        Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher( "/commons/metadata.xml" );
+        Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher( "/commons/maven-metadata.xml" );
         assertTrue( matcher.matches() );
         assertEquals( "commons/", matcher.group( 1 ) );
-        matcher = ArtifactStoreFileSystem.METADATA.matcher( "/org/apache/maven/metadata.xml" );
+        matcher = ArtifactStoreFileSystem.METADATA.matcher( "/org/apache/maven/maven-metadata.xml" );
         assertTrue( matcher.matches() );
         assertEquals( "org/apache/maven/", matcher.group( 1 ) );
         matcher = ArtifactStoreFileSystem.METADATA.matcher( "/commons/commons/1.0/commons-1.0.pom" );
@@ -42,9 +42,9 @@ public class ArtifactStoreFileSystemTest
     public void testArtifactRegex()
         throws Exception
     {
-        Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/commons/metadata.xml" );
+        Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/commons/maven-metadata.xml" );
         assertFalse( matcher.matches() );
-        matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/org/apache/maven/metadata.xml" );
+        matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/org/apache/maven/maven-metadata.xml" );
         assertFalse( matcher.matches() );
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/commons/commons/1.0/commons-1.0.pom" );
         assertTrue( matcher.matches() );
@@ -94,9 +94,9 @@ public class ArtifactStoreFileSystemTest
     public void testSnapshotArtifactRegex()
         throws Exception
     {
-        Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/commons/metadata.xml" );
+        Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/commons/maven-metadata.xml" );
         assertFalse( matcher.matches() );
-        matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/org/apache/maven/metadata.xml" );
+        matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/org/apache/maven/maven-metadata.xml" );
         assertFalse( matcher.matches() );
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/commons/commons/1.0/commons-1.0.pom" );
         assertFalse( matcher.matches() );

@@ -52,7 +52,7 @@ public class ArtifactStoreFileSystem
 
     private static final String SNAPSHOT_VERSION_REGEX = "([^/]+)-SNAPSHOT/";
 
-    /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(metadata\\.xml)" );
+    /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
 
     /*package*/ static final Pattern ARTIFACT = Pattern.compile(
         GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + VERSION_REGEX + "(\\2-\\3(-[^.]+)?\\.([^/]*))" );

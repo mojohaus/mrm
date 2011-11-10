@@ -243,7 +243,7 @@ public class FileSystemArtifactStore
         throws IOException, MetadataNotFoundException
     {
         Entry entry = backing.get(
-            StringUtils.join( StringUtils.split( StringUtils.strip( path, "/" ), "/" ), "/" ) + "/metadata.xml" );
+            StringUtils.join( StringUtils.split( StringUtils.strip( path, "/" ), "/" ), "/" ) + "/maven-metadata.xml" );
         if ( !( entry instanceof FileEntry ) )
         {
             throw new MetadataNotFoundException( path );
@@ -271,7 +271,7 @@ public class FileSystemArtifactStore
         throws IOException, MetadataNotFoundException
     {
         Entry entry = backing.get(
-            StringUtils.join( StringUtils.split( StringUtils.strip( path, "/" ), "/" ), "/" ) + "/metadata.xml" );
+            StringUtils.join( StringUtils.split( StringUtils.strip( path, "/" ), "/" ), "/" ) + "/maven-metadata.xml" );
         if ( !( entry instanceof FileEntry ) )
         {
             throw new MetadataNotFoundException( path );

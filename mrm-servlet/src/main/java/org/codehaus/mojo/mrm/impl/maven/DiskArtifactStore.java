@@ -252,7 +252,7 @@ public class DiskArtifactStore
         {
             file = new File( file, parts[i] );
         }
-        file = new File( file, "metadata.xml" );
+        file = new File( file, "maven-metadata.xml" );
         if ( !file.isFile() )
         {
             throw new MetadataNotFoundException( path );
@@ -301,7 +301,7 @@ public class DiskArtifactStore
                 stack.push( file );
             }
         }
-        file = new File( file, "metadata.xml" );
+        file = new File( file, "maven-metadata.xml" );
         if ( !file.isFile() )
         {
             throw new MetadataNotFoundException( path );
