@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
@@ -85,6 +86,38 @@ public final class Utils
         manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
         manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
         JarOutputStream jos = new JarOutputStream( bos, manifest );
+        jos.close();
+        bos.close();
+        emptyJar = bos.toByteArray();
+        return emptyJar;
+    }
+
+    /**
+     * Creates an empty maven plugin jar file.
+     *
+     * @param groupId
+     * @param artifactId
+     * @param version
+     * @return the empty jar file as a byte array.
+     * @throws org.apache.maven.plugin.MojoExecutionException
+     *          if things go wrong.
+     */
+    public static byte[] newEmptyMavenPluginJarContent( String groupId, String artifactId, String version )
+        throws IOException
+    {
+        byte[] emptyJar;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+        JarOutputStream jos = new JarOutputStream( bos, manifest );
+        JarEntry entry = new JarEntry( "META-INF/maven/plugin.xml" );
+        jos.putNextEntry( entry );
+        jos.write(
+            ( "<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version
+                + "</version></plugin>" ).getBytes() );
+        jos.closeEntry();
         jos.close();
         bos.close();
         emptyJar = bos.toByteArray();

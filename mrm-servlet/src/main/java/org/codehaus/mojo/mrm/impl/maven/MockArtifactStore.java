@@ -97,6 +97,13 @@ public class MockArtifactStore
                         set( new Artifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), "jar" ),
                              new BytesContent( Utils.newEmptyJarContent() ) );
                     }
+                    if ( "maven-plugin".equals( model.getPackaging() ) )
+                    {
+                        set( new Artifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), "jar" ),
+                             new BytesContent(
+                                 Utils.newEmptyMavenPluginJarContent( model.getGroupId(), model.getArtifactId(),
+                                                                      model.getVersion() ) ) );
+                    }
                 }
                 catch ( IOException e )
                 {
