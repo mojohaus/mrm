@@ -46,7 +46,7 @@ public class CompositeFileSystem
         Map/*<String,Entry>*/ result = new TreeMap();
         for ( int i = 0; i < delegates.length; i++ )
         {
-            Entry[] entries = delegates[i].listEntries( equivalent( delegates[i], directory ) );
+            Entry[] entries = delegates[i].listEntries( DefaultDirectoryEntry.equivalent( delegates[i], directory ) );
             if ( entries == null )
             {
                 continue;
@@ -82,7 +82,7 @@ public class CompositeFileSystem
             }
             if ( entry instanceof DirectoryEntry )
             {
-                return equivalent( this, (DirectoryEntry) entry );
+                return DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry );
             }
             return entry;
         }
@@ -134,12 +134,4 @@ public class CompositeFileSystem
         throw new UnsupportedOperationException();
     }
 
-    private DirectoryEntry equivalent( FileSystem target, DirectoryEntry directory )
-    {
-        if ( directory.getParent() == null )
-        {
-            return target.getRoot();
-        }
-        return new DefaultDirectoryEntry( target, equivalent( target, directory.getParent() ), directory.getName() );
-    }
 }

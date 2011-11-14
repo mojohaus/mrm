@@ -30,7 +30,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -56,7 +56,8 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 public class MemoryArtifactStore
-    implements ArtifactStore, Serializable
+    extends BaseArtifactStore
+    implements Serializable
 {
 
     private static final long serialVersionUID = 1L;

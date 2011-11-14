@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeMap;
 
 public class AutoDigestFileSystem
@@ -49,7 +48,7 @@ public class AutoDigestFileSystem
         Map result = new TreeMap();
         Map missing = new HashMap();
         Set present = new HashSet();
-        Entry[] entries = backing.listEntries( equivalent( backing, directory ) );
+        Entry[] entries = backing.listEntries( DefaultDirectoryEntry.equivalent( backing, directory ) );
         for ( int i = 0; i < entries.length; i++ )
         {
             final String name = entries[i].getName();
@@ -68,7 +67,7 @@ public class AutoDigestFileSystem
             }
             else if ( entries[i] instanceof DirectoryEntry )
             {
-                result.put( name, equivalent( this, (DirectoryEntry) entries[i] ) );
+                result.put( name, DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entries[i] ) );
             }
         }
         missing.keySet().removeAll( present );
@@ -92,7 +91,7 @@ public class AutoDigestFileSystem
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
-        return backing.getLastModified( equivalent( backing, entry ) );
+        return backing.getLastModified( DefaultDirectoryEntry.equivalent( backing, entry ) );
     }
 
     public Entry get( String path )
@@ -121,7 +120,7 @@ public class AutoDigestFileSystem
             String name = parts[parts.length - 1];
             if ( name.endsWith( ".md5" ) )
             {
-                Entry shadow = backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( name, ".md5" ) );
+                Entry shadow = backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, ".md5" ) );
                 if ( shadow instanceof FileEntry )
                 {
                     return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
@@ -129,7 +128,7 @@ public class AutoDigestFileSystem
             }
             if ( name.endsWith( ".sha1" ) )
             {
-                Entry shadow = backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( name, ".sha1" ) );
+                Entry shadow = backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, ".sha1" ) );
                 if ( shadow instanceof FileEntry )
                 {
                     return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
@@ -163,7 +162,7 @@ public class AutoDigestFileSystem
                 if ( entry.getName().endsWith( ".md5" ) )
                 {
                     Entry shadow =
-                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
+                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
                     if ( shadow instanceof FileEntry )
                     {
                         return new AutoMD5DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
@@ -172,7 +171,7 @@ public class AutoDigestFileSystem
                 if ( entry.getName().endsWith( ".sha1" ) )
                 {
                     Entry shadow =
-                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
+                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
                     if ( shadow instanceof FileEntry )
                     {
                         return new AutoSHA1DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
@@ -185,7 +184,7 @@ public class AutoDigestFileSystem
                 if ( entry.getName().endsWith( ".md5" ) )
                 {
                     Entry shadow =
-                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
+                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
                     if ( shadow instanceof FileEntry )
                     {
                         return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
@@ -194,7 +193,7 @@ public class AutoDigestFileSystem
                 if ( entry.getName().endsWith( ".sha1" ) )
                 {
                     Entry shadow =
-                        backing.get( toPath( parent ) + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
+                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
                     if ( shadow instanceof FileEntry )
                     {
                         return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
@@ -204,33 +203,6 @@ public class AutoDigestFileSystem
             }
         }
         return null;
-    }
-
-    private DirectoryEntry equivalent( FileSystem target, DirectoryEntry directory )
-    {
-        if ( directory.getParent() == null )
-        {
-            return target.getRoot();
-        }
-        return new DefaultDirectoryEntry( target, equivalent( target, directory.getParent() ), directory.getName() );
-    }
-
-    private String toPath( Entry entry )
-    {
-        Stack stack = new Stack();
-        Entry root = getRoot();
-        while ( entry != null && !root.equals( entry ) )
-        {
-            stack.push( entry.getName() );
-            entry = entry.getParent();
-        }
-        StringBuffer buf = new StringBuffer();
-        while ( !stack.empty() )
-        {
-            buf.append( '/' );
-            buf.append( stack.pop() );
-        }
-        return buf.toString();
     }
 
 }

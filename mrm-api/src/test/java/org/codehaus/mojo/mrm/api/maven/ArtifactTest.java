@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.codehaus.mojo.mrm.api.maven;
 
-package org.codehaus.mojo.mrm.api;
+import junit.framework.TestCase;
 
-/**
- * Marker interface for a directory entry.
- *
- * @since 1.0
- */
-public interface DirectoryEntry
-    extends Entry
+public class ArtifactTest
+    extends TestCase
 {
+    public void testSmokes()
+        throws Exception
+    {
+        assertEquals( new Artifact( "foo", "bar", "1.0", "jar" ), new Artifact( "foo", "bar", "1.0", null, "jar" ) );
+    }
 }

@@ -16,10 +16,30 @@
 
 package org.codehaus.mojo.mrm.api;
 
+/**
+ * Base implementation of {@link FileEntry} that all implementations should extend from.
+ *
+ * @since 1.0
+ */
 public abstract class BaseFileEntry
-    extends BaseEntry
+    extends AbstractEntry
     implements FileEntry
 {
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Creates an entry in the specified file system with the specified parent and name.
+     *
+     * @param fileSystem The filesystem.
+     * @param parent     The parent.
+     * @param name       The name of the entry.
+     * @since 1.0
+     */
     protected BaseFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name )
     {
         super( fileSystem, parent, name );

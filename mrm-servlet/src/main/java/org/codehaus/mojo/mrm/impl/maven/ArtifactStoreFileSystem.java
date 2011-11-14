@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.codehaus.mojo.mrm.api.maven;
+package org.codehaus.mojo.mrm.impl.maven;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
+import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +35,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -85,7 +87,7 @@ public class ArtifactStoreFileSystem
         }
         List/*<Entry>*/ result = new ArrayList();
         Set names = new HashSet();
-        String path = toPath( directory ).substring( 1 ); // skip initial '/'
+        String path = directory.toPath().substring( 1 ); // skip initial '/'
 
         try
         {
@@ -136,7 +138,7 @@ public class ArtifactStoreFileSystem
         if ( parent != null && !getRoot().equals( parent ) )
         {
             // get all the versions that belong to the groupId/artifactId path
-            groupId = toPath( parent ).substring( 1 ).replace( '/', '.' );
+            groupId = parent.toPath().substring( 1 ).replace( '/', '.' );
             String artifactId = directory.getName();
             for ( Iterator i = store.getVersions( groupId, artifactId ).iterator(); i.hasNext(); )
             {
@@ -151,7 +153,7 @@ public class ArtifactStoreFileSystem
             if ( grandParent != null && !getRoot().equals( grandParent ) )
             {
                 // get all the versions that belong to the groupId/artifactId path
-                groupId = toPath( grandParent ).substring( 1 ).replace( '/', '.' );
+                groupId = grandParent.toPath().substring( 1 ).replace( '/', '.' );
                 artifactId = parent.getName();
                 String version = directory.getName();
                 for ( Iterator i = store.getArtifacts( groupId, artifactId, version ).iterator(); i.hasNext(); )
@@ -180,7 +182,7 @@ public class ArtifactStoreFileSystem
     protected Entry get( DirectoryEntry parent, String name )
     {
 
-        String path = toPath( parent ) + "/" + name;
+        String path = parent.toPath() + "/" + name;
 
         if ( "favicon.ico".equals( name ) )
         {
@@ -188,7 +190,7 @@ public class ArtifactStoreFileSystem
         }
         if ( METADATA.matcher( path ).matches() )
         {
-            MetadataFileEntry entry = new MetadataFileEntry( this, parent, toPath( parent ), store );
+            MetadataFileEntry entry = new MetadataFileEntry( this, parent, parent.toPath(), store );
             try
             {
                 entry.getLastModified();
@@ -288,24 +290,6 @@ public class ArtifactStoreFileSystem
         throws IOException
     {
         return System.currentTimeMillis();
-    }
-
-    private String toPath( Entry entry )
-    {
-        Stack stack = new Stack();
-        Entry root = getRoot();
-        while ( entry != null && !root.equals( entry ) )
-        {
-            stack.push( entry.getName() );
-            entry = entry.getParent();
-        }
-        StringBuffer buf = new StringBuffer();
-        while ( !stack.empty() )
-        {
-            buf.append( '/' );
-            buf.append( stack.pop() );
-        }
-        return buf.toString();
     }
 
 }

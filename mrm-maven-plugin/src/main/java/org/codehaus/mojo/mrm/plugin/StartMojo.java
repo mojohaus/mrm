@@ -22,8 +22,8 @@ import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
-import org.codehaus.mojo.mrm.api.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
+import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.DiskArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;

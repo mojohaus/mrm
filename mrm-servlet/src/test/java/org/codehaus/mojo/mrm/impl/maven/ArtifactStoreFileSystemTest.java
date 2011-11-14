@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codehaus.mojo.mrm.api.maven;
+package org.codehaus.mojo.mrm.impl.maven;
 
 import junit.framework.TestCase;
 

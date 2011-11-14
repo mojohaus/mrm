@@ -26,7 +26,7 @@ import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -42,7 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FileSystemArtifactStore
-    implements ArtifactStore
+    extends BaseArtifactStore
 {
     private final FileSystem backing;
 

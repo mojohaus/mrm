@@ -16,11 +16,85 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
+/**
+ * An exception that indicates that an artifact could not be found.
+ *
+ * @since 1.0
+ */
 public class MetadataNotFoundException
     extends Exception
 {
-    public MetadataNotFoundException( String message )
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The path.
+     *
+     * @since 1.0
+     */
+    private final String path;
+
+    /**
+     * Creates a new {@link MetadataNotFoundException}.
+     *
+     * @param path the path of the metadata that was not found.
+     * @since 1.0
+     */
+    public MetadataNotFoundException( String path )
     {
-        super( message );
+        this( path, path );
+    }
+
+    /**
+     * Creates a new {@link MetadataNotFoundException}.
+     *
+     * @param message The message.
+     * @param path    the path of the metadata that was not found.
+     * @since 1.0
+     */
+    public MetadataNotFoundException( String message, String path )
+    {
+        this( message, path, null );
+    }
+
+    /**
+     * Creates a new {@link MetadataNotFoundException}.
+     *
+     * @param path  the path of the metadata that was not found.
+     * @param cause the reason why it was not found (or <code>null</code> if there is no specific reason)
+     * @since 1.0
+     */
+    public MetadataNotFoundException( String path, Throwable cause )
+    {
+        this( path, path, cause );
+    }
+
+    /**
+     * Creates a new {@link MetadataNotFoundException}.
+     *
+     * @param message The message.
+     * @param path    the path of the metadata that was not found.
+     * @param cause   the reason why it was not found (or <code>null</code> if there is no specific reason)
+     * @since 1.0
+     */
+    public MetadataNotFoundException( String message, String path, Throwable cause )
+    {
+        super( message, cause );
+        this.path = path;
+    }
+
+    /**
+     * Gets the path of the metadata that does not exist.
+     *
+     * @return the path of the metadata that was not found.
+     * @since 1.0
+     */
+    public String getPath()
+    {
+        return path;
     }
 }

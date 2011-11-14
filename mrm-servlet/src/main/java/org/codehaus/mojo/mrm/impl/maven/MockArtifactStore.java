@@ -32,7 +32,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.impl.Utils;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
@@ -64,7 +64,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 public class MockArtifactStore
-    implements ArtifactStore
+    extends BaseArtifactStore
 {
 
     public static final String[] POM_EXTENSIONS = { "pom" };

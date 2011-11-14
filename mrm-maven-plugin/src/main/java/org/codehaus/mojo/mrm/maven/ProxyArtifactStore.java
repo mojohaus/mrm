@@ -34,7 +34,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
 import java.io.File;
@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ProxyArtifactStore
-    implements ArtifactStore
+    extends BaseArtifactStore
 {
     private final RepositoryMetadataManager repositoryMetadataManager;
 
@@ -131,9 +131,9 @@ public class ProxyArtifactStore
         }
     }
 
-    public synchronized Set getGroupIds( String prefix )
+    public synchronized Set getGroupIds( String parentGroupId )
     {
-        String path = prefix.replace( '.', '/' );
+        String path = parentGroupId.replace( '.', '/' );
         Map children = (Map) this.children.get( path );
         if ( children == null )
         {

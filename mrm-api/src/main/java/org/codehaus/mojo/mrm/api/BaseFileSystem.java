@@ -20,17 +20,37 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Base implementation of {@link FileSystem} that all implementations should extend from.
+ *
+ * @since 1.0
+ */
 public abstract class BaseFileSystem
     implements FileSystem
 {
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * The root entry.
+     */
     private final DirectoryEntry root = new DefaultDirectoryEntry( this, null, "" );
 
+    /**
+     * {@inheritDoc}
+     */
     public DirectoryEntry getRoot()
     {
         return root;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry get( String path )
     {
         if ( path.startsWith( "/" ) )
@@ -54,6 +74,15 @@ public abstract class BaseFileSystem
         return get( parent, parts[parts.length - 1] );
     }
 
+    /**
+     * Gets the named entry in the specified directory.
+     * The default implementation lists all the entries in the directory and looks for the one with the matching name.
+     * Caching implementations will likely want to override this behaviour.
+     *
+     * @param parent the directory.
+     * @param name   the name of the entry to get.
+     * @return the {@link Entry} or <code>null</code> if the entry does not exist.
+     */
     protected Entry get( DirectoryEntry parent, String name )
     {
         parent.getClass();
@@ -71,23 +100,35 @@ public abstract class BaseFileSystem
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DirectoryEntry mkdir( DirectoryEntry parent, String name )
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileEntry put( DirectoryEntry parent, String name, byte[] content )
         throws IOException
     {
         return put( parent, name, new ByteArrayInputStream( content ) );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void remove( Entry entry )
     {
         throw new UnsupportedOperationException();

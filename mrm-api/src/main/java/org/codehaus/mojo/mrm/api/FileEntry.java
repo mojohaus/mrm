@@ -19,12 +19,31 @@ package org.codehaus.mojo.mrm.api;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * An {@link Entry} that corresponds to a file.
+ *
+ * @since 1.0
+ */
 public interface FileEntry
     extends Entry
 {
+    /**
+     * Returns the size in bytes of the entry.
+     *
+     * @return the length of the entry in bytes or <code>-1L</code> if the length cannot be determined.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.0
+     */
     long getSize()
         throws IOException;
 
+    /**
+     * Returns the contents of the entry.
+     *
+     * @return the contents of the entry as an {@link InputStream} (caller is responsible for closing).
+     * @throws IOException if an I/O error occurs.
+     * @since 1.0
+     */
     InputStream getInputStream()
         throws IOException;
 }

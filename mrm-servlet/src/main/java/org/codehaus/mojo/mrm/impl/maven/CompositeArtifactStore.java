@@ -25,6 +25,7 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class CompositeArtifactStore
-    implements ArtifactStore
+    extends BaseArtifactStore
 {
 
     private final ArtifactStore[] stores;
@@ -46,12 +47,12 @@ public class CompositeArtifactStore
         this.stores = stores;
     }
 
-    public Set getGroupIds( String prefix )
+    public Set getGroupIds( String parentGroupId )
     {
         Set result = new TreeSet();
         for ( int i = 0; i < stores.length; i++ )
         {
-            Set groupIds = stores[i].getGroupIds( prefix );
+            Set groupIds = stores[i].getGroupIds( parentGroupId );
             if ( groupIds != null )
             {
                 result.addAll( groupIds );

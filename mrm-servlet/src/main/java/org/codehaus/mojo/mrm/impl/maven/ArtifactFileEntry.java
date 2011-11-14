@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.codehaus.mojo.mrm.api.maven;
+package org.codehaus.mojo.mrm.impl.maven;
 
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
+import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 
 import java.io.IOException;
 import java.io.InputStream;

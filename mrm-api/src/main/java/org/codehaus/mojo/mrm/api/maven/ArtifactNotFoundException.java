@@ -16,12 +16,85 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
+/**
+ * An exception that indicates that an artifact could not be found.
+ *
+ * @since 1.0
+ */
 public class ArtifactNotFoundException
     extends Exception
 {
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The artifact.
+     *
+     * @since 1.0
+     */
+    private final Artifact artifact;
+
+    /**
+     * Creates a new {@link ArtifactNotFoundException}.
+     *
+     * @param artifact the artifact that was not found.
+     * @since 1.0
+     */
     public ArtifactNotFoundException( Artifact artifact )
     {
-        super( artifact.toString() );
+        this( artifact.toString(), artifact, null );
     }
 
+    /**
+     * Creates a new {@link ArtifactNotFoundException}.
+     *
+     * @param artifact the artifact that was not found.
+     * @param cause    the reason why it was not found (or <code>null</code> if there is no specific reason)
+     * @since 1.0
+     */
+    public ArtifactNotFoundException( Artifact artifact, Throwable cause )
+    {
+        this( artifact.toString(), artifact, cause );
+    }
+
+    /**
+     * Creates a new {@link ArtifactNotFoundException}.
+     *
+     * @param message  The message.
+     * @param artifact the artifact that was not found.
+     * @since 1.0
+     */
+    public ArtifactNotFoundException( String message, Artifact artifact )
+    {
+        this( message, artifact, null );
+    }
+
+    /**
+     * Creates a new {@link ArtifactNotFoundException}.
+     *
+     * @param message  The message.
+     * @param artifact the artifact that was not found.
+     * @param cause    the reason why it was not found (or <code>null</code> if there is no specific reason)
+     * @since 1.0
+     */
+    public ArtifactNotFoundException( String message, Artifact artifact, Throwable cause )
+    {
+        super( message, cause );
+        this.artifact = artifact;
+    }
+
+    /**
+     * Gets the artifact that does not exist.
+     *
+     * @return the artifact that does not exist.
+     * @since 1.0
+     */
+    public Artifact getArtifact()
+    {
+        return artifact;
+    }
 }

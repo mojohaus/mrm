@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.codehaus.mojo.mrm.api.maven;
+package org.codehaus.mojo.mrm.impl.maven;
 
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
+import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
