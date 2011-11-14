@@ -19,8 +19,8 @@
 <project name="Mock Repository Manager Maven Plugin">
   <body>
     <menu name="Parent Project">
-      <item name="Codehaus Mojo Parent" href="/index.html"/>
-      <item name="Mock Repository Manager" href="../index.html"/>
+      <item name="Codehaus Mojo Parent" href="..//index.html"/>
+      <item name="Mock Repository Manager" href="../mrm/index.html"/>
     </menu>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
