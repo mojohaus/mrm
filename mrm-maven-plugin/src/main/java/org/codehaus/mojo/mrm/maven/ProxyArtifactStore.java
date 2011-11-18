@@ -50,36 +50,73 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that serves content from a running Maven instance.
+ */
 public class ProxyArtifactStore
     extends BaseArtifactStore
 {
+    /**
+     * The {@link RepositoryMetadataManager} provided by Maven.
+     */
     private final RepositoryMetadataManager repositoryMetadataManager;
 
-    private final List remoteArtifactRepositories;
-
+    /**
+     * The remote plugin repositories provided by Maven.
+     */
     private final List remotePluginRepositories;
 
+    /**
+     * The {@link ArtifactRepository} provided by Maven.
+     */
     private final ArtifactRepository localRepository;
 
+    /**
+     * The {@link ArtifactFactory} provided by Maven.
+     */
     private final ArtifactFactory artifactFactory;
 
+    /**
+     * The remote repositories that we will query.
+     */
     private final List remoteRepositories;
 
-    private final VersionRange anyVersion;
-
+    /**
+     * The {@link ArtifactResolver} provided by Maven.
+     */
     private final ArtifactResolver artifactResolver;
 
+    /**
+     * The {@link Log} to log to.
+     */
     private final Log log;
 
+    /**
+     * A version range that matches any version
+     */
+    private final VersionRange anyVersion;
+
+    /**
+     * A cache of what artifacts are present.
+     */
     private final Map/*<String,Map<String,Artifact>>*/ children = new HashMap();
 
+    /**
+     * Creates a new instance.
+     *
+     * @param repositoryMetadataManager  the {@link RepositoryMetadataManager} to use.
+     * @param remoteArtifactRepositories the repsoitories to use.
+     * @param remotePluginRepositories   the plugin repositories to use.
+     * @param localRepository            the local repository to use.
+     * @param artifactFactory            the {@link ArtifactFactory} to use.
+     * @param artifactResolver           the {@link ArtifactResolver} to use.
+     * @param log                        the {@link Log} to log to.
+     */
     public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager, List remoteArtifactRepositories,
                                List remotePluginRepositories, ArtifactRepository localRepository,
                                ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, Log log )
-        throws InvalidVersionSpecificationException
     {
         this.repositoryMetadataManager = repositoryMetadataManager;
-        this.remoteArtifactRepositories = remoteArtifactRepositories;
         this.remotePluginRepositories = remotePluginRepositories;
         this.localRepository = localRepository;
         this.artifactFactory = artifactFactory;
@@ -88,9 +125,25 @@ public class ProxyArtifactStore
         remoteRepositories = new ArrayList();
         remoteRepositories.addAll( remoteArtifactRepositories );
         remoteRepositories.addAll( remotePluginRepositories );
-        anyVersion = VersionRange.createFromVersionSpec( "[0,]" );
+        try
+        {
+            anyVersion = VersionRange.createFromVersionSpec( "[0,]" );
+        }
+        catch ( InvalidVersionSpecificationException e )
+        {
+            // must never happen... so if it does make sure we stop
+            IllegalStateException ise =
+                new IllegalStateException( "[0,] should always be a valid version specification" );
+            ise.initCause( e );
+            throw ise;
+        }
     }
 
+    /**
+     * Update the {@link #children} with a resolved artifact.
+     *
+     * @param artifact the artifact that was resolved.
+     */
     private synchronized void addResolved( Artifact artifact )
     {
         String path =
@@ -105,6 +158,11 @@ public class ProxyArtifactStore
         addResolved( path );
     }
 
+    /**
+     * Update the {@link #children} with a resolved path.
+     *
+     * @param path the path that was resolved.
+     */
     private synchronized void addResolved( String path )
     {
         for ( int index = path.lastIndexOf( '/' ); index > 0; index = path.lastIndexOf( '/' ) )
@@ -131,6 +189,9 @@ public class ProxyArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getGroupIds( String parentGroupId )
     {
         String path = parentGroupId.replace( '.', '/' );
@@ -151,6 +212,9 @@ public class ProxyArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getArtifactIds( String groupId )
     {
         String path = groupId.replace( '.', '/' );
@@ -171,6 +235,9 @@ public class ProxyArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getVersions( String groupId, String artifactId )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId;
@@ -191,6 +258,9 @@ public class ProxyArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getArtifacts( String groupId, String artifactId, String version )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId + "/" + version;
@@ -211,6 +281,9 @@ public class ProxyArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -243,6 +316,9 @@ public class ProxyArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -275,6 +351,9 @@ public class ProxyArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -307,12 +386,18 @@ public class ProxyArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void set( Artifact artifact, InputStream content )
         throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -406,7 +491,7 @@ public class ProxyArtifactStore
                     metadata.merge( artifactMetadata );
                     for ( Iterator i = artifactMetadata.getVersioning().getVersions().iterator(); i.hasNext(); )
                     {
-                        addResolved( path + "/" + (String) i.next() );
+                        addResolved( path + "/" + i.next() );
                     }
                 }
             }
@@ -443,6 +528,9 @@ public class ProxyArtifactStore
         return metadata;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException
     {

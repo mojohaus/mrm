@@ -29,17 +29,21 @@ import java.util.Map;
  * @goal stop
  * @phase post-integration-test
  * @requiresProject false
+ * @threadSafe
  * @description Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
  * by integration tests.
  */
 public class StopMojo
     extends AbstractMRMMojo
 {
+    /**
+     * {@inheritDoc}
+     */
     public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
         Map pluginContext = session.getPluginContext( pluginDescriptor, project );
-        MRMThread mrm = (MRMThread) pluginContext.get( MRMThread.class.getName() );
+        FileSystemServer mrm = (FileSystemServer) pluginContext.get( FileSystemServer.class.getName() );
         if ( mrm == null )
         {
             getLog().info( "Mock Repository Manager was not started" );
@@ -52,7 +56,7 @@ public class StopMojo
         {
             mrm.waitForFinished();
             getLog().info( "Mock Repository Manager " + url + " is stopped." );
-            pluginContext.remove( MRMThread.class.getName() );
+            pluginContext.remove( FileSystemServer.class.getName() );
         }
         catch ( InterruptedException e )
         {

@@ -16,51 +16,65 @@
 
 package org.codehaus.mojo.mrm.plugin;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import java.util.Map;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @goal start
- * @phase pre-integration-test
+ * @goal run
  * @requiresProject false
+ * @requiresDirectInvocation true
  * @threadSafe
- * @description Starts a mock repository manager as part of a maven build for use by integration tests.
+ * @description Starts a mock repository manager for manual testing.
  */
-public class StartMojo
+public class RunMojo
     extends AbstractStartMojo
 {
-    /**
-     * The property to set the repository url to.
-     *
-     * @parameter expression="${mrm.propertyName}"
-     */
-    private String propertyName;
-
     /**
      * {@inheritDoc}
      */
     public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
+        if ( !session.getSettings().isInteractiveMode() )
+        {
+            throw new MojoExecutionException(
+                "Cannot run a mock repository in batch mode (as there is no way to signal shutdown) "
+                    + "use mrm:start instead" );
+        }
         FileSystemServer mrm = createFileSystemServer( createArtifactStore() );
         getLog().info( "Starting Mock Repository Manager" );
         mrm.ensureStarted();
         String url = mrm.getUrl();
-        getLog().info( "Mock Repository Manager " + url + " is started." );
-        if ( !StringUtils.isEmpty( propertyName ) )
+        try
         {
-            getLog().info( "Setting property '" + propertyName + "' to '" + url + "'." );
-            project.getProperties().setProperty( propertyName, url );
+            getLog().info( "Mock Repository Manager " + url + " is started." );
+            ConsoleScanner consoleScanner = new ConsoleScanner();
+            consoleScanner.start();
+            getLog().info( "Hit ENTER on the console to stop the Mock Repository Manager and continue the build." );
+            consoleScanner.waitForFinished();
         }
-        Map pluginContext = session.getPluginContext( pluginDescriptor, project );
-        pluginContext.put( FileSystemServer.class.getName(), mrm );
+        catch ( InterruptedException e )
+        {
+            // ignore
+        }
+        finally
+        {
+            getLog().info( "Stopping Mock Repository Manager " + url );
+            mrm.finish();
+            try
+            {
+                mrm.waitForFinished();
+                getLog().info( "Mock Repository Manager " + url + " is stopped." );
+            }
+            catch ( InterruptedException e )
+            {
+                // ignore
+            }
+        }
     }
 
 }

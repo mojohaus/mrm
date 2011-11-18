@@ -20,7 +20,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -45,6 +44,8 @@ public abstract class AbstractMRMMojo
     protected MavenProject project;
 
     /**
+     * The repository metadata manager.
+     *
      * @component
      * @required
      * @readonly
@@ -52,29 +53,39 @@ public abstract class AbstractMRMMojo
     private RepositoryMetadataManager repositoryMetadataManager;
 
     /**
+     * The remote repositories.
+     *
      * @parameter expression="${project.remoteArtifactRepositories}"
      * @readonly
      */
     protected List remoteArtifactRepositories;
 
     /**
+     * The remote pluginRepositories.
+     *
      * @parameter expression="${project.pluginArtifactRepositories}"
      * @readonly
      */
     protected List remotePluginRepositories;
 
     /**
+     * The local repository.
+     *
      * @parameter expression="${localRepository}"
      * @readonly
      */
     protected ArtifactRepository localRepository;
 
     /**
+     * The artifact factory.
+     *
      * @component
      */
     protected ArtifactFactory artifactFactory;
 
     /**
+     * The artifact resolver.
+     *
      * @component
      */
     protected ArtifactResolver artifactResolver;
@@ -112,6 +123,12 @@ public abstract class AbstractMRMMojo
      */
     protected boolean skip;
 
+    /**
+     * Executes the plugin goal (if the plugin is not skipped)
+     *
+     * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
+     * @throws MojoFailureException   If there is an exception occuring during the execution of the plugin.
+     */
     public final void execute()
         throws MojoExecutionException, MojoFailureException
     {
@@ -128,11 +145,23 @@ public abstract class AbstractMRMMojo
         doExecute();
     }
 
+    /**
+     * Performs this plugin's action.
+     *
+     * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
+     * @throws MojoFailureException   If there is an exception occuring during the execution of the plugin.
+     */
     protected abstract void doExecute()
         throws MojoExecutionException, MojoFailureException;
 
+    /**
+     * Creates an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available
+     * to Maven itself.
+     *
+     * @return an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available
+     *         to Maven itself.
+     */
     protected ProxyArtifactStore createProxyArtifactStore()
-        throws InvalidVersionSpecificationException
     {
         return new ProxyArtifactStore( repositoryMetadataManager, remoteArtifactRepositories, remotePluginRepositories,
                                        localRepository, artifactFactory, artifactResolver, getLog() );

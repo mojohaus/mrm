@@ -18,62 +18,78 @@ package org.codehaus.mojo.mrm.plugin;
 
 import java.io.IOException;
 
+/**
+ * A thread that waits for the user to press a key.
+ */
 public class ConsoleScanner
     extends Thread
 {
+    /**
+     * The guard for {@link #finished}.
+     */
     private final Object lock = new Object();
 
+    /**
+     * Flag to indicate that the thread has finished.
+     * <p/>
+     * Guarded by {@link #lock}.
+     */
     private boolean finished = false;
 
+    /**
+     * creates a new instance.
+     */
     public ConsoleScanner()
     {
         setName( "Console scanner" );
         setDaemon( true );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void run()
     {
         try
         {
-            while ( !isFinished() )
+            synchronized ( lock )
             {
-                checkSystemInput();
-                getSomeSleep();
+                try
+                {
+                    while ( !finished )
+                    {
+                        checkSystemInput();
+                        try
+                        {
+                            lock.wait( 500 );
+                        }
+                        catch ( InterruptedException e )
+                        {
+                            // ignore
+                        }
+                    }
+                }
+                finally
+                {
+                    synchronized ( lock )
+                    {
+                        finished = true;
+                        lock.notifyAll();
+                    }
+                }
             }
         }
         catch ( IOException e )
         {
             // ignore
         }
-        finally
-        {
-            finish();
-        }
     }
 
-    public boolean isFinished()
-    {
-        synchronized ( lock )
-        {
-            return finished;
-        }
-    }
-
-    private void getSomeSleep()
-    {
-        synchronized ( lock )
-        {
-            try
-            {
-                lock.wait( 500 );
-            }
-            catch ( InterruptedException e )
-            {
-                // ignore
-            }
-        }
-    }
-
+    /**
+     * Checks for the user pressing Enter.
+     *
+     * @throws IOException if something went wrong.
+     */
     private void checkSystemInput()
         throws IOException
     {
@@ -85,25 +101,29 @@ public class ConsoleScanner
                 char c = (char) input;
                 if ( c == '\n' )
                 {
-                    finish();
+                    synchronized ( lock )
+                    {
+                        finished = true;
+                        lock.notifyAll();
+                    }
                 }
             }
             else
             {
-                finish();
+                synchronized ( lock )
+                {
+                    finished = true;
+                    lock.notifyAll();
+                }
             }
         }
     }
 
-    public void finish()
-    {
-        synchronized ( lock )
-        {
-            finished = true;
-            lock.notifyAll();
-        }
-    }
-
+    /**
+     * Blocks until the console scanner is finished.
+     *
+     * @throws InterruptedException if interrupted.
+     */
     public void waitForFinished()
         throws InterruptedException
     {
