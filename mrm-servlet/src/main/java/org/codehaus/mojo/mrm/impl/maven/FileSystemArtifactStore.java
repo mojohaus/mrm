@@ -51,6 +51,9 @@ public class FileSystemArtifactStore
         this.backing = backing;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getGroupIds( String parentGroupId )
     {
         Entry parentEntry =
@@ -72,6 +75,9 @@ public class FileSystemArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifactIds( String groupId )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) );
@@ -92,6 +98,9 @@ public class FileSystemArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getVersions( String groupId, String artifactId )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) + "/" + artifactId );
@@ -112,6 +121,9 @@ public class FileSystemArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifacts( final String groupId, final String artifactId, final String version )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) + "/" + artifactId + "/" + version );
@@ -194,6 +206,9 @@ public class FileSystemArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -207,6 +222,9 @@ public class FileSystemArtifactStore
         return entry.getLastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -220,6 +238,9 @@ public class FileSystemArtifactStore
         return ( (FileEntry) entry ).getSize();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -233,12 +254,18 @@ public class FileSystemArtifactStore
         return ( (FileEntry) entry ).getInputStream();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void set( Artifact artifact, InputStream content )
         throws IOException
     {
         throw new UnsupportedOperationException( "Read-only store" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -267,6 +294,9 @@ public class FileSystemArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException
     {

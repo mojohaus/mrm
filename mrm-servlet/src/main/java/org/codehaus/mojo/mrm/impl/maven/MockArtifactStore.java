@@ -123,6 +123,9 @@ public class MockArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getGroupIds( String parentGroupId )
     {
         TreeSet result = new TreeSet();
@@ -152,12 +155,18 @@ public class MockArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getArtifactIds( String groupId )
     {
         Map artifactMap = (Map) contents.get( groupId );
         return new TreeSet( artifactMap == null ? Collections.EMPTY_SET : artifactMap.keySet() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getVersions( String groupId, String artifactId )
     {
         Map artifactMap = (Map) contents.get( groupId );
@@ -165,6 +174,9 @@ public class MockArtifactStore
         return new TreeSet( versionMap == null ? Collections.EMPTY_SET : versionMap.keySet() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Set getArtifacts( String groupId, String artifactId, String version )
     {
         Map artifactMap = (Map) contents.get( groupId );
@@ -174,6 +186,9 @@ public class MockArtifactStore
         return new HashSet( filesMap == null ? Collections.EMPTY_SET : filesMap.keySet() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -210,6 +225,9 @@ public class MockArtifactStore
         return content.getLastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -246,6 +264,9 @@ public class MockArtifactStore
         return content.getLength();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -282,6 +303,9 @@ public class MockArtifactStore
         return content.getInputStream();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void set( Artifact artifact, InputStream content )
         throws IOException
     {
@@ -319,6 +343,9 @@ public class MockArtifactStore
         filesMap.put( artifact, content );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -538,6 +565,9 @@ public class MockArtifactStore
         return metadata;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException
     {

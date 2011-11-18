@@ -45,6 +45,9 @@ public class AutoSHA1DigestFileEntry
         this.hashEntry = hashEntry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {
@@ -58,12 +61,18 @@ public class AutoSHA1DigestFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
         return 40;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

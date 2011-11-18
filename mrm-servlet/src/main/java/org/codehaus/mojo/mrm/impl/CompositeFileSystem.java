@@ -41,6 +41,9 @@ public class CompositeFileSystem
         this.delegates = delegates;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry[] listEntries( DirectoryEntry directory )
     {
         Map/*<String,Entry>*/ result = new TreeMap();
@@ -71,6 +74,9 @@ public class CompositeFileSystem
         return (Entry[]) result.values().toArray( new Entry[result.size()] );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry get( String path )
     {
         for ( int i = 0; i < delegates.length; i++ )
@@ -89,6 +95,9 @@ public class CompositeFileSystem
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
@@ -107,28 +116,43 @@ public class CompositeFileSystem
         return lastModified;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DirectoryEntry getRoot()
     {
         return root;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DirectoryEntry mkdir( DirectoryEntry parent, String name )
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileEntry put( DirectoryEntry parent, String name, byte[] content )
         throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void remove( Entry entry )
     {
         throw new UnsupportedOperationException();

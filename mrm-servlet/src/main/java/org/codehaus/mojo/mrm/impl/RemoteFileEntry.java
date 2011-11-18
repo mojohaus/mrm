@@ -24,30 +24,53 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * A {@link org.codehaus.mojo.mrm.api.FileEntry} that is hosted at a remote {@link URL}.
+ */
 public class RemoteFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * The {@link URL} of the entry.
+     */
     private final URL url;
 
+    /**
+     * Create a new file entry.
+     *
+     * @param fileSystem the owning file system.
+     * @param parent     the directory hosting the entry.
+     * @param name       the name of the entry.
+     * @param url        the content of the entry.
+     */
     public RemoteFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, URL url )
     {
         super( fileSystem, parent, name );
         this.url = url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {
         return url.openConnection().getLastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
         return url.openConnection().getContentLength();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

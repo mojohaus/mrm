@@ -50,6 +50,9 @@ public class DiskArtifactStore
         this.root = root;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getGroupIds( String parentGroupId )
     {
         File parentDir =
@@ -70,6 +73,9 @@ public class DiskArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifactIds( String groupId )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
@@ -91,6 +97,9 @@ public class DiskArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getVersions( String groupId, String artifactId )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
@@ -112,6 +121,9 @@ public class DiskArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifacts( final String groupId, final String artifactId, final String version )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
@@ -195,6 +207,9 @@ public class DiskArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -209,6 +224,9 @@ public class DiskArtifactStore
         return file.lastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -223,6 +241,9 @@ public class DiskArtifactStore
         return file.length();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -237,12 +258,18 @@ public class DiskArtifactStore
         return new FileInputStream( file );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void set( Artifact artifact, InputStream content )
         throws IOException
     {
         throw new UnsupportedOperationException( "Read-only store" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -276,6 +303,9 @@ public class DiskArtifactStore
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException
     {

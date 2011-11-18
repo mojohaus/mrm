@@ -42,18 +42,27 @@ public class MD5DigestFileEntry
         this.entry = entry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {
         return entry.getLastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
         return 32;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

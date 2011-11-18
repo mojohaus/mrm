@@ -45,6 +45,9 @@ public class AutoMD5DigestFileEntry
         this.hashEntry = hashEntry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {
@@ -58,12 +61,18 @@ public class AutoMD5DigestFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
         return 32;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

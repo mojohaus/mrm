@@ -42,6 +42,9 @@ public class MemoryFileSystem
         contents.put( getRoot(), new ArrayList() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized Entry[] listEntries( DirectoryEntry directory )
     {
         List/*<Entry>*/ entries = (List/*<Entry>*/) contents.get( directory == null ? getRoot() : directory );
@@ -52,6 +55,9 @@ public class MemoryFileSystem
         return (Entry[]) entries.toArray( new Entry[entries.size()] );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
@@ -67,6 +73,9 @@ public class MemoryFileSystem
         return lastModified;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected synchronized Entry get( DirectoryEntry parent, String name )
     {
         parent.getClass();
@@ -86,6 +95,9 @@ public class MemoryFileSystem
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized DirectoryEntry mkdir( DirectoryEntry parent, String name )
     {
         parent.getClass();
@@ -108,6 +120,9 @@ public class MemoryFileSystem
         return entry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
@@ -158,6 +173,9 @@ public class MemoryFileSystem
         return entries;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void remove( Entry entry )
     {
         List/*<Entry>*/ entries;

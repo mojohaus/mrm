@@ -43,6 +43,9 @@ public class AutoDigestFileSystem
         this.backing = backing;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry[] listEntries( DirectoryEntry directory )
     {
         Map result = new TreeMap();
@@ -88,12 +91,18 @@ public class AutoDigestFileSystem
         return (Entry[]) result.values().toArray( new Entry[result.size()] );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
         return backing.getLastModified( DefaultDirectoryEntry.equivalent( backing, entry ) );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry get( String path )
     {
         Entry entry = backing.get( path );

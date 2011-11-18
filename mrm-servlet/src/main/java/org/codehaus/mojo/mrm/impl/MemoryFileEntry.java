@@ -41,16 +41,25 @@ public class MemoryFileEntry
         this.lastModified = System.currentTimeMillis();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
     {
         return lastModified;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
     {
         return content.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

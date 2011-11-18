@@ -41,6 +41,9 @@ public class ArtifactFileEntry
         this.store = store;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
@@ -56,6 +59,9 @@ public class ArtifactFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {
@@ -71,6 +77,9 @@ public class ArtifactFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {

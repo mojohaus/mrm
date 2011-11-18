@@ -35,25 +35,53 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Servlet that serves a {@link FileSystem}.
+ */
 public class FileSystemServlet
     extends HttpServlet
 {
 
+    /**
+     * Width of the name column in the HTML view.
+     */
+    private static final int NAME_COL_WIDTH = 50;
+
+    /**
+     * Width of the size column in the HTML view.
+     */
+    private static final int SIZE_COL_WIDTH = 20;
+
+    /**
+     * The file system that we are serving.
+     */
+    private FileSystem fileSystem;
+
+    /**
+     * Default constructor.
+     */
     public FileSystemServlet()
     {
         this.fileSystem = new MemoryFileSystem();
     }
 
+    /**
+     * Constructor that takes a specific file system instance.
+     *
+     * @param fileSystem the file systen to serve.
+     */
     public FileSystemServlet( FileSystem fileSystem )
     {
         this.fileSystem = fileSystem;
     }
 
-    private FileSystem fileSystem;
-
+    /**
+     * {@inheritDoc}
+     */
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
         throws ServletException, IOException
     {
@@ -127,15 +155,18 @@ public class FileSystemServlet
                     boolean directory = entries[i] instanceof DirectoryEntry;
                     if ( directory )
                     {
-                        w.write( "<a href=\"./" + Utils.urlEncodePathSegment( childName ) + "/\">"
-                                     + formatName( childName + "/" ) + "</a>" + StringUtils.repeat( " ", Math.max( 0, 49
-                            - childName.length() ) ) );
+                        String dirName = childName + "/";
+                        w.write(
+                            "<a href=\"./" + Utils.urlEncodePathSegment( childName ) + "/\">" + formatName( dirName )
+                                + "</a>" + StringUtils.repeat( " ",
+                                                               Math.max( 0, NAME_COL_WIDTH - dirName.length() ) ) );
                     }
                     else
                     {
                         w.write(
                             "<a href=\"./" + Utils.urlEncodePathSegment( childName ) + "\">" + formatName( childName )
-                                + "</a>" + StringUtils.repeat( " ", Math.max( 0, 50 - childName.length() ) ) );
+                                + "</a>" + StringUtils.repeat( " ",
+                                                               Math.max( 0, NAME_COL_WIDTH - childName.length() ) ) );
                     }
 
                     long timestamp = 0;
@@ -152,7 +183,7 @@ public class FileSystemServlet
                     w.write( format.format( timestamp != -1 ? new Date( timestamp ) : new Date() ) );
                     if ( directory )
                     {
-                        w.println( StringUtils.leftPad( "-", 20 ) );
+                        w.println( StringUtils.leftPad( "-", SIZE_COL_WIDTH ) );
                     }
                     else if ( entries[i] instanceof FileEntry )
                     {
@@ -162,21 +193,21 @@ public class FileSystemServlet
                             long size = fileEntry.getSize();
                             if ( size >= 0 )
                             {
-                                w.println( StringUtils.leftPad( Long.toString( size ), 20 ) );
+                                w.println( StringUtils.leftPad( Long.toString( size ), SIZE_COL_WIDTH ) );
                             }
                             else
                             {
-                                w.println( StringUtils.leftPad( "-", 20 ) );
+                                w.println( StringUtils.leftPad( "-", SIZE_COL_WIDTH ) );
                             }
                         }
                         catch ( IOException e )
                         {
-                            w.println( StringUtils.leftPad( "-", 20 ) );
+                            w.println( StringUtils.leftPad( "-", SIZE_COL_WIDTH ) );
                         }
                     }
                     else
                     {
-                        w.println( StringUtils.leftPad( "-", 20 ) );
+                        w.println( StringUtils.leftPad( "-", SIZE_COL_WIDTH ) );
                     }
                 }
             }
@@ -187,9 +218,12 @@ public class FileSystemServlet
             return;
         }
 
-        resp.sendError( 404 );
+        resp.sendError( HttpURLConnection.HTTP_NOT_FOUND );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected void doPut( HttpServletRequest req, HttpServletResponse resp )
         throws ServletException, IOException
     {
@@ -206,7 +240,7 @@ public class FileSystemServlet
         }
         if ( path.endsWith( "/" ) )
         {
-            resp.sendError( 405 );
+            resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
             return;
         }
         if ( path.startsWith( "/" ) )
@@ -216,13 +250,13 @@ public class FileSystemServlet
         String[] parts = path.split( "/" );
         if ( parts.length == 0 )
         {
-            resp.sendError( 405 );
+            resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
             return;
         }
         String name = parts[parts.length - 1];
         if ( StringUtils.isEmpty( name ) )
         {
-            resp.sendError( 405 );
+            resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
             return;
         }
         DirectoryEntry parent = fileSystem.getRoot();
@@ -237,7 +271,7 @@ public class FileSystemServlet
             FileEntry put = fileSystem.put( parent, name, inputStream );
             if ( put != null )
             {
-                resp.setStatus( 200 );
+                resp.setStatus( HttpURLConnection.HTTP_OK );
                 return;
             }
         }
@@ -245,9 +279,12 @@ public class FileSystemServlet
         {
             IOUtils.closeQuietly( inputStream );
         }
-        resp.sendError( 405 );
+        resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
         throws ServletException, IOException
     {
@@ -265,27 +302,33 @@ public class FileSystemServlet
         Entry entry = fileSystem.get( path );
         if ( entry == null )
         {
-            resp.setStatus( 200 );
+            resp.setStatus( HttpURLConnection.HTTP_OK );
             return;
         }
         try
         {
             fileSystem.remove( entry );
-            resp.setStatus( 200 );
+            resp.setStatus( HttpURLConnection.HTTP_OK );
         }
         catch ( UnsupportedOperationException e )
         {
-            resp.sendError( 405 );
+            resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
         }
     }
 
+    /**
+     * Formats a name for the fixed width layout of the html index.
+     *
+     * @param name the name.
+     * @return the name or the name shortened to 50 characters.
+     */
     private static String formatName( String name )
     {
-        if ( name.length() < 50 )
+        if ( name.length() < NAME_COL_WIDTH )
         {
             return name;
         }
-        return name.substring( 0, 49 ) + ">";
+        return name.substring( 0, NAME_COL_WIDTH - 1 ) + ">";
     }
 
 }

@@ -44,6 +44,9 @@ public class MetadataFileEntry
         this.store = store;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
         throws IOException
     {
@@ -63,6 +66,9 @@ public class MetadataFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {
@@ -80,6 +86,9 @@ public class MetadataFileEntry
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
         throws IOException
     {

@@ -47,6 +47,9 @@ public class CompositeArtifactStore
         this.stores = stores;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getGroupIds( String parentGroupId )
     {
         Set result = new TreeSet();
@@ -61,6 +64,9 @@ public class CompositeArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifactIds( String groupId )
     {
         Set result = new TreeSet();
@@ -75,6 +81,9 @@ public class CompositeArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getVersions( String groupId, String artifactId )
     {
         Set result = new TreeSet();
@@ -89,6 +98,9 @@ public class CompositeArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Set getArtifacts( String groupId, String artifactId, String version )
     {
         Set result = new TreeSet();
@@ -103,6 +115,9 @@ public class CompositeArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -120,6 +135,9 @@ public class CompositeArtifactStore
         throw new ArtifactNotFoundException( artifact );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -137,6 +155,9 @@ public class CompositeArtifactStore
         throw new ArtifactNotFoundException( artifact );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
@@ -154,12 +175,18 @@ public class CompositeArtifactStore
         throw new ArtifactNotFoundException( artifact );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void set( Artifact artifact, InputStream content )
         throws IOException
     {
         throw new IOException( "Read-only store" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -281,6 +308,9 @@ public class CompositeArtifactStore
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException
     {

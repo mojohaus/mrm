@@ -46,6 +46,9 @@ public class DiskFileSystem
         this( root, true );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry[] listEntries( DirectoryEntry directory )
     {
         File file = toFile( directory );
@@ -69,6 +72,9 @@ public class DiskFileSystem
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
@@ -103,6 +109,9 @@ public class DiskFileSystem
         return file;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public DirectoryEntry mkdir( DirectoryEntry parent, String name )
     {
         if ( readOnly )
@@ -114,6 +123,9 @@ public class DiskFileSystem
         return new DefaultDirectoryEntry( this, parent, name );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
@@ -128,6 +140,9 @@ public class DiskFileSystem
         return new DiskFileEntry( this, parent, file );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void remove( Entry entry )
     {
         if ( readOnly )

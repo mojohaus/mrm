@@ -37,16 +37,25 @@ public class DiskFileEntry
         this.file = file;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified()
     {
         return file.lastModified();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getSize()
     {
         return file.length();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getInputStream()
         throws IOException
     {

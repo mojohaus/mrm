@@ -73,8 +73,7 @@ public final class Utils
      * Creates an empty jar file.
      *
      * @return the empty jar file as a byte array.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if things go wrong.
+     * @throws IOException if things go wrong.
      */
     public static byte[] newEmptyJarContent()
         throws IOException
@@ -95,12 +94,11 @@ public final class Utils
     /**
      * Creates an empty maven plugin jar file.
      *
-     * @param groupId
-     * @param artifactId
-     * @param version
+     * @param groupId    the group id of the plugin.
+     * @param artifactId the artifact id of the plugin.
+     * @param version    the version of the plugin.
      * @return the empty jar file as a byte array.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if things go wrong.
+     * @throws IOException if things go wrong.
      */
     public static byte[] newEmptyMavenPluginJarContent( String groupId, String artifactId, String version )
         throws IOException
@@ -137,12 +135,26 @@ public final class Utils
         return getGAVPath( groupId, artifactId, version ) + '/' + artifactId + '-' + version;
     }
 
+    /**
+     * Converts a GAV coordinate into the repository path for the directory containing all artifacts at that GAV.
+     *
+     * @param groupId    the group id.
+     * @param artifactId the artifact id (may be <code>null</code> to just get the path of the groupId)
+     * @param version    the version (may be <code>null</code> to just get the path of the groupId:artifactId)
+     * @return the path.
+     */
     public static String getGAVPath( String groupId, String artifactId, String version )
     {
         return groupId.replace( '.', '/' ) + ( artifactId != null ? ( '/' + artifactId + ( version != null ? ( '/'
             + version ) : "" ) ) : "" );
     }
 
+    /**
+     * Extract the version from an un-interpolated model.
+     *
+     * @param model the model.
+     * @return the version of the project.
+     */
     public static String getVersion( Model model )
     {
         String version = model.getVersion();
@@ -153,6 +165,12 @@ public final class Utils
         return version;
     }
 
+    /**
+     * Extract the artifactId from an un-interpolated model.
+     *
+     * @param model the model.
+     * @return the artifactId of the project.
+     */
     public static String getArtifactId( Model model )
     {
         String artifactId = model.getArtifactId();
@@ -163,6 +181,12 @@ public final class Utils
         return artifactId;
     }
 
+    /**
+     * Extract the groupId from an un-interpolated model.
+     *
+     * @param model the model.
+     * @return the groupId of the project.
+     */
     public static String getGroupId( Model model )
     {
         String groupId = model.getGroupId();
@@ -173,6 +197,13 @@ public final class Utils
         return groupId;
     }
 
+    /**
+     * Take a path and encode it for use as an URL parameter.
+     *
+     * @param path the path.
+     * @return the path encoded for use as an URL parameter.
+     * @throws UnsupportedEncodingException if the path cannot be encoded.
+     */
     public static String urlEncodePath( String path )
         throws UnsupportedEncodingException
     {
@@ -188,6 +219,13 @@ public final class Utils
         return buf.toString();
     }
 
+    /**
+     * Take a path segment and encode it for use as an URL parameter.
+     *
+     * @param pathSegment the path segment.
+     * @return the path segment encoded for use as an URL parameter.
+     * @throws UnsupportedEncodingException if the path cannot be encoded.
+     */
     public static String urlEncodePathSegment( String pathSegment )
         throws UnsupportedEncodingException
     {

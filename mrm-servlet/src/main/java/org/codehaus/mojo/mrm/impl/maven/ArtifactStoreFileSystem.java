@@ -71,6 +71,9 @@ public class ArtifactStoreFileSystem
         this.store = store;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Entry[] listEntries( DirectoryEntry directory )
     {
         if ( getRoot().equals( directory ) )
@@ -179,6 +182,9 @@ public class ArtifactStoreFileSystem
         return (Entry[]) result.toArray( new Entry[result.size()] );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected Entry get( DirectoryEntry parent, String name )
     {
 
@@ -286,6 +292,9 @@ public class ArtifactStoreFileSystem
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
