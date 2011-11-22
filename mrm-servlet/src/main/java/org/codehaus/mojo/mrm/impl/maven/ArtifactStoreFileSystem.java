@@ -40,32 +40,81 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A {@link org.codehaus.mojo.mrm.api.FileSystem} that delegates to a {@link ArtifactStore}.
+ *
+ * @see FileSystemArtifactStore for the oposite.
+ * @since 1.0
+ */
 public class ArtifactStoreFileSystem
     extends BaseFileSystem
 {
 
-    private final ArtifactStore store;
-
+    /**
+     * Regex to match the groupId portion of a path.
+     *
+     * @since 1.0
+     */
     private static final String GROUP_ID_PATH_REGEX = "/((?:[^/]+/)+)";
 
+    /**
+     * Regex to match the artifactId portion of a path.
+     *
+     * @since 1.0
+     */
     private static final String ARTIFACT_ID_PATH_REGEX = "([^/]+)/";
 
+    /**
+     * Regex to match the version portion of a path.
+     *
+     * @since 1.0
+     */
     private static final String VERSION_REGEX = "([^/]+)/";
 
+    /**
+     * Regex to match the version portion of a path if the version is a <code>-SNAPSHOT</code>.
+     *
+     * @since 1.0
+     */
     private static final String SNAPSHOT_VERSION_REGEX = "([^/]+)-SNAPSHOT/";
 
+    /**
+     * Regex to match a metadata path.
+     *
+     * @since 1.0
+     */
     /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
 
+    /**
+     * Regex to match a release artifact path.
+     *
+     * @since 1.0
+     */
     /*package*/ static final Pattern ARTIFACT = Pattern.compile(
         GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + VERSION_REGEX + "(\\2-\\3(-[^.]+)?\\.([^/]*))" );
 
+    /**
+     * Regex to match a snapshot artifact path.
+     *
+     * @since 1.0
+     */
     /*package*/ static final Pattern SNAPSHOT_ARTIFACT = Pattern.compile(
         GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + SNAPSHOT_VERSION_REGEX
             + "(\\2-(?:\\3-(?:SNAPSHOT|\\d{8}\\.\\d{6}-\\d+))(-[^.]+)?\\.([^/]*))" );
 
-    /*package*/ static final Pattern SNAPSHOT_TIMESTAMP_REGEX =
-        Pattern.compile( "(.*(?:-SNAPSHOT|-\\d{8}\\.\\d{6}-\\d+))" );
+    /**
+     * The backing {@link ArtifactStore}.
+     *
+     * @since 1.0
+     */
+    private final ArtifactStore store;
 
+    /**
+     * Creates a {@link org.codehaus.mojo.mrm.api.FileSystem} backed by an {@link ArtifactStore}.
+     *
+     * @param store the backing artifact store.
+     * @since 1.0
+     */
     public ArtifactStoreFileSystem( ArtifactStore store )
     {
         this.store = store;

@@ -44,11 +44,15 @@ public class ArtifactFileEntry
 
     /**
      * The backing {@link Artifact}.
+     *
+     * @since 1.0
      */
     private final Artifact artifact;
 
     /**
      * The backing {@link ArtifactStore}.
+     *
+     * @since 1.0
      */
     private final ArtifactStore store;
 

@@ -55,14 +55,28 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+/**
+ * An artifact store that keeps all its artifacts in memory.
+ *
+ * @since 1.0
+ */
 public class MemoryArtifactStore
     extends BaseArtifactStore
     implements Serializable
 {
-
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
     private static final long serialVersionUID = 1L;
 
-    private Map/*<String, Map<String, Map<String, Map<Artifact, byte[]>>>>*/ contents = new HashMap();
+    /**
+     * The contents of this artifact store.
+     *
+     * @since 1.0
+     */
+    private Map/*<String, Map<String, Map<String, Map<Artifact, Content>>>>*/ contents = new HashMap();
 
     /**
      * {@inheritDoc}
@@ -575,6 +589,15 @@ public class MemoryArtifactStore
         throw new MetadataNotFoundException( path );
     }
 
+    /**
+     * If the plugin configurations contain a reference to the <code>maven-plugin-plugin</code> and that contains
+     * configuration of the <code>goalPrefix</code>, update the supplied plugin with that prefix.
+     *
+     * @param plugin        the plugin to update.
+     * @param pluginConfigs the configurations of {@link org.apache.maven.model.Plugin} to search.
+     * @return <code>true</code> if the prefix has been set.
+     * @since 1.0
+     */
     private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List pluginConfigs )
     {
         Iterator iterator = pluginConfigs.iterator();
@@ -600,9 +623,17 @@ public class MemoryArtifactStore
         return false;
     }
 
+    /**
+     * Compares two versions using Maven's version comparison rules.
+     *
+     * @since 1.0
+     */
     private static class VersionComparator
         implements Comparator
     {
+        /**
+         * {@inheritDoc}
+         */
         public int compare( Object o1, Object o2 )
         {
             ArtifactVersion v1 = new DefaultArtifactVersion( (String) o1 );
@@ -611,34 +642,88 @@ public class MemoryArtifactStore
         }
     }
 
+    /**
+     * Holds the contents of an artifact.
+     *
+     * @since 1.0
+     */
     private static class Content
+        implements Serializable
     {
 
+        /**
+         * Ensure consistent serialization.
+         *
+         * @since 1.0
+         */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * The last modified timestamp.
+         *
+         * @since 1.0
+         */
         private final long lastModified;
 
+        /**
+         * The actual content.
+         *
+         * @since 1.0
+         */
         private final byte[] bytes;
 
+        /**
+         * Creates new content from the supplied content.
+         *
+         * @param bytes the content.
+         * @since 1.0
+         */
         private Content( byte[] bytes )
         {
             this.lastModified = System.currentTimeMillis();
             this.bytes = bytes;
         }
 
+        /**
+         * Returns the last modified timestamp.
+         *
+         * @return the last modified timestamp.
+         * @since 1.0
+         */
         public long getLastModified()
         {
             return lastModified;
         }
 
+        /**
+         * Returns the content.
+         *
+         * @return the content.
+         * @since 1.0
+         */
         public byte[] getBytes()
         {
             return bytes;
         }
     }
 
+    /**
+     * In order to allow the use of Maven 3 methods from a plugin running in Maven 2, we need to encapsulate all the
+     * Maven 3 method signatures in a separate class so that we can catch the {@link LinkageError} that will be thrown
+     * when the class is attempted to load. If we didn't do it this way then our class could not load either.
+     *
+     * @since 1.0
+     */
     private static class Maven3
     {
+        /**
+         * Adds a snapshot version to the list of snapshot versions.
+         *
+         * @param snapshotVersions the list of snapshot versions.
+         * @param artifact         the artifact to add details of.
+         * @param lastUpdatedTime  the time to flag for last updated.
+         * @since 1.0
+         */
         private static void addSnapshotVersion( List snapshotVersions, Artifact artifact, String lastUpdatedTime )
         {
             try
@@ -656,6 +741,13 @@ public class MemoryArtifactStore
             }
         }
 
+        /**
+         * Add the list of {@link SnapshotVersion}s to the {@link Versioning}.
+         *
+         * @param versioning       the versionioning to add to.
+         * @param snapshotVersions the snapshot versions to add.
+         * @since 1.0
+         */
         private static void addSnapshotVersions( Versioning versioning, List snapshotVersions )
         {
             try

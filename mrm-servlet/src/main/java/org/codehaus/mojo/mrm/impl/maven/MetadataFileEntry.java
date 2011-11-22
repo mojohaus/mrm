@@ -29,6 +29,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+/**
+ * A file entry backed by {@link Metadata} in a {@link ArtifactStore}.
+ *
+ * @since 1.0
+ */
 public class MetadataFileEntry
     extends BaseFileEntry
 {
@@ -40,10 +45,31 @@ public class MetadataFileEntry
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The path of the backing {@link Metadata}.
+     *
+     * @since 1.0
+     */
     private final String path;
 
+    /**
+     * The backing {@link ArtifactStore}.
+     *
+     * @since 1.0
+     */
     private final ArtifactStore store;
 
+    /**
+     * Creates a file entry for the specified parent directory of the specified file system that corresponds to the
+     * specified metadata in the specified artifact store and will have the name
+     * <code>maven-metadata.xml</code>.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param path       the path of the metadata.
+     * @param store      the artifact store.
+     * @since 1.0
+     */
     public MetadataFileEntry( FileSystem fileSystem, DirectoryEntry parent, String path, ArtifactStore store )
     {
         super( fileSystem, parent, "maven-metadata.xml" );

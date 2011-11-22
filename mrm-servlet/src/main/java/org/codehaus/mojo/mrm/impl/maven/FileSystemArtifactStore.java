@@ -41,11 +41,28 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * An artifact store based off a {@link FileSystem}.
+ *
+ * @see ArtifactStoreFileSystem for the oposite.
+ * @since 1.0
+ */
 public class FileSystemArtifactStore
     extends BaseArtifactStore
 {
+    /**
+     * The backing file system.
+     *
+     * @since 1.0
+     */
     private final FileSystem backing;
 
+    /**
+     * Creates a new artifact store hosted at the supplied root directory.
+     *
+     * @param backing the backing file system.
+     * @since 1.0
+     */
     public FileSystemArtifactStore( FileSystem backing )
     {
         this.backing = backing;
@@ -134,6 +151,12 @@ public class FileSystemArtifactStore
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
         final Pattern rule;
+
+        abstract class ArtifactFactory
+        {
+            abstract Artifact get( Entry entry );
+        }
+
         final ArtifactFactory factory;
         if ( version.endsWith( "-SNAPSHOT" ) )
         {
@@ -141,9 +164,9 @@ public class FileSystemArtifactStore
                                         + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
             factory = new ArtifactFactory()
             {
-                public Artifact get( Entry file )
+                public Artifact get( Entry entry )
                 {
-                    Matcher matcher = rule.matcher( file.getName() );
+                    Matcher matcher = rule.matcher( entry.getName() );
                     if ( !matcher.matches() )
                     {
                         return null;
@@ -179,9 +202,9 @@ public class FileSystemArtifactStore
             rule = Pattern.compile( "\\Q" + artifactId + "\\E-\\Q" + version + "\\E(?:-([^.]+))?\\.(.+)" );
             factory = new ArtifactFactory()
             {
-                public Artifact get( Entry file )
+                public Artifact get( Entry entry )
                 {
-                    Matcher matcher = rule.matcher( file.getName() );
+                    Matcher matcher = rule.matcher( entry.getName() );
                     if ( !matcher.matches() )
                     {
                         return null;
@@ -309,8 +332,4 @@ public class FileSystemArtifactStore
         return entry.getLastModified();
     }
 
-    private interface ArtifactFactory
-    {
-        Artifact get( Entry file );
-    }
 }

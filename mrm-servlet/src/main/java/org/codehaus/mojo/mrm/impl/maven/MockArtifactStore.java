@@ -42,11 +42,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,19 +61,47 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+/**
+ * An artifact store that keeps all its artifacts in memory.
+ *
+ * @since 1.0
+ */
 public class MockArtifactStore
     extends BaseArtifactStore
 {
 
+    /**
+     * The extensions to search for when looking for POMs to mock.
+     *
+     * @since 1.0
+     */
     public static final String[] POM_EXTENSIONS = { "pom" };
 
-    private Map/*<String, Map<String, Map<String, Map<Artifact, byte[]>>>>*/ contents = new HashMap();
+    /**
+     * The contents of this artifact store.
+     *
+     * @since 1.0
+     */
+    private Map/*<String, Map<String, Map<String, Map<Artifact, Content>>>>*/ contents = new HashMap();
 
+    /**
+     * Create a mock artifact store by scanning for POMs within the specified root.
+     *
+     * @param root the root to search for POMs within.
+     * @since 1.0
+     */
     public MockArtifactStore( File root )
     {
         this( null, root );
     }
 
+    /**
+     * Create a mock artifact store by scanning for POMs within the specified root.
+     *
+     * @param root the root to search for POMs within.
+     * @param log  the {@link Log} to log to.
+     * @since 1.0
+     */
     public MockArtifactStore( Log log, File root )
     {
         if ( root.isDirectory() )
@@ -85,7 +111,7 @@ public class MockArtifactStore
             for ( Iterator i = poms.iterator(); i.hasNext(); )
             {
                 File file = (File) i.next();
-                FileReader fileReader = null;
+                FileReader fileReader;
                 try
                 {
                     fileReader = new FileReader( file );
@@ -319,8 +345,14 @@ public class MockArtifactStore
         }
     }
 
-    public synchronized void set( Artifact artifact, Content content )
-        throws IOException
+    /**
+     * Sets the content for a specified artifact.
+     *
+     * @param artifact the artifact.
+     * @param content  the content.
+     * @since 1.0
+     */
+    private synchronized void set( Artifact artifact, Content content )
     {
         Map artifactMap = (Map) contents.get( artifact.getGroupId() );
         if ( artifactMap == null )
@@ -665,9 +697,17 @@ public class MockArtifactStore
         return false;
     }
 
+    /**
+     * Compares two versions using Maven's version comparison rules.
+     *
+     * @since 1.0
+     */
     private static class VersionComparator
         implements Comparator
     {
+        /**
+         * {@inheritDoc}
+         */
         public int compare( Object o1, Object o2 )
         {
             ArtifactVersion v1 = new DefaultArtifactVersion( (String) o1 );
@@ -676,82 +716,170 @@ public class MockArtifactStore
         }
     }
 
+    /**
+     * Holds the contents of an artifact.
+     *
+     * @since 1.0
+     */
     private static interface Content
-        extends Serializable
     {
 
+        /**
+         * Returns the last modified timestamp.
+         *
+         * @return the last modified timestamp.
+         * @since 1.0
+         */
         long getLastModified();
 
+        /**
+         * Returns the content.
+         *
+         * @return the content.
+         * @throws IOException if something went wrong.
+         */
         InputStream getInputStream()
-            throws FileNotFoundException;
+            throws IOException;
 
+        /**
+         * Returns the length of the content.
+         *
+         * @return the length of the content.
+         */
         long getLength();
     }
 
+    /**
+     * Content held in memory.
+     *
+     * @since 1.0
+     */
     private static class BytesContent
         implements Content
     {
 
-        private static final long serialVersionUID = 1L;
-
+        /**
+         * The last modified timestamp.
+         *
+         * @since 1.0
+         */
         private final long lastModified;
 
+        /**
+         * The content.
+         *
+         * @since 1.0
+         */
         private final byte[] bytes;
 
+        /**
+         * Creates a new instance from the specified content.
+         *
+         * @param bytes the content.
+         * @since 1.0
+         */
         private BytesContent( byte[] bytes )
         {
             this.lastModified = System.currentTimeMillis();
             this.bytes = bytes;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public long getLastModified()
         {
             return lastModified;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public InputStream getInputStream()
+            throws IOException
         {
             return new ByteArrayInputStream( bytes );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public long getLength()
         {
             return bytes.length;
         }
     }
 
+    /**
+     * Content held on disk.
+     *
+     * @since 1.0
+     */
     private static class FileContent
         implements Content
     {
 
-        private static final long serialVersionUID = 1L;
-
+        /**
+         * The backing file.
+         *
+         * @since 1.0
+         */
         private final File file;
 
+        /**
+         * Creates a new instance.
+         *
+         * @param file the backing file.
+         * @since 1.0
+         */
         private FileContent( File file )
         {
             this.file = file;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public long getLastModified()
         {
             return file.lastModified();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public InputStream getInputStream()
-            throws FileNotFoundException
+            throws IOException
         {
             return new FileInputStream( file );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public long getLength()
         {
             return file.length();
         }
     }
 
+    /**
+     * In order to allow the use of Maven 3 methods from a plugin running in Maven 2, we need to encapsulate all the
+     * Maven 3 method signatures in a separate class so that we can catch the {@link LinkageError} that will be thrown
+     * when the class is attempted to load. If we didn't do it this way then our class could not load either.
+     *
+     * @since 1.0
+     */
     private static class Maven3
     {
+        /**
+         * Adds a snapshot version to the list of snapshot versions.
+         *
+         * @param snapshotVersions the list of snapshot versions.
+         * @param artifact         the artifact to add details of.
+         * @param lastUpdatedTime  the time to flag for last updated.
+         * @since 1.0
+         */
         private static void addSnapshotVersion( List snapshotVersions, Artifact artifact, String lastUpdatedTime )
         {
             try
@@ -769,6 +897,13 @@ public class MockArtifactStore
             }
         }
 
+        /**
+         * Add the list of {@link SnapshotVersion}s to the {@link Versioning}.
+         *
+         * @param versioning       the versionioning to add to.
+         * @param snapshotVersions the snapshot versions to add.
+         * @since 1.0
+         */
         private static void addSnapshotVersions( Versioning versioning, List snapshotVersions )
         {
             try

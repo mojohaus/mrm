@@ -40,11 +40,27 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * An artifact store backed by a directory on the local disk.
+ *
+ * @since 1.0
+ */
 public class DiskArtifactStore
     extends BaseArtifactStore
 {
+    /**
+     * The root of the artifact store.
+     *
+     * @since 1.0
+     */
     private final File root;
 
+    /**
+     * Creates a new artifact store hosted at the supplied root directory.
+     *
+     * @param root the root directory of the artifact store.
+     * @since 1.0
+     */
     public DiskArtifactStore( File root )
     {
         this.root = root;
@@ -134,6 +150,12 @@ public class DiskArtifactStore
             return Collections.EMPTY_SET;
         }
         final Pattern rule;
+
+        abstract class ArtifactFactory
+        {
+            abstract Artifact get( File file );
+        }
+
         final ArtifactFactory factory;
         if ( version.endsWith( "-SNAPSHOT" ) )
         {
@@ -339,8 +361,4 @@ public class DiskArtifactStore
         return file.lastModified();
     }
 
-    private interface ArtifactFactory
-    {
-        Artifact get( File file );
-    }
 }

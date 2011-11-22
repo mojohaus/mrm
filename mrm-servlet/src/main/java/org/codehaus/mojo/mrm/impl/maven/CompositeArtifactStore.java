@@ -35,12 +35,28 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * An artifact store that serves as a union of multiple artifact stores.
+ *
+ * @since 1.0
+ */
 public class CompositeArtifactStore
     extends BaseArtifactStore
 {
 
+    /**
+     * The backing artifact stores, in order of priority.
+     *
+     * @since 1.0
+     */
     private final ArtifactStore[] stores;
 
+    /**
+     * Creates a new artifact store resulting from the union of multiple artifact stores.
+     *
+     * @param stores the artifact stores.
+     * @since 1.0
+     */
     public CompositeArtifactStore( ArtifactStore[] stores )
     {
         stores.getClass();
