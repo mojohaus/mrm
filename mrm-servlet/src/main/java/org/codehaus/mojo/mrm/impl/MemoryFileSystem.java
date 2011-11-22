@@ -31,12 +31,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A file system who's structure is entirely stored in memory.
+ *
+ * @since 1.0
+ */
 public class MemoryFileSystem
     extends BaseFileSystem
 {
 
+    /**
+     * The file system content.
+     *
+     * @since 1.0
+     */
     private final Map/*<DirectoryEntry,List<Entry>>*/ contents = new HashMap/*<DirectoryEntry,List<Entry>>*/();
 
+    /**
+     * Create a new empty file system.
+     *
+     * @since 1.0
+     */
     public MemoryFileSystem()
     {
         contents.put( getRoot(), new ArrayList() );
@@ -149,6 +164,13 @@ public class MemoryFileSystem
         return entry;
     }
 
+    /**
+     * Gets the parent directory entry (ensuring it exists).
+     *
+     * @param parent the parent entry to get.
+     * @return the actual directory entry instance used as the key in {@link #contents}.
+     * @since 1.0
+     */
     private DirectoryEntry getNormalizedParent( DirectoryEntry parent )
     {
         if ( parent.getParent() == null )
@@ -161,6 +183,13 @@ public class MemoryFileSystem
         }
     }
 
+    /**
+     * Gets the list of entries in the specified directory.
+     *
+     * @param directory the directory to get the entries of.
+     * @return the list of entries (never <code>null</code>).
+     * @since 1.0
+     */
     private synchronized List getEntriesList( DirectoryEntry directory )
     {
         List entries;

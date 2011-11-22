@@ -24,6 +24,11 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * An entry backed by a {@link FileEntry} on a (possibly different) {@link FileSystem}.
+ *
+ * @since 1.0
+ */
 public class LinkFileEntry
     extends BaseFileEntry
 {
@@ -35,11 +40,40 @@ public class LinkFileEntry
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The backing entry.
+     *
+     * @since 1.0
+     */
     private final FileEntry entry;
 
+    /**
+     * Creates a new instance in the specified parent directory of the specified file system that backs the supplied
+     * entry named with {@link FileEntry#getName()}.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param entry      the backing entry.
+     * @since 1.0
+     */
     public LinkFileEntry( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry )
     {
-        super( fileSystem, parent, entry.getName() );
+        this( fileSystem, parent, entry.getName(), entry );
+    }
+
+    /**
+     * Creates a new instance in the specified parent directory of the specified file system that backs the supplied
+     * entry named with the supplied name.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param name       the name of the entry.
+     * @param entry      the backing entry.
+     * @since 1.0
+     */
+    public LinkFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, FileEntry entry )
+    {
+        super( fileSystem, parent, name );
         this.entry = entry;
     }
 

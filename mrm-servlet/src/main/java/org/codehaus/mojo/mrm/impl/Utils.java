@@ -31,11 +31,15 @@ import java.util.jar.Manifest;
 
 /**
  * Utility class.
+ *
+ * @since 1.0
  */
 public final class Utils
 {
     /**
      * Do not instantiate.
+     *
+     * @since 1.0
      */
     private Utils()
     {
@@ -51,6 +55,7 @@ public final class Utils
      * @param content The content.
      * @return an input stream of the content.
      * @throws java.io.IOException if things go wrong.
+     * @since 1.0
      */
     public static InputStream asInputStream( Object content )
         throws IOException
@@ -74,6 +79,7 @@ public final class Utils
      *
      * @return the empty jar file as a byte array.
      * @throws IOException if things go wrong.
+     * @since 1.0
      */
     public static byte[] newEmptyJarContent()
         throws IOException
@@ -99,6 +105,7 @@ public final class Utils
      * @param version    the version of the plugin.
      * @return the empty jar file as a byte array.
      * @throws IOException if things go wrong.
+     * @since 1.0
      */
     public static byte[] newEmptyMavenPluginJarContent( String groupId, String artifactId, String version )
         throws IOException
@@ -129,6 +136,7 @@ public final class Utils
      * @param artifactId the artifact id.
      * @param version    the version.
      * @return the base filepath for artifacts at the specified coordinates.
+     * @since 1.0
      */
     public static String getGAVPathName( String groupId, String artifactId, String version )
     {
@@ -142,6 +150,7 @@ public final class Utils
      * @param artifactId the artifact id (may be <code>null</code> to just get the path of the groupId)
      * @param version    the version (may be <code>null</code> to just get the path of the groupId:artifactId)
      * @return the path.
+     * @since 1.0
      */
     public static String getGAVPath( String groupId, String artifactId, String version )
     {
@@ -154,6 +163,7 @@ public final class Utils
      *
      * @param model the model.
      * @return the version of the project.
+     * @since 1.0
      */
     public static String getVersion( Model model )
     {
@@ -170,6 +180,7 @@ public final class Utils
      *
      * @param model the model.
      * @return the artifactId of the project.
+     * @since 1.0
      */
     public static String getArtifactId( Model model )
     {
@@ -186,6 +197,7 @@ public final class Utils
      *
      * @param model the model.
      * @return the groupId of the project.
+     * @since 1.0
      */
     public static String getGroupId( Model model )
     {
@@ -203,6 +215,7 @@ public final class Utils
      * @param path the path.
      * @return the path encoded for use as an URL parameter.
      * @throws UnsupportedEncodingException if the path cannot be encoded.
+     * @since 1.0
      */
     public static String urlEncodePath( String path )
         throws UnsupportedEncodingException
@@ -225,6 +238,7 @@ public final class Utils
      * @param pathSegment the path segment.
      * @return the path segment encoded for use as an URL parameter.
      * @throws UnsupportedEncodingException if the path cannot be encoded.
+     * @since 1.0
      */
     public static String urlEncodePathSegment( String pathSegment )
         throws UnsupportedEncodingException

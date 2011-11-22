@@ -24,6 +24,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A {@link org.codehaus.mojo.mrm.api.FileEntry} who's contents are held in memory.
+ */
 public class MemoryFileEntry
     extends BaseFileEntry
 {
@@ -35,12 +38,37 @@ public class MemoryFileEntry
      */
     private static final long serialVersionUID = 1L;
 
-    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    /**
+     * Lazy <code>null</code> surrogate.
+     *
+     * @since 1.0
+     */
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
+    /**
+     * The content to serve.
+     *
+     * @since 1.0
+     */
     private final byte[] content;
 
+    /**
+     * The timestamp of the content.
+     *
+     * @since 1.0
+     */
     private final long lastModified;
 
+    /**
+     * Creates a new entry for the specified parent directory of the specified file system with the specified name
+     * having the supplied content.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory
+     * @param name       the name.
+     * @param content    the content.
+     * @since 1.0
+     */
     public MemoryFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, byte[] content )
     {
         super( fileSystem, parent, name );

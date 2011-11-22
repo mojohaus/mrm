@@ -25,6 +25,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A file entry backed by a {@link File} on a local disk.
+ *
+ * @since 1.0
+ */
 public class DiskFileEntry
     extends BaseFileEntry
 {
@@ -36,11 +41,40 @@ public class DiskFileEntry
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The backing file.
+     *
+     * @since 1.0
+     */
     private final File file;
 
+    /**
+     * Creates a new instance in the specified parent directory of the specified file system that backs the supplied
+     * file named with {@link java.io.File#getName()}.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param file       the backing file.
+     * @since 1.0
+     */
     public DiskFileEntry( FileSystem fileSystem, DirectoryEntry parent, File file )
     {
-        super( fileSystem, parent, file.getName() );
+        this( fileSystem, parent, file.getName(), file );
+    }
+
+    /**
+     * Creates a new instance in the specified parent directory of the specified file system that backs the supplied
+     * file named with the supplied name.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param name       the name of the entry.
+     * @param file       the backing file.
+     * @since 1.0
+     */
+    public DiskFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, File file )
+    {
+        super( fileSystem, parent, name );
         this.file = file;
     }
 
