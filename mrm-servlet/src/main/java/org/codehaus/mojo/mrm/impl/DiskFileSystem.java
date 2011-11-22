@@ -28,19 +28,48 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Stack;
 
+/**
+ * A file system hosted from a local directory.
+ *
+ * @since 1.0
+ */
 public class DiskFileSystem
     extends BaseFileSystem
 {
+
+    /**
+     * The root directory of the file system.
+     *
+     * @since 1.0
+     */
     private final File root;
 
+    /**
+     * Whether the file system can support modifications.
+     *
+     * @since 1.0
+     */
     private final boolean readOnly;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param root     the root of the file system.
+     * @param readOnly <code>true</code> if the file system is to be read-only
+     * @since 1.0
+     */
     public DiskFileSystem( File root, boolean readOnly )
     {
         this.root = root;
         this.readOnly = readOnly;
     }
 
+    /**
+     * Creates a new read-only instance.
+     *
+     * @param root the root of the file system.
+     * @since 1.0
+     */
     public DiskFileSystem( File root )
     {
         this( root, true );
@@ -81,11 +110,18 @@ public class DiskFileSystem
         return toFile( entry ).lastModified();
     }
 
+    /**
+     * Convert an entry into the corresponding file path.
+     *
+     * @param entry the entry.
+     * @return the corresponding file.
+     * @since 1.0
+     */
     private File toFile( Entry entry )
     {
         Stack stack = new Stack();
-        Entry root = getRoot();
-        while ( entry != null && !root.equals( entry ) )
+        Entry entryRoot = entry.getFileSystem().getRoot();
+        while ( entry != null && !entryRoot.equals( entry ) )
         {
             String name = entry.getName();
             if ( "..".equals( name ) )
