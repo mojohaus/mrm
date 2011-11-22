@@ -32,6 +32,13 @@ public class RemoteFileEntry
 {
 
     /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The {@link URL} of the entry.
      */
     private final URL url;

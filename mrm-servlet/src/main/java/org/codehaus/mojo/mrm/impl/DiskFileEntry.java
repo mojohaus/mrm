@@ -29,6 +29,13 @@ public class DiskFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
     private final File file;
 
     public DiskFileEntry( FileSystem fileSystem, DirectoryEntry parent, File file )

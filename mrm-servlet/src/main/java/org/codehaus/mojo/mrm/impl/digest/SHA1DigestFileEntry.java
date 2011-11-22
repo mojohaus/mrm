@@ -30,12 +30,38 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * A {@link FileEntry} that corresponds to the SHA1 digest of another file entry.
+ *
+ * @since 1.0
+ */
 public class SHA1DigestFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The entry we will calculate the digest of.
+     *
+     * @since 1.0
+     */
     private final FileEntry entry;
 
+    /**
+     * Creates an instance in the specified directory of the specified file system that will calculate the
+     * digest of the specified file entry.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param entry      the entry to digest.
+     * @since 1.0
+     */
     public SHA1DigestFileEntry( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry )
     {
         super( fileSystem, parent, entry.getName() + ".sha1" );
@@ -69,6 +95,13 @@ public class SHA1DigestFileEntry
         return new ByteArrayInputStream( getContent() );
     }
 
+    /**
+     * Generates the digest.
+     *
+     * @return the digest.
+     * @throws IOException if the backing entry could not be read.
+     * @since 1.0
+     */
     private byte[] getContent()
         throws IOException
     {
@@ -106,6 +139,31 @@ public class SHA1DigestFileEntry
         finally
         {
             IOUtils.closeQuietly( is );
+        }
+    }
+
+    /**
+     * A {@link DigestFileEntryFactory} that creates SHA1 digest entries.
+     *
+     * @since 1.0
+     */
+    public static class Factory
+        extends BaseDigestFileEntryFactory
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public String getType()
+        {
+            return ".sha1";
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public FileEntry create( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry )
+        {
+            return new SHA1DigestFileEntry( fileSystem, parent, entry );
         }
     }
 }

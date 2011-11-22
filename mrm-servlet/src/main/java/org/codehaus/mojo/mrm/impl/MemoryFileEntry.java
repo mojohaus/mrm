@@ -28,6 +28,13 @@ public class MemoryFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     private final byte[] content;

@@ -28,6 +28,13 @@ public class LinkFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
     private final FileEntry entry;
 
     public LinkFileEntry( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry )

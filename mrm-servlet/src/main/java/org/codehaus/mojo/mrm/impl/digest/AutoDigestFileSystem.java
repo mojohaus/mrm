@@ -23,9 +23,11 @@ import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
+import org.codehaus.mojo.mrm.impl.GenerateOnErrorFileEntry;
 import org.codehaus.mojo.mrm.impl.LinkFileEntry;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,14 +35,59 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+/**
+ * A delegating file system that will automatically provide digests of any files that are missing digests from
+ * the backing file system.
+ *
+ * @since 1.0
+ */
 public class AutoDigestFileSystem
     extends BaseFileSystem
 {
+    /**
+     * The backing filesystem.
+     *
+     * @since 1.0
+     */
     private final FileSystem backing;
 
+    /**
+     * The digest factories that we will use.
+     *
+     * @since 1.0
+     */
+    private final Map/*<String,DigestFileEntryFactory>*/ digestFactories;
+
+    /**
+     * Creates an instance that will add SHA1 and MD5 digests to the backing file system for any entries that are
+     * missing digests.
+     *
+     * @param backing the backing file system.
+     * @since 1.0
+     */
     public AutoDigestFileSystem( FileSystem backing )
     {
+        this( backing,
+              new DigestFileEntryFactory[]{ new MD5DigestFileEntry.Factory(), new SHA1DigestFileEntry.Factory() } );
+    }
+
+    /**
+     * Creates an instance that will use the supplied {@link DigestFileEntryFactory}s to add any missing digests to the
+     * backing file system.
+     *
+     * @param backing         the backing file system.
+     * @param digestFactories the digest factories.
+     * @since 1.0
+     */
+    public AutoDigestFileSystem( FileSystem backing, DigestFileEntryFactory[] digestFactories )
+    {
         this.backing = backing;
+        Map map = new HashMap( digestFactories.length );
+        for ( int i = 0; i < digestFactories.length; i++ )
+        {
+            map.put( digestFactories[i].getType(), digestFactories[i] );
+        }
+        this.digestFactories = Collections.unmodifiableMap( map );
     }
 
     /**
@@ -57,14 +104,17 @@ public class AutoDigestFileSystem
             final String name = entries[i].getName();
             if ( entries[i] instanceof FileEntry )
             {
-                if ( name.endsWith( ".md5" ) || name.endsWith( ".sha1" ) )
+                for ( Iterator/*<String>*/ j = digestFactories.keySet().iterator(); j.hasNext(); )
                 {
-                    present.add( name );
-                }
-                else
-                {
-                    missing.put( name + ".md5", entries[i] );
-                    missing.put( name + ".sha1", entries[i] );
+                    String type = (String) j.next();
+                    if ( name.endsWith( type ) )
+                    {
+                        present.add( name );
+                    }
+                    else
+                    {
+                        missing.put( name + type, entries[i] );
+                    }
                 }
                 result.put( name, new LinkFileEntry( this, directory, (FileEntry) entries[i] ) );
             }
@@ -79,13 +129,13 @@ public class AutoDigestFileSystem
             Map.Entry entry = (Map.Entry) i.next();
             String name = (String) entry.getKey();
             FileEntry fileEntry = (FileEntry) entry.getValue();
-            if ( name.endsWith( ".md5" ) )
+            for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
             {
-                result.put( name, new MD5DigestFileEntry( this, directory, fileEntry ) );
-            }
-            else if ( name.endsWith( ".sha1" ) )
-            {
-                result.put( name, new SHA1DigestFileEntry( this, directory, fileEntry ) );
+                DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
+                if ( name.endsWith( factory.getType() ) )
+                {
+                    result.put( name, factory.create( this, directory, fileEntry ) );
+                }
             }
         }
         return (Entry[]) result.values().toArray( new Entry[result.size()] );
@@ -127,20 +177,14 @@ public class AutoDigestFileSystem
                 parent = new DefaultDirectoryEntry( this, parent, parts[i] );
             }
             String name = parts[parts.length - 1];
-            if ( name.endsWith( ".md5" ) )
+            for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
             {
-                Entry shadow = backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, ".md5" ) );
-                if ( shadow instanceof FileEntry )
+                DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
+                if ( name.endsWith( factory.getType() ) )
                 {
-                    return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
-                }
-            }
-            if ( name.endsWith( ".sha1" ) )
-            {
-                Entry shadow = backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, ".sha1" ) );
-                if ( shadow instanceof FileEntry )
-                {
-                    return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
+                    Entry shadow =
+                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, factory.getType() ) );
+                    return factory.create( this, parent, (FileEntry) shadow );
                 }
             }
             return get( parent, name );
@@ -168,44 +212,29 @@ public class AutoDigestFileSystem
             if ( entry instanceof FileEntry )
             {
                 // repair filesystems that lie to us because they are caching
-                if ( entry.getName().endsWith( ".md5" ) )
+                for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
                 {
-                    Entry shadow =
-                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
-                    if ( shadow instanceof FileEntry )
+                    DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
+                    if ( entry.getName().endsWith( factory.getType() ) )
                     {
-                        return new AutoMD5DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
-                    }
-                }
-                if ( entry.getName().endsWith( ".sha1" ) )
-                {
-                    Entry shadow =
-                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
-                    if ( shadow instanceof FileEntry )
-                    {
-                        return new AutoSHA1DigestFileEntry( this, parent, (FileEntry) shadow, (FileEntry) entry );
+                        Entry shadow = backing.get(
+                            parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), factory.getType() ) );
+                        return new GenerateOnErrorFileEntry( this, parent, (FileEntry) entry,
+                                                             factory.create( this, parent, (FileEntry) shadow ) );
                     }
                 }
                 return new LinkFileEntry( this, parent, (FileEntry) entry );
             }
             else if ( entry instanceof DirectoryEntry )
             {
-                if ( entry.getName().endsWith( ".md5" ) )
+                for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
                 {
-                    Entry shadow =
-                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".md5" ) );
-                    if ( shadow instanceof FileEntry )
+                    DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
+                    if ( entry.getName().endsWith( factory.getType() ) )
                     {
-                        return new MD5DigestFileEntry( this, parent, (FileEntry) shadow );
-                    }
-                }
-                if ( entry.getName().endsWith( ".sha1" ) )
-                {
-                    Entry shadow =
-                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), ".sha1" ) );
-                    if ( shadow instanceof FileEntry )
-                    {
-                        return new SHA1DigestFileEntry( this, parent, (FileEntry) shadow );
+                        Entry shadow = backing.get(
+                            parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), factory.getType() ) );
+                        return factory.create( this, parent, (FileEntry) shadow );
                     }
                 }
                 return new DefaultDirectoryEntry( this, parent, entry.getName() );
