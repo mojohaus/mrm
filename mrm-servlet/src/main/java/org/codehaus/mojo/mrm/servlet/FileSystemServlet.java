@@ -41,6 +41,8 @@ import java.util.Date;
 
 /**
  * Servlet that serves a {@link FileSystem}.
+ *
+ * @since 1.0
  */
 public class FileSystemServlet
     extends HttpServlet
@@ -48,21 +50,29 @@ public class FileSystemServlet
 
     /**
      * Width of the name column in the HTML view.
+     *
+     * @since 1.0
      */
     private static final int NAME_COL_WIDTH = 50;
 
     /**
      * Width of the size column in the HTML view.
+     *
+     * @since 1.0
      */
     private static final int SIZE_COL_WIDTH = 20;
 
     /**
      * The file system that we are serving.
+     *
+     * @since 1.0
      */
     private FileSystem fileSystem;
 
     /**
      * Default constructor.
+     *
+     * @since 1.0
      */
     public FileSystemServlet()
     {
@@ -73,6 +83,7 @@ public class FileSystemServlet
      * Constructor that takes a specific file system instance.
      *
      * @param fileSystem the file systen to serve.
+     * @since 1.0
      */
     public FileSystemServlet( FileSystem fileSystem )
     {
