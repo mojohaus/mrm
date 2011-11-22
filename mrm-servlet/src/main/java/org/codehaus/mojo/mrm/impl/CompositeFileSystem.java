@@ -27,14 +27,42 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * A file system that is a composite of multiple file systems.
+ *
+ * @since 1.0
+ */
 public class CompositeFileSystem
     implements FileSystem
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The file systems to delegate to (in order of preference).
+     *
+     * @since 1.0
+     */
     private final FileSystem[] delegates;
 
+    /**
+     * The root entry.
+     *
+     * @since 1.0
+     */
     private final DirectoryEntry root = new DefaultDirectoryEntry( this, null, "" );
 
+    /**
+     * Creates a new {@link FileSystem} that will delegate to each of the supplied delegate {@link FileSystem} in turn
+     * until a matching entry is found.
+     *
+     * @param delegates the delegate {@link FileSystem}s (in order of preference).
+     */
     public CompositeFileSystem( FileSystem[] delegates )
     {
         delegates.getClass();
