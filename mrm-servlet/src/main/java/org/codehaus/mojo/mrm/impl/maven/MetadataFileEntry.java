@@ -33,6 +33,13 @@ public class MetadataFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
     private final String path;
 
     private final ArtifactStore store;

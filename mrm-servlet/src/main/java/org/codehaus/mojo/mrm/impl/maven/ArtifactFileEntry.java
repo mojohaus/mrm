@@ -26,14 +26,43 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A file entry backed by a {@link Artifact} in a {@link ArtifactStore}.
+ *
+ * @since 1.0
+ */
 public class ArtifactFileEntry
     extends BaseFileEntry
 {
 
+    /**
+     * Ensure consistent serialization.
+     *
+     * @since 1.0
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The backing {@link Artifact}.
+     */
     private final Artifact artifact;
 
+    /**
+     * The backing {@link ArtifactStore}.
+     */
     private final ArtifactStore store;
 
+    /**
+     * Creates a file entry for the specified parent directory of the specified file system that corresponds to the
+     * specified artifact in the specified artifact store and will have the name
+     * {@link org.codehaus.mojo.mrm.api.maven.Artifact#getName()}.
+     *
+     * @param fileSystem the file system.
+     * @param parent     the parent directory.
+     * @param artifact   the artifact.
+     * @param store      the artifact store.
+     * @since 1.0
+     */
     protected ArtifactFileEntry( FileSystem fileSystem, DirectoryEntry parent, Artifact artifact, ArtifactStore store )
     {
         super( fileSystem, parent, artifact.getName() );
@@ -95,6 +124,12 @@ public class ArtifactFileEntry
         }
     }
 
+    /**
+     * Gets the backing artifact.
+     *
+     * @return the backing artifact.
+     * @since 1.0
+     */
     public Artifact getArtifact()
     {
         return artifact;
