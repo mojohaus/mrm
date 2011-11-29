@@ -68,9 +68,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/sandbox/mrm</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/sandbox/mrm</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/sandbox/mrm</url>
+    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/mrm</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mrm</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mrm</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -154,6 +154,12 @@
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>2.1.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
