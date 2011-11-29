@@ -16,8 +16,7 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -28,7 +27,7 @@
 
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>mrm</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha-1</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager: Project</name>
@@ -68,9 +67,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/sandbox/mrm</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/sandbox/mrm</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/sandbox/mrm</url>
+    <connection>scm:svn:https://svn.codehaus.org/mojo/tags/mrm-1.0-alpha-1</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/mrm-1.0-alpha-1</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/tags/mrm-1.0-alpha-1</url>
   </scm>
   <issueManagement>
     <system>jira</system>
