@@ -26,11 +26,17 @@ import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
 
 import java.util.List;
 
+/**
+ * Base class for all the Mock Repository Manager's Mojos.
+ *
+ * @since 1.0
+ */
 public abstract class AbstractMRMMojo
     extends AbstractMojo
 {
@@ -167,4 +173,78 @@ public abstract class AbstractMRMMojo
                                        localRepository, artifactFactory, artifactResolver, getLog() );
     }
 
+    /**
+     * Creates a new {@link FactoryHelper} instance for injection into anything that needs one.
+     *
+     * @return a new {@link FactoryHelper} instance for injection into anything that needs one.
+     */
+    protected FactoryHelper createFactoryHelper()
+    {
+        return new FactoryHelperImpl();
+    }
+
+    /**
+     * Our implementation of {@link FactoryHelper}.
+     *
+     * @since 1.0
+     */
+    private class FactoryHelperImpl
+        implements FactoryHelper
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public RepositoryMetadataManager getRepositoryMetadataManager()
+        {
+            return repositoryMetadataManager;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List getRemotePluginRepositories()
+        {
+            return remotePluginRepositories;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public ArtifactRepository getLocalRepository()
+        {
+            return localRepository;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public ArtifactFactory getArtifactFactory()
+        {
+            return artifactFactory;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List getRemoteArtifactRepositories()
+        {
+            return remoteArtifactRepositories;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public ArtifactResolver getArtifactResolver()
+        {
+            return artifactResolver;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Log getLog()
+        {
+            return AbstractMRMMojo.this.getLog();
+        }
+    }
 }

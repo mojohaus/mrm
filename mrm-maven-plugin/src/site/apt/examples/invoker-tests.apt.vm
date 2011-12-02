@@ -76,8 +76,10 @@ Using with Maven Invoker
         <configuration>
           <propertyName>repository.proxy.url</propertyName>
           <repositories>
-            <mock>src/mrm/repository</mock>
-            <proxy/>
+            <mockRepo>
+              <source>src/mrm/repository</source>
+            </mockRepo>
+            <proxyRepo/>
           </repositories>
         </configuration>
       </plugin>
