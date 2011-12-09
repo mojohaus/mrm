@@ -67,9 +67,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/mrm</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mrm</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mrm</url>
+    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/mrm</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/mrm</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/mrm</url>
   </scm>
   <issueManagement>
     <system>jira</system>
