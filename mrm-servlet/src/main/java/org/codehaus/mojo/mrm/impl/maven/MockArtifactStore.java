@@ -116,19 +116,21 @@ public class MockArtifactStore
                 {
                     fileReader = new FileReader( file );
                     Model model = reader.read( fileReader );
-                    set( new Artifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), "pom" ),
+                    String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
+                    String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
+                    set( new Artifact( groupId, model.getArtifactId(), version, "pom" ),
                          new FileContent( file ) );
                     if ( StringUtils.isEmpty( model.getPackaging() ) || "jar".equals( model.getPackaging() ) )
                     {
-                        set( new Artifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), "jar" ),
+                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
                              new BytesContent( Utils.newEmptyJarContent() ) );
                     }
                     if ( "maven-plugin".equals( model.getPackaging() ) )
                     {
-                        set( new Artifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), "jar" ),
+                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
                              new BytesContent(
-                                 Utils.newEmptyMavenPluginJarContent( model.getGroupId(), model.getArtifactId(),
-                                                                      model.getVersion() ) ) );
+                                 Utils.newEmptyMavenPluginJarContent( groupId, model.getArtifactId(),
+                                                                      version ) ) );
                     }
                 }
                 catch ( IOException e )
