@@ -16,14 +16,18 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 
+import org.junit.Test;
+
 public class ArtifactStoreFileSystemTest
-    extends TestCase
 {
 
+    @Test
     public void testGroupMetadataRegex()
         throws Exception
     {
@@ -39,6 +43,7 @@ public class ArtifactStoreFileSystemTest
         assertFalse( matcher.matches() );
     }
 
+    @Test
     public void testArtifactRegex()
         throws Exception
     {
@@ -91,6 +96,7 @@ public class ArtifactStoreFileSystemTest
         assertFalse( matcher.matches() );
     }
 
+    @Test
     public void testSnapshotArtifactRegex()
         throws Exception
     {

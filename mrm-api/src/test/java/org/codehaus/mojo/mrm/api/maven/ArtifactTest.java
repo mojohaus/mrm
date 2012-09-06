@@ -15,11 +15,13 @@
  */
 package org.codehaus.mojo.mrm.api.maven;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class ArtifactTest
-    extends TestCase
 {
+    @Test
     public void testSmokes()
         throws Exception
     {
