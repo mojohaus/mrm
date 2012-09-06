@@ -71,17 +71,17 @@ public class FileSystemArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getGroupIds( String parentGroupId )
+    public Set<String> getGroupIds( String parentGroupId )
     {
         Entry parentEntry =
             StringUtils.isEmpty( parentGroupId ) ? backing.getRoot() : backing.get( parentGroupId.replace( '.', '/' ) );
         if ( !( parentEntry instanceof DirectoryEntry ) )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         for ( int i = 0; i < entries.length; i++ )
         {
             if ( entries[i] instanceof DirectoryEntry )
@@ -95,16 +95,16 @@ public class FileSystemArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifactIds( String groupId )
+    public Set<String> getArtifactIds( String groupId )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) );
         if ( !( parentEntry instanceof DirectoryEntry ) )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         for ( int i = 0; i < entries.length; i++ )
         {
             if ( entries[i] instanceof DirectoryEntry )
@@ -118,16 +118,16 @@ public class FileSystemArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getVersions( String groupId, String artifactId )
+    public Set<String> getVersions( String groupId, String artifactId )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) + "/" + artifactId );
         if ( !( parentEntry instanceof DirectoryEntry ) )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         for ( int i = 0; i < entries.length; i++ )
         {
             if ( entries[i] instanceof DirectoryEntry )
@@ -141,12 +141,12 @@ public class FileSystemArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifacts( final String groupId, final String artifactId, final String version )
+    public Set<Artifact> getArtifacts( final String groupId, final String artifactId, final String version )
     {
         Entry parentEntry = backing.get( groupId.replace( '.', '/' ) + "/" + artifactId + "/" + version );
         if ( !( parentEntry instanceof DirectoryEntry ) )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
@@ -213,7 +213,7 @@ public class FileSystemArtifactStore
                 }
             };
         }
-        Set result = new HashSet( entries.length );
+        Set<Artifact> result = new HashSet<Artifact>( entries.length );
         for ( int i = 0; i < entries.length; i++ )
         {
             if ( !( entries[i] instanceof FileEntry ) || !rule.matcher( entries[i].getName() ).matches() )

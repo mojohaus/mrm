@@ -39,6 +39,7 @@ public class StopMojo
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( "rawtypes" )
     public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {

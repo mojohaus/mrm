@@ -16,6 +16,12 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
@@ -27,13 +33,6 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * An artifact store that serves as a union of multiple artifact stores.
@@ -66,12 +65,12 @@ public class CompositeArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getGroupIds( String parentGroupId )
+    public Set<String> getGroupIds( String parentGroupId )
     {
-        Set result = new TreeSet();
+        Set<String> result = new TreeSet<String>();
         for ( int i = 0; i < stores.length; i++ )
         {
-            Set groupIds = stores[i].getGroupIds( parentGroupId );
+            Set<String> groupIds = stores[i].getGroupIds( parentGroupId );
             if ( groupIds != null )
             {
                 result.addAll( groupIds );
@@ -83,12 +82,12 @@ public class CompositeArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifactIds( String groupId )
+    public Set<String> getArtifactIds( String groupId )
     {
-        Set result = new TreeSet();
+        Set<String> result = new TreeSet<String>();
         for ( int i = 0; i < stores.length; i++ )
         {
-            Set artifactIds = stores[i].getArtifactIds( groupId );
+            Set<String> artifactIds = stores[i].getArtifactIds( groupId );
             if ( artifactIds != null )
             {
                 result.addAll( artifactIds );
@@ -100,12 +99,12 @@ public class CompositeArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getVersions( String groupId, String artifactId )
+    public Set<String> getVersions( String groupId, String artifactId )
     {
-        Set result = new TreeSet();
+        Set<String> result = new TreeSet<String>();
         for ( int i = 0; i < stores.length; i++ )
         {
-            Set versions = stores[i].getVersions( groupId, artifactId );
+            Set<String> versions = stores[i].getVersions( groupId, artifactId );
             if ( versions != null )
             {
                 result.addAll( versions );
@@ -117,12 +116,12 @@ public class CompositeArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifacts( String groupId, String artifactId, String version )
+    public Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
     {
-        Set result = new TreeSet();
+        Set<Artifact> result = new TreeSet<Artifact>();
         for ( int i = 0; i < stores.length; i++ )
         {
-            Set artifacts = stores[i].getArtifacts( groupId, artifactId, version );
+            Set<Artifact> artifacts = stores[i].getArtifacts( groupId, artifactId, version );
             if ( artifacts != null )
             {
                 result.addAll( artifacts );
@@ -208,8 +207,8 @@ public class CompositeArtifactStore
     {
         boolean found = false;
         Metadata result = new Metadata();
-        Set pluginArtifactIds = new HashSet();
-        Set snapshotVersions = new HashSet();
+        Set<String> pluginArtifactIds = new HashSet<String>();
+        Set<String> snapshotVersions = new HashSet<String>();
         for ( int i = 0; i < stores.length; i++ )
         {
             try
@@ -232,9 +231,8 @@ public class CompositeArtifactStore
                 }
                 if ( partial.getPlugins() != null && !partial.getPlugins().isEmpty() )
                 {
-                    for ( Iterator j = partial.getPlugins().iterator(); j.hasNext(); )
+                    for ( Plugin plugin : partial.getPlugins() )
                     {
-                        Plugin plugin = (Plugin) j.next();
                         if ( !pluginArtifactIds.contains( plugin.getArtifactId() ) )
                         {
                             result.addPlugin( plugin );
@@ -267,9 +265,8 @@ public class CompositeArtifactStore
                         }
                         rVers.setLastUpdated( pVers.getLastUpdated() );
                     }
-                    for ( Iterator j = pVers.getVersions().iterator(); j.hasNext(); )
+                    for ( String version : pVers.getVersions() )
                     {
-                        String version = (String) j.next();
                         if ( !rVers.getVersions().contains( version ) )
                         {
                             rVers.addVersion( version );
@@ -290,9 +287,8 @@ public class CompositeArtifactStore
                     {
                         if ( pVers.getSnapshotVersions() != null && !pVers.getSnapshotVersions().isEmpty() )
                         {
-                            for ( Iterator j = pVers.getSnapshotVersions().iterator(); j.hasNext(); )
+                            for ( SnapshotVersion snapshotVersion : pVers.getSnapshotVersions() )
                             {
-                                SnapshotVersion snapshotVersion = (SnapshotVersion) j.next();
                                 String key = snapshotVersion.getVersion() + "-" + snapshotVersion.getClassifier() + "."
                                     + snapshotVersion.getExtension();
                                 if ( !snapshotVersions.contains( key ) )

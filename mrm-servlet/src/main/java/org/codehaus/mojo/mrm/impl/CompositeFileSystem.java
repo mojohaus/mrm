@@ -74,7 +74,7 @@ public class CompositeFileSystem
      */
     public Entry[] listEntries( DirectoryEntry directory )
     {
-        Map/*<String,Entry>*/ result = new TreeMap();
+        Map<String,Entry> result = new TreeMap<String,Entry>();
         for ( int i = 0; i < delegates.length; i++ )
         {
             Entry[] entries = delegates[i].listEntries( DefaultDirectoryEntry.equivalent( delegates[i], directory ) );

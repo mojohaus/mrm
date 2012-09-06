@@ -77,20 +77,20 @@ public abstract class AbstractStartMojo
             return createProxyArtifactStore();
         }
         getLog().info( "Configuring Mock Repository Manager..." );
-        List stores = new ArrayList();
+        List<ArtifactStore> stores = new ArrayList<ArtifactStore>();
         if ( repositories == null || repositories.length == 0 )
         {
             repositories = new ArtifactStoreFactory[]{ new ProxyRepo() };
         }
         FactoryHelper helper = createFactoryHelper();
-        for ( int i = 0; i < repositories.length; i++ )
+        for ( ArtifactStoreFactory artifactStoreFactory : repositories )
         {
-            if ( repositories[i] instanceof FactoryHelperRequired )
+            if ( artifactStoreFactory instanceof FactoryHelperRequired )
             {
-                ( (FactoryHelperRequired) repositories[i] ).setFactoryHelper( helper );
+                ( (FactoryHelperRequired) artifactStoreFactory ).setFactoryHelper( helper );
             }
-            getLog().info( "  " + repositories[i].toString() );
-            stores.add( repositories[i].newInstance() );
+            getLog().info( "  " + artifactStoreFactory.toString() );
+            stores.add( artifactStoreFactory.newInstance() );
         }
         ArtifactStore[] artifactStores = (ArtifactStore[]) stores.toArray( new ArtifactStore[stores.size()] );
         return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore( artifactStores );

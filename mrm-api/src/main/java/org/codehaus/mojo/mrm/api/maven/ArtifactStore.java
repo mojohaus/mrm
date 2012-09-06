@@ -57,7 +57,7 @@ public interface ArtifactStore
      *         one and only one additional segment.
      * @since 1.0
      */
-    Set/*<String>*/ getGroupIds( String parentGroupId );
+    Set<String> getGroupIds( String parentGroupId );
 
     /**
      * Returns the set of artifactIds that belong in the specified groupId. Some implementations may be lazy caching
@@ -73,7 +73,7 @@ public interface ArtifactStore
      *         {@code groupId}.
      * @since 1.0
      */
-    Set/*<String>*/ getArtifactIds( String groupId );
+    Set<String> getArtifactIds( String groupId );
 
     /**
      * Returns the set of versions of the specified groupId:artifactId. Some implementations may be lazy caching
@@ -90,7 +90,7 @@ public interface ArtifactStore
      *         {@code groupId:artifactId}.
      * @since 1.0
      */
-    Set/*<String>*/ getVersions( String groupId, String artifactId );
+    Set<String> getVersions( String groupId, String artifactId );
 
     /**
      * Returns the set of artifacts at the specified groupId:artifactId:version. Some implementations may be lazy caching
@@ -105,7 +105,7 @@ public interface ArtifactStore
      *         specified {@code groupId:artifactId:version}.
      * @since 1.0
      */
-    Set/*<Artifact>*/ getArtifacts( String groupId, String artifactId, String version );
+    Set<Artifact> getArtifacts( String groupId, String artifactId, String version );
 
     /**
      * Returns the time that the specified artifact was last modified.

@@ -46,6 +46,7 @@ public class StartMojo
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
     public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {

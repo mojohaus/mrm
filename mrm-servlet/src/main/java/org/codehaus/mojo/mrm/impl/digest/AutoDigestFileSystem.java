@@ -16,6 +16,14 @@
 
 package org.codehaus.mojo.mrm.impl.digest;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
@@ -25,15 +33,6 @@ import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.impl.GenerateOnErrorFileEntry;
 import org.codehaus.mojo.mrm.impl.LinkFileEntry;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * A delegating file system that will automatically provide digests of any files that are missing digests from
@@ -56,7 +55,7 @@ public class AutoDigestFileSystem
      *
      * @since 1.0
      */
-    private final Map/*<String,DigestFileEntryFactory>*/ digestFactories;
+    private final Map<String,DigestFileEntryFactory> digestFactories;
 
     /**
      * Creates an instance that will add SHA1 and MD5 digests to the backing file system for any entries that are
@@ -82,10 +81,10 @@ public class AutoDigestFileSystem
     public AutoDigestFileSystem( FileSystem backing, DigestFileEntryFactory[] digestFactories )
     {
         this.backing = backing;
-        Map map = new HashMap( digestFactories.length );
-        for ( int i = 0; i < digestFactories.length; i++ )
+        Map<String,DigestFileEntryFactory> map = new HashMap<String,DigestFileEntryFactory>( digestFactories.length );
+        for ( DigestFileEntryFactory factory : digestFactories )
         {
-            map.put( digestFactories[i].getType(), digestFactories[i] );
+            map.put( factory.getType(), factory );
         }
         this.digestFactories = Collections.unmodifiableMap( map );
     }
@@ -95,50 +94,47 @@ public class AutoDigestFileSystem
      */
     public Entry[] listEntries( DirectoryEntry directory )
     {
-        Map result = new TreeMap();
-        Map missing = new HashMap();
-        Set present = new HashSet();
+        Map<String, Entry> result = new TreeMap<String, Entry>();
+        Map<String, FileEntry> missing = new HashMap<String, FileEntry>();
+        Set<String> present = new HashSet<String>();
         Entry[] entries = backing.listEntries( DefaultDirectoryEntry.equivalent( backing, directory ) );
-        for ( int i = 0; i < entries.length; i++ )
+        for ( Entry entry : entries )
         {
-            final String name = entries[i].getName();
-            if ( entries[i] instanceof FileEntry )
+            final String name = entry.getName();
+            if ( entry instanceof FileEntry )
             {
-                for ( Iterator/*<String>*/ j = digestFactories.keySet().iterator(); j.hasNext(); )
+                for ( String type : digestFactories.keySet() )
                 {
-                    String type = (String) j.next();
                     if ( name.endsWith( type ) )
                     {
                         present.add( name );
                     }
                     else
                     {
-                        missing.put( name + type, entries[i] );
+                        missing.put( name + type, (FileEntry) entry );
                     }
                 }
-                result.put( name, new LinkFileEntry( this, directory, (FileEntry) entries[i] ) );
+                result.put( name, new LinkFileEntry( this, directory, (FileEntry) entry ) );
             }
-            else if ( entries[i] instanceof DirectoryEntry )
+            else if ( entry instanceof DirectoryEntry )
             {
-                result.put( name, DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entries[i] ) );
+                result.put( name, DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ) );
             }
         }
         missing.keySet().removeAll( present );
-        for ( Iterator i = missing.entrySet().iterator(); i.hasNext(); )
+        for ( Map.Entry<String, FileEntry> entry : missing.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) i.next();
-            String name = (String) entry.getKey();
-            FileEntry fileEntry = (FileEntry) entry.getValue();
-            for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
+            String name = entry.getKey();
+            FileEntry fileEntry = entry.getValue();
+            for ( DigestFileEntryFactory factory : digestFactories.values() )
             {
-                DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
                 if ( name.endsWith( factory.getType() ) )
                 {
                     result.put( name, factory.create( this, directory, fileEntry ) );
                 }
             }
         }
-        return (Entry[]) result.values().toArray( new Entry[result.size()] );
+        return result.values().toArray( new Entry[result.size()] );
     }
 
     /**
@@ -177,9 +173,8 @@ public class AutoDigestFileSystem
                 parent = new DefaultDirectoryEntry( this, parent, parts[i] );
             }
             String name = parts[parts.length - 1];
-            for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
+            for ( DigestFileEntryFactory factory : digestFactories.values())
             {
-                DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
                 if ( name.endsWith( factory.getType() ) )
                 {
                     Entry shadow =
@@ -212,9 +207,8 @@ public class AutoDigestFileSystem
             if ( entry instanceof FileEntry )
             {
                 // repair filesystems that lie to us because they are caching
-                for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
+                for ( DigestFileEntryFactory factory : digestFactories.values() )
                 {
-                    DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
                     if ( entry.getName().endsWith( factory.getType() ) )
                     {
                         Entry shadow = backing.get(
@@ -227,9 +221,8 @@ public class AutoDigestFileSystem
             }
             else if ( entry instanceof DirectoryEntry )
             {
-                for ( Iterator/*<DigestFileEntryFactory>*/ j = digestFactories.values().iterator(); j.hasNext(); )
+                for ( DigestFileEntryFactory factory : digestFactories.values() )
                 {
-                    DigestFileEntryFactory factory = (DigestFileEntryFactory) j.next();
                     if ( entry.getName().endsWith( factory.getType() ) )
                     {
                         Entry shadow = backing.get(

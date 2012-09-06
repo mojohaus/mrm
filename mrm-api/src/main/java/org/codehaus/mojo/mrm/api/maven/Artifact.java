@@ -30,7 +30,7 @@ import java.util.TimeZone;
  * @since 1.0
  */
 public final class Artifact
-    implements Serializable, Comparable
+    implements Serializable, Comparable<Artifact>
 {
 
     /**
@@ -483,9 +483,8 @@ public final class Artifact
     /**
      * {@inheritDoc}
      */
-    public int compareTo( Object o )
+    public int compareTo( Artifact that )
     {
-        Artifact that = (Artifact) o;
         int rv = this.getGroupId().compareTo( that.getGroupId() );
         return rv == 0 ? getName().compareTo( that.getName() ) : rv;
     }

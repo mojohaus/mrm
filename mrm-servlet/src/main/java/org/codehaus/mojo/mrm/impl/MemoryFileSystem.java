@@ -45,7 +45,7 @@ public class MemoryFileSystem
      *
      * @since 1.0
      */
-    private final Map/*<DirectoryEntry,List<Entry>>*/ contents = new HashMap/*<DirectoryEntry,List<Entry>>*/();
+    private final Map<DirectoryEntry,List<Entry>> contents = new HashMap<DirectoryEntry,List<Entry>>();
 
     /**
      * Create a new empty file system.
@@ -54,7 +54,7 @@ public class MemoryFileSystem
      */
     public MemoryFileSystem()
     {
-        contents.put( getRoot(), new ArrayList() );
+        contents.put( getRoot(), new ArrayList<Entry>() );
     }
 
     /**
@@ -62,12 +62,12 @@ public class MemoryFileSystem
      */
     public synchronized Entry[] listEntries( DirectoryEntry directory )
     {
-        List/*<Entry>*/ entries = (List/*<Entry>*/) contents.get( directory == null ? getRoot() : directory );
+        List<Entry> entries = (List<Entry>) contents.get( directory == null ? getRoot() : directory );
         if ( entries == null )
         {
             return null;
         }
-        return (Entry[]) entries.toArray( new Entry[entries.size()] );
+        return entries.toArray( new Entry[entries.size()] );
     }
 
     /**
@@ -94,14 +94,13 @@ public class MemoryFileSystem
     protected synchronized Entry get( DirectoryEntry parent, String name )
     {
         parent.getClass();
-        List/*<Entry>*/ parentEntries = (List/*<Entry>*/) contents.get( parent );
+        List<Entry> parentEntries = contents.get( parent );
         if ( parentEntries == null )
         {
             return null;
         }
-        for ( Iterator/*<Entry>*/ i = parentEntries.iterator(); i.hasNext(); )
+        for ( Entry entry : parentEntries )
         {
-            Entry entry = (Entry) i.next();
             if ( name.equals( entry.getName() ) )
             {
                 return entry;
@@ -117,10 +116,9 @@ public class MemoryFileSystem
     {
         parent.getClass();
         parent = getNormalizedParent( parent );
-        List/*<Entry>*/ entries = getEntriesList( parent );
-        for ( Iterator/*<Entry>*/ i = entries.iterator(); i.hasNext(); )
+        List<Entry> entries = getEntriesList( parent );
+        for ( Entry entry : entries )
         {
-            Entry entry = (Entry) i.next();
             if ( name.equals( entry.getName() ) )
             {
                 if ( entry instanceof DirectoryEntry )
@@ -143,8 +141,8 @@ public class MemoryFileSystem
     {
         parent.getClass();
         parent = getNormalizedParent( parent );
-        List/*<Entry>*/ entries = getEntriesList( parent );
-        for ( Iterator/*<Entry>*/ i = entries.iterator(); i.hasNext(); )
+        List<Entry> entries = getEntriesList( parent );
+        for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
         {
             Entry entry = (Entry) i.next();
             if ( name.equals( entry.getName() ) )
@@ -190,13 +188,12 @@ public class MemoryFileSystem
      * @return the list of entries (never <code>null</code>).
      * @since 1.0
      */
-    private synchronized List getEntriesList( DirectoryEntry directory )
+    private synchronized List<Entry> getEntriesList( DirectoryEntry directory )
     {
-        List entries;
-        entries = (List/*<Entry>*/) contents.get( directory );
+        List<Entry> entries = contents.get( directory );
         if ( entries == null )
         {
-            entries = new ArrayList/*<Entry>*/();
+            entries = new ArrayList<Entry>();
             contents.put( directory, entries );
         }
         return entries;
@@ -207,7 +204,7 @@ public class MemoryFileSystem
      */
     public synchronized void remove( Entry entry )
     {
-        List/*<Entry>*/ entries;
+        List<Entry> entries;
         if ( entry == null )
         {
             return;
@@ -219,13 +216,13 @@ public class MemoryFileSystem
         }
         else
         {
-            entries = (List/*<Entry>*/) contents.get( parent );
+            entries = contents.get( parent );
             if ( entries == null )
             {
                 return;
             }
         }
-        for ( Iterator/*<Entry>*/ i = entries.iterator(); i.hasNext(); )
+        for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
         {
             Entry e = (Entry) i.next();
             if ( entry.equals( e ) )

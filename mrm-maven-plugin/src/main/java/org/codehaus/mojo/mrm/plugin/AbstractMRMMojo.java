@@ -64,7 +64,7 @@ public abstract class AbstractMRMMojo
      * @parameter expression="${project.remoteArtifactRepositories}"
      * @readonly
      */
-    protected List remoteArtifactRepositories;
+    protected List<ArtifactRepository> remoteArtifactRepositories;
 
     /**
      * The remote pluginRepositories.
@@ -72,7 +72,7 @@ public abstract class AbstractMRMMojo
      * @parameter expression="${project.pluginArtifactRepositories}"
      * @readonly
      */
-    protected List remotePluginRepositories;
+    protected List<ArtifactRepository> remotePluginRepositories;
 
     /**
      * The local repository.
@@ -202,7 +202,7 @@ public abstract class AbstractMRMMojo
         /**
          * {@inheritDoc}
          */
-        public List getRemotePluginRepositories()
+        public List<ArtifactRepository> getRemotePluginRepositories()
         {
             return remotePluginRepositories;
         }
@@ -226,7 +226,7 @@ public abstract class AbstractMRMMojo
         /**
          * {@inheritDoc}
          */
-        public List getRemoteArtifactRepositories()
+        public List<ArtifactRepository> getRemoteArtifactRepositories()
         {
             return remoteArtifactRepositories;
         }

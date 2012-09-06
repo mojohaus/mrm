@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +63,7 @@ public class ProxyArtifactStore
     /**
      * The remote plugin repositories provided by Maven.
      */
-    private final List remotePluginRepositories;
+    private final List<ArtifactRepository> remotePluginRepositories;
 
     /**
      * The {@link ArtifactRepository} provided by Maven.
@@ -79,7 +78,7 @@ public class ProxyArtifactStore
     /**
      * The remote repositories that we will query.
      */
-    private final List remoteRepositories;
+    private final List<ArtifactRepository> remoteRepositories;
 
     /**
      * The {@link ArtifactResolver} provided by Maven.
@@ -99,7 +98,7 @@ public class ProxyArtifactStore
     /**
      * A cache of what artifacts are present.
      */
-    private final Map/*<String,Map<String,Artifact>>*/ children = new HashMap();
+    private final Map<String,Map<String,Artifact>> children = new HashMap<String,Map<String,Artifact>>();
 
     /**
      * Creates a new instance.
@@ -112,8 +111,8 @@ public class ProxyArtifactStore
      * @param artifactResolver           the {@link ArtifactResolver} to use.
      * @param log                        the {@link Log} to log to.
      */
-    public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager, List remoteArtifactRepositories,
-                               List remotePluginRepositories, ArtifactRepository localRepository,
+    public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager, List<ArtifactRepository> remoteArtifactRepositories,
+                               List<ArtifactRepository> remotePluginRepositories, ArtifactRepository localRepository,
                                ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, Log log )
     {
         this.repositoryMetadataManager = repositoryMetadataManager;
@@ -122,7 +121,7 @@ public class ProxyArtifactStore
         this.artifactFactory = artifactFactory;
         this.artifactResolver = artifactResolver;
         this.log = log;
-        remoteRepositories = new ArrayList();
+        remoteRepositories = new ArrayList<ArtifactRepository>();
         remoteRepositories.addAll( remoteArtifactRepositories );
         remoteRepositories.addAll( remotePluginRepositories );
         try
@@ -148,10 +147,10 @@ public class ProxyArtifactStore
     {
         String path =
             artifact.getGroupId().replace( '.', '/' ) + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
-        Map children = (Map) this.children.get( path );
+        Map<String,Artifact> children = this.children.get( path );
         if ( children == null )
         {
-            children = new HashMap();
+            children = new HashMap<String,Artifact>();
             this.children.put( path, children );
         }
         children.put( artifact.getName(), artifact );
@@ -169,20 +168,20 @@ public class ProxyArtifactStore
         {
             String name = path.substring( index + 1 );
             path = path.substring( 0, index );
-            Map children = (Map) this.children.get( path );
+            Map<String,Artifact> children = this.children.get( path );
             if ( children == null )
             {
-                children = new HashMap();
+                children = new HashMap<String,Artifact>();
                 this.children.put( path, children );
             }
             children.put( name, null );
         }
         if ( !StringUtils.isEmpty( path ) )
         {
-            Map children = (Map) this.children.get( "" );
+            Map<String,Artifact> children = this.children.get( "" );
             if ( children == null )
             {
-                children = new HashMap();
+                children = new HashMap<String,Artifact>();
                 this.children.put( "", children );
             }
             children.put( path, null );
@@ -192,18 +191,17 @@ public class ProxyArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getGroupIds( String parentGroupId )
+    public synchronized Set<String> getGroupIds( String parentGroupId )
     {
         String path = parentGroupId.replace( '.', '/' );
-        Map children = (Map) this.children.get( path );
+        Map<String,Artifact> children = this.children.get( path );
         if ( children == null )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        Set result = new HashSet();
-        for ( Iterator i = children.entrySet().iterator(); i.hasNext(); )
+        Set<String> result = new HashSet<String>();
+        for ( Map.Entry<String,Artifact> e : children.entrySet() )
         {
-            Map.Entry e = (Map.Entry) i.next();
             if ( e.getValue() == null )
             {
                 result.add( e.getKey() );
@@ -215,18 +213,17 @@ public class ProxyArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getArtifactIds( String groupId )
+    public synchronized Set<String> getArtifactIds( String groupId )
     {
         String path = groupId.replace( '.', '/' );
-        Map children = (Map) this.children.get( path );
+        Map<String,Artifact> children = this.children.get( path );
         if ( children == null )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        Set result = new HashSet();
-        for ( Iterator i = children.entrySet().iterator(); i.hasNext(); )
+        Set<String> result = new HashSet<String>();
+        for ( Map.Entry<String,Artifact> e : children.entrySet() )
         {
-            Map.Entry e = (Map.Entry) i.next();
             if ( e.getValue() == null )
             {
                 result.add( e.getKey() );
@@ -238,18 +235,17 @@ public class ProxyArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getVersions( String groupId, String artifactId )
+    public synchronized Set<String> getVersions( String groupId, String artifactId )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId;
-        Map children = (Map) this.children.get( path );
+        Map<String,Artifact> children = this.children.get( path );
         if ( children == null )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        Set result = new HashSet();
-        for ( Iterator i = children.entrySet().iterator(); i.hasNext(); )
+        Set<String> result = new HashSet<String>();
+        for ( Map.Entry<String,Artifact> e : children.entrySet() )
         {
-            Map.Entry e = (Map.Entry) i.next();
             if ( e.getValue() == null )
             {
                 result.add( e.getKey() );
@@ -261,18 +257,17 @@ public class ProxyArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getArtifacts( String groupId, String artifactId, String version )
+    public synchronized Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId + "/" + version;
-        Map children = (Map) this.children.get( path );
+        Map<String,Artifact> children = this.children.get( path );
         if ( children == null )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        Set result = new HashSet();
-        for ( Iterator i = children.values().iterator(); i.hasNext(); )
+        Set<Artifact> result = new HashSet<Artifact>();
+        for ( Artifact a : children.values() )
         {
-            Artifact a = (Artifact) i.next();
             if ( a != null )
             {
                 result.add( a );
@@ -441,10 +436,8 @@ public class ProxyArtifactStore
                         && !artifactMetadata.getVersioning().getSnapshotVersions().isEmpty() )
                     {
                         // TODO up to and including Maven 3.0.3 we do not get a populated SnapshotVersions
-                        for ( Iterator i = artifactMetadata.getVersioning().getSnapshotVersions().iterator();
-                              i.hasNext(); )
+                        for ( SnapshotVersion v : artifactMetadata.getVersioning().getSnapshotVersions() )
                         {
-                            SnapshotVersion v = (SnapshotVersion) i.next();
                             metadata.getVersioning().addSnapshotVersion( v );
                             if ( v.getVersion().endsWith( "-SNAPSHOT" ) )
                             {
@@ -487,9 +480,9 @@ public class ProxyArtifactStore
                         metadata.setArtifactId( artifactId );
                     }
                     metadata.merge( artifactMetadata );
-                    for ( Iterator i = artifactMetadata.getVersioning().getVersions().iterator(); i.hasNext(); )
+                    for ( String v : artifactMetadata.getVersioning().getVersions() )
                     {
-                        addResolved( path + "/" + i.next() );
+                        addResolved( path + "/" + v );
                     }
                 }
             }
@@ -507,9 +500,8 @@ public class ProxyArtifactStore
             repositoryMetadataManager.resolve( groupRepositoryMetadata, remotePluginRepositories, localRepository );
             foundSomething = true;
             metadata.merge( groupRepositoryMetadata.getMetadata() );
-            for ( Iterator i = groupRepositoryMetadata.getMetadata().getPlugins().iterator(); i.hasNext(); )
+            for ( Plugin plugin : groupRepositoryMetadata.getMetadata().getPlugins() )
             {
-                Plugin plugin = (Plugin) i.next();
                 addResolved( path + "/" + plugin.getArtifactId() );
             }
         }

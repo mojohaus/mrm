@@ -16,6 +16,20 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
@@ -24,21 +38,6 @@ import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileSystem} that delegates to a {@link ArtifactStore}.
@@ -127,18 +126,17 @@ public class ArtifactStoreFileSystem
     {
         if ( getRoot().equals( directory ) )
         {
-            Set rootGroupIds = new TreeSet( store.getGroupIds( "" ) );
+            Set<String> rootGroupIds = new TreeSet<String>( store.getGroupIds( "" ) );
             Entry[] result = new Entry[rootGroupIds.size()];
             int index = 0;
-            Iterator i = rootGroupIds.iterator();
-            while ( i.hasNext() )
+            for ( String name : rootGroupIds )
             {
-                result[index++] = new DefaultDirectoryEntry( this, getRoot(), (String) i.next() );
+                result[index++] = new DefaultDirectoryEntry( this, getRoot(), name );
             }
             return result;
         }
-        List/*<Entry>*/ result = new ArrayList();
-        Set names = new HashSet();
+        List<Entry> result = new ArrayList<Entry>();
+        Set<String> names = new HashSet<String>();
         String path = directory.toPath().substring( 1 ); // skip initial '/'
 
         try
@@ -164,10 +162,9 @@ public class ArtifactStoreFileSystem
 
         // get all the groupId's that start with this groupId
         String groupIdPrefix = groupId + ".";
-        Set groupIds = new TreeSet( store.getGroupIds( groupId ) );
-        for ( Iterator i = groupIds.iterator(); i.hasNext(); )
+        Set<String> groupIds = new TreeSet<String>( store.getGroupIds( groupId ) );
+        for ( String name : groupIds )
         {
-            String name = (String) i.next();
             if ( !names.contains( name ) )
             {
                 result.add( new DefaultDirectoryEntry( this, directory, name ) );
@@ -176,9 +173,8 @@ public class ArtifactStoreFileSystem
         }
 
         // get all the artifactIds that belong to this groupId
-        for ( Iterator i = store.getArtifactIds( groupId ).iterator(); i.hasNext(); )
+        for ( String name : store.getArtifactIds( groupId ) )
         {
-            String name = (String) i.next();
             if ( !names.contains( name ) )
             {
                 result.add( new DefaultDirectoryEntry( this, directory, name ) );
@@ -192,9 +188,8 @@ public class ArtifactStoreFileSystem
             // get all the versions that belong to the groupId/artifactId path
             groupId = parent.toPath().substring( 1 ).replace( '/', '.' );
             String artifactId = directory.getName();
-            for ( Iterator i = store.getVersions( groupId, artifactId ).iterator(); i.hasNext(); )
+            for ( String name : store.getVersions( groupId, artifactId ) )
             {
-                String name = (String) i.next();
                 if ( !names.contains( name ) )
                 {
                     result.add( new DefaultDirectoryEntry( this, directory, name ) );
@@ -208,9 +203,9 @@ public class ArtifactStoreFileSystem
                 groupId = grandParent.toPath().substring( 1 ).replace( '/', '.' );
                 artifactId = parent.getName();
                 String version = directory.getName();
-                for ( Iterator i = store.getArtifacts( groupId, artifactId, version ).iterator(); i.hasNext(); )
+                for ( Artifact a : store.getArtifacts( groupId, artifactId, version ) )
                 {
-                    ArtifactFileEntry entry = new ArtifactFileEntry( this, directory, (Artifact) i.next(), store );
+                    ArtifactFileEntry entry = new ArtifactFileEntry( this, directory, a, store );
                     if ( !names.contains( entry.getName() ) )
                     {
                         result.add( entry );
@@ -221,14 +216,14 @@ public class ArtifactStoreFileSystem
         }
 
         // sort
-        Collections.sort( result, new Comparator/*<Entry>*/()
+        Collections.sort( result, new Comparator<Entry>()
         {
-            public int compare( Object o1, Object o2 )
+            public int compare( Entry o1, Entry o2 )
             {
-                return ( (Entry) o1 ).getName().compareTo( ( (Entry) o2 ).getName() );
+                return ( o1 ).getName().compareTo( ( o2 ).getName() );
             }
         } );
-        return (Entry[]) result.toArray( new Entry[result.size()] );
+        return result.toArray( new Entry[result.size()] );
     }
 
     /**

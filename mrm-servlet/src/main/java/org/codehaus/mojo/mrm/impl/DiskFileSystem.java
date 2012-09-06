@@ -119,7 +119,7 @@ public class DiskFileSystem
      */
     private File toFile( Entry entry )
     {
-        Stack stack = new Stack();
+        Stack<String> stack = new Stack<String>();
         Entry entryRoot = entry.getFileSystem().getRoot();
         while ( entry != null && !entryRoot.equals( entry ) )
         {

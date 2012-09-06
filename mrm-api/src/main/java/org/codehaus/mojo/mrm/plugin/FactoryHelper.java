@@ -46,7 +46,7 @@ public interface FactoryHelper
      * @return The remote plugin repositories provided by Maven.
      * @since 1.0
      */
-    List getRemotePluginRepositories();
+    List<ArtifactRepository> getRemotePluginRepositories();
 
     /**
      * Returns the {@link ArtifactRepository} provided by Maven.
@@ -70,7 +70,7 @@ public interface FactoryHelper
      * @return The remote repositories that we will query.
      * @since 1.0
      */
-    List getRemoteArtifactRepositories();
+    List<ArtifactRepository> getRemoteArtifactRepositories();
 
     /**
      * Returns the {@link ArtifactResolver} provided by Maven.

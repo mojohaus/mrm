@@ -16,16 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.codehaus.mojo.mrm.api.maven.Artifact;
-import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
-import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +29,16 @@ import java.util.Stack;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
  * An artifact store backed by a directory on the local disk.
@@ -69,16 +69,16 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getGroupIds( String parentGroupId )
+    public Set<String> getGroupIds( String parentGroupId )
     {
         File parentDir =
             StringUtils.isEmpty( parentGroupId ) ? root : new File( root, parentGroupId.replace( '.', '/' ) );
         if ( !parentDir.isDirectory() )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         File[] groupDirs = parentDir.listFiles();
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         for ( int i = 0; i < groupDirs.length; i++ )
         {
             if ( groupDirs[i].isDirectory() )
@@ -92,14 +92,14 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifactIds( String groupId )
+    public Set<String> getArtifactIds( String groupId )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
         if ( !groupDir.isDirectory() )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         File[] artifactDirs = groupDir.listFiles();
         for ( int i = 0; i < artifactDirs.length; i++ )
         {
@@ -116,16 +116,16 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getVersions( String groupId, String artifactId )
+    public Set<String> getVersions( String groupId, String artifactId )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
         File artifactDir = new File( groupDir, artifactId );
         if ( !artifactDir.isDirectory() )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         File[] dirs = artifactDir.listFiles();
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         for ( int i = 0; i < dirs.length; i++ )
         {
             if ( !dirs[i].isDirectory() )
@@ -140,14 +140,14 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set getArtifacts( final String groupId, final String artifactId, final String version )
+    public Set<Artifact> getArtifacts( final String groupId, final String artifactId, final String version )
     {
         File groupDir = new File( root, groupId.replace( '.', '/' ) );
         File artifactDir = new File( groupDir, artifactId );
         File versionDir = new File( artifactDir, version );
         if ( !versionDir.isDirectory() )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         final Pattern rule;
 
@@ -213,7 +213,7 @@ public class DiskArtifactStore
             };
         }
         File[] files = versionDir.listFiles();
-        Set result = new HashSet( files.length );
+        Set<Artifact> result = new HashSet<Artifact>( files.length );
         for ( int i = 0; i < files.length; i++ )
         {
             if ( !files[i].isFile() || !rule.matcher( files[i].getName() ).matches() )
@@ -333,7 +333,7 @@ public class DiskArtifactStore
     {
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        Stack stack = new Stack();
+        Stack<File> stack = new Stack<File>();
         for ( int i = 0; i < parts.length; i++ )
         {
             if ( "..".equals( parts[i] ) )

@@ -154,7 +154,7 @@ public abstract class AbstractEntry
      */
     public final String toPath()
     {
-        Stack stack = new Stack();
+        Stack<String> stack = new Stack<String>();
         Entry root = getFileSystem().getRoot();
         Entry entry = this;
         while ( entry != null && !root.equals( entry ) )
