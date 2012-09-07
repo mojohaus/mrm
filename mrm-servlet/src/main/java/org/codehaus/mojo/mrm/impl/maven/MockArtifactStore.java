@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -38,7 +39,10 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
@@ -75,6 +79,8 @@ public class MockArtifactStore
      * @since 1.0
      */
     public static final String[] POM_EXTENSIONS = { "pom" };
+    
+    private static final String[] CLASSIFIER_EXTENSIONS = { "xml" };
 
     /**
      * The contents of this artifact store.
@@ -129,6 +135,22 @@ public class MockArtifactStore
                              new BytesContent(
                                  Utils.newEmptyMavenPluginJarContent( groupId, model.getArtifactId(),
                                                                       version ) ) );
+                    }
+                    
+                    // Search for classified files in the same directory
+                    final String basename = FilenameUtils.getBaseName( file.getName() );
+                    
+                    Collection<File> classifiedFiles = FileUtils.listFiles( root, CLASSIFIER_EXTENSIONS, false );
+                    for ( File classifiedFile : classifiedFiles )
+                    {
+                        if ( FilenameUtils.getBaseName( classifiedFile.getName() ).startsWith( basename + '-' ) )
+                        {
+                            String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
+                            String classifier =
+                                FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
+                            set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ),
+                                 new FileContent( file ) );
+                        }
                     }
                 }
                 catch ( IOException e )
