@@ -367,8 +367,9 @@ public class ProxyArtifactStore
         }
         catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
-            ArtifactNotFoundException anfe = new ArtifactNotFoundException( artifact );
-            anfe.initCause( e );
+            ArtifactNotFoundException anfe = new ArtifactNotFoundException( artifact, e );
+//          Causes a java.lang.IllegalStateException: Can't overwrite cause            
+//            anfe.initCause( e );
             throw anfe;
         }
         catch ( ArtifactResolutionException e )
