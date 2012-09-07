@@ -36,6 +36,7 @@ import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
@@ -281,9 +282,21 @@ public class ArtifactStoreFileSystem
                 }
                 if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
                 {
-                    return new ArtifactFileEntry( this, parent,
-                                                  new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                                matcher.group( 10 ) ), store );
+                    Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
+                                                      matcher.group( 10 ) );
+                    try
+                    {
+                        store.get( artifact );
+                        return new ArtifactFileEntry( this, parent, artifact, store );
+                    }
+                    catch ( IOException e )
+                    {
+                        return null;
+                    }
+                    catch ( ArtifactNotFoundException e )
+                    {
+                        return null;
+                    }
                 }
                 try
                 {
@@ -297,9 +310,22 @@ public class ArtifactStoreFileSystem
                     cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
                     long timestamp = cal.getTimeInMillis();
                     int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                    return new ArtifactFileEntry( this, parent,
-                                                  new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                                matcher.group( 10 ), timestamp, buildNumber ), store );
+                    
+                    Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
+                                                      matcher.group( 10 ), timestamp, buildNumber );
+                    try
+                    {
+                        store.get( artifact );
+                        return new ArtifactFileEntry( this, parent, artifact, store );
+                    }
+                    catch ( IOException e )
+                    {
+                        return null;
+                    }
+                    catch ( ArtifactNotFoundException e )
+                    {
+                        return null;
+                    }
                 }
                 catch ( NullPointerException e )
                 {
@@ -308,14 +334,14 @@ public class ArtifactStoreFileSystem
             }
             else
             {
-                Matcher artifact = ARTIFACT.matcher( path );
-                if ( artifact.matches() )
+                Matcher matcher = ARTIFACT.matcher( path );
+                if ( matcher.matches() )
                 {
-                    String groupId = StringUtils.stripEnd( artifact.group( 1 ), "/" ).replace( '/', '.' );
-                    String artifactId = artifact.group( 2 );
-                    String version = artifact.group( 3 );
-                    String classifier = artifact.group( 5 );
-                    String type = artifact.group( 6 );
+                    String groupId = StringUtils.stripEnd( matcher.group( 1 ), "/" ).replace( '/', '.' );
+                    String artifactId = matcher.group( 2 );
+                    String version = matcher.group( 3 );
+                    String classifier = matcher.group( 5 );
+                    String type = matcher.group( 6 );
                     if ( classifier != null )
                     {
                         classifier = classifier.substring( 1 );
@@ -324,9 +350,21 @@ public class ArtifactStoreFileSystem
                     {
                         classifier = null;
                     }
-                    return new ArtifactFileEntry( this, parent,
-                                                  new Artifact( groupId, artifactId, version, classifier, type ),
-                                                  store );
+                    
+                    Artifact artifact = new Artifact( groupId, artifactId, version, classifier, type );
+                    try
+                    {
+                        store.get( artifact );
+                        return new ArtifactFileEntry( this, parent, artifact, store );
+                    }
+                    catch ( ArtifactNotFoundException e )
+                    {
+                        return null;
+                    }
+                    catch ( IOException e )
+                    {
+                        return null;
+                    }
                 }
                 else
                 {

@@ -18,11 +18,22 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.regex.Matcher;
 
+import org.codehaus.mojo.mrm.api.FileEntry;
+import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.junit.Test;
+import org.mockito.verification.VerificationMode;
 
 public class ArtifactStoreFileSystemTest
 {
@@ -141,4 +152,27 @@ public class ArtifactStoreFileSystemTest
         assertEquals( "1.0", matcher.group( 3 ) );
         assertEquals( "pom-1.0-20110101.123456-56-tests.jar", matcher.group( 4 ) );
     }
+    
+    
+    // MMOCKRM-5
+    @Test
+    public void testSiteXmlReleaseVersion() throws Exception
+    {
+        ArtifactStore store = mock( ArtifactStore.class );
+        when( store.get( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
+        ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
+        FileEntry entry = (FileEntry) system.get( "/localhost/mmockrm-5/1/mmockrm-5-1-site_en.xml" );
+        assertNull( entry );
+    }
+    
+    @Test
+    public void testSiteXmlSnapshotVersion() throws Exception
+    {
+        ArtifactStore store = mock( ArtifactStore.class );
+        when( store.get( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
+        ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
+        FileEntry entry = (FileEntry) system.get( "/localhost/mmockrm-5/1.0-SNAPSHOT/mmockrm-5-1.0-SNAPSHOT-site_en.xml" );
+        assertNull( entry );
+    }
+
 }
