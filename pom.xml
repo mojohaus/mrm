@@ -53,6 +53,14 @@
       </roles>
       <timezone>0</timezone>
     </developer>
+    <developer>
+      <id>rscholte</id>
+      <name>Robert Scholte</name>
+      <timezone>Europe/Amsterdam</timezone>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
   </developers>
 
   <prerequisites>
