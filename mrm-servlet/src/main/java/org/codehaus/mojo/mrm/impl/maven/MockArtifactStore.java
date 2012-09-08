@@ -149,7 +149,7 @@ public class MockArtifactStore
                             String classifier =
                                 FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
                             set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ),
-                                 new FileContent( file ) );
+                                 new FileContent( classifiedFile ) );
                         }
                     }
                 }
