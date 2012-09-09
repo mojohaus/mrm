@@ -18,6 +18,8 @@ package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 import java.util.Map;
 
@@ -26,13 +28,10 @@ import java.util.Map;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @goal stop
- * @phase post-integration-test
- * @requiresProject false
- * @threadSafe
  * @description Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
  * by integration tests.
  */
+@Mojo( name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true )
 public class StopMojo
     extends AbstractMRMMojo
 {

@@ -19,6 +19,9 @@ package org.codehaus.mojo.mrm.plugin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.util.Map;
 
@@ -27,20 +30,18 @@ import java.util.Map;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @goal start
- * @phase pre-integration-test
- * @requiresProject false
- * @threadSafe
  * @description Starts a mock repository manager as part of a maven build for use by integration tests.
  */
+@Mojo( name = "start", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresProject = false, threadSafe = true )
 public class StartMojo
     extends AbstractStartMojo
 {
     /**
      * The property to set the repository url to.
      *
-     * @parameter expression="${mrm.propertyName}"
+     * 
      */
+    @Parameter( property = "mrm.propertyName" )
     private String propertyName;
 
     /**

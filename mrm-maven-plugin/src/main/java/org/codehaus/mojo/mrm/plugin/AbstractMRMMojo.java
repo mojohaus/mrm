@@ -27,6 +27,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
 
@@ -41,68 +43,51 @@ public abstract class AbstractMRMMojo
     extends AbstractMojo
 {
     /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
+     * The Maven project.
      */
+    @Component
     protected MavenProject project;
 
     /**
      * The repository metadata manager.
-     *
-     * @component
-     * @required
-     * @readonly
      */
+    @Component
     private RepositoryMetadataManager repositoryMetadataManager;
 
     /**
      * The remote repositories.
-     *
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @readonly
      */
+    @Parameter( defaultValue = "${project.remoteArtifactRepositories}", readonly = true )
     protected List<ArtifactRepository> remoteArtifactRepositories;
 
     /**
      * The remote pluginRepositories.
-     *
-     * @parameter expression="${project.pluginArtifactRepositories}"
-     * @readonly
      */
+    @Parameter( defaultValue = "${project.pluginArtifactRepositories}", readonly = true )
     protected List<ArtifactRepository> remotePluginRepositories;
 
     /**
      * The local repository.
-     *
-     * @parameter expression="${localRepository}"
-     * @readonly
      */
+    @Parameter( defaultValue = "${localRepository}", readonly = true )
     protected ArtifactRepository localRepository;
 
     /**
      * The artifact factory.
-     *
-     * @component
      */
+    @Component
     protected ArtifactFactory artifactFactory;
 
     /**
      * The artifact resolver.
-     *
-     * @component
      */
+    @Component
     protected ArtifactResolver artifactResolver;
 
     /**
      * The Maven Session Object
-     *
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
      */
+    @Component
     protected MavenSession session;
 
     /**
@@ -111,22 +96,21 @@ public abstract class AbstractMRMMojo
      * @parameter expression="${plugin}"
      * @readonly
      */
+    @Component
     protected PluginDescriptor pluginDescriptor;
 
     /**
      * This mojo's execution.
-     *
-     * @parameter expression="${mojoExecution}"
-     * @required
-     * @readonly
      */
+    @Parameter( defaultValue = "${mojoExecution}", readonly = true, required = true )
     protected MojoExecution mojoExecution;
 
     /**
      * If true, execution of the plugin is skipped.
      *
-     * @parameter expression="${mrm.skip}" default-value="false"
+     * 
      */
+    @Parameter( property = "mrm.skip", defaultValue = "false" )
     protected boolean skip;
 
     /**

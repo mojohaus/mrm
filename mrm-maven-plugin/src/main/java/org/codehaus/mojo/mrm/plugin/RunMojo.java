@@ -18,18 +18,16 @@ package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @goal run
- * @requiresProject false
- * @requiresDirectInvocation true
- * @threadSafe
  * @description Starts a mock repository manager for manual testing.
  */
+@Mojo( name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true )
 public class RunMojo
     extends AbstractStartMojo
 {

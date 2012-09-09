@@ -18,6 +18,7 @@ package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
@@ -36,16 +37,16 @@ public abstract class AbstractStartMojo
 {
     /**
      * The port to serve the remote repository on.
-     *
-     * @parameter expression="${mrm.port}"
      */
+    @Parameter( property = "mrm.port" )
     private int port;
 
     /**
      * The repositories to serve if none specified then a proxy of the invoking maven's repositories will be served.
      *
-     * @parameter
+     * 
      */
+    @Parameter
     private ArtifactStoreFactory[] repositories;
 
     /**
