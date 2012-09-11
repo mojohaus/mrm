@@ -55,7 +55,7 @@ public class AutoDigestFileSystem
      *
      * @since 1.0
      */
-    private final Map<String,DigestFileEntryFactory> digestFactories;
+    private final Map<String, DigestFileEntryFactory> digestFactories;
 
     /**
      * Creates an instance that will add SHA1 and MD5 digests to the backing file system for any entries that are
@@ -81,7 +81,7 @@ public class AutoDigestFileSystem
     public AutoDigestFileSystem( FileSystem backing, DigestFileEntryFactory[] digestFactories )
     {
         this.backing = backing;
-        Map<String,DigestFileEntryFactory> map = new HashMap<String,DigestFileEntryFactory>( digestFactories.length );
+        Map<String, DigestFileEntryFactory> map = new HashMap<String, DigestFileEntryFactory>( digestFactories.length );
         for ( DigestFileEntryFactory factory : digestFactories )
         {
             map.put( factory.getType(), factory );
@@ -173,7 +173,7 @@ public class AutoDigestFileSystem
                 parent = new DefaultDirectoryEntry( this, parent, parts[i] );
             }
             String name = parts[parts.length - 1];
-            for ( DigestFileEntryFactory factory : digestFactories.values())
+            for ( DigestFileEntryFactory factory : digestFactories.values() )
             {
                 if ( name.endsWith( factory.getType() ) )
                 {

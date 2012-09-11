@@ -45,7 +45,7 @@ public class MemoryFileSystem
      *
      * @since 1.0
      */
-    private final Map<DirectoryEntry,List<Entry>> contents = new HashMap<DirectoryEntry,List<Entry>>();
+    private final Map<DirectoryEntry, List<Entry>> contents = new HashMap<DirectoryEntry, List<Entry>>();
 
     /**
      * Create a new empty file system.
@@ -62,7 +62,7 @@ public class MemoryFileSystem
      */
     public synchronized Entry[] listEntries( DirectoryEntry directory )
     {
-        List<Entry> entries = (List<Entry>) contents.get( directory == null ? getRoot() : directory );
+        List<Entry> entries = contents.get( directory == null ? getRoot() : directory );
         if ( entries == null )
         {
             return null;
@@ -73,16 +73,16 @@ public class MemoryFileSystem
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( DirectoryEntry entry )
+    public long getLastModified( DirectoryEntry directoryEntry )
         throws IOException
     {
         long lastModified = 0;
-        Entry[] entries = listEntries( entry );
+        Entry[] entries = listEntries( directoryEntry );
         if ( entries != null )
         {
-            for ( int i = 0; i < entries.length; )
+            for ( Entry entry : entries )
             {
-                lastModified = Math.max( lastModified, entries[i].getLastModified() );
+                lastModified = Math.max( lastModified, entry.getLastModified() );
             }
         }
         return lastModified;

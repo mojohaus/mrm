@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -41,8 +40,6 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
@@ -87,7 +84,8 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
+    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
+        new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
 
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
@@ -725,7 +723,7 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private static interface Content
+    private interface Content
     {
 
         /**

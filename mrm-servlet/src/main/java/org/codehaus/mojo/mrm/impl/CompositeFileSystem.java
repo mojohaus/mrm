@@ -74,28 +74,28 @@ public class CompositeFileSystem
      */
     public Entry[] listEntries( DirectoryEntry directory )
     {
-        Map<String,Entry> result = new TreeMap<String,Entry>();
-        for ( int i = 0; i < delegates.length; i++ )
+        Map<String, Entry> result = new TreeMap<String, Entry>();
+        for ( FileSystem delegate : delegates )
         {
-            Entry[] entries = delegates[i].listEntries( DefaultDirectoryEntry.equivalent( delegates[i], directory ) );
+            Entry[] entries = delegate.listEntries( DefaultDirectoryEntry.equivalent( delegate, directory ) );
             if ( entries == null )
             {
                 continue;
             }
-            for ( int j = 0; j < entries.length; j++ )
+            for ( Entry entry : entries )
             {
-                if ( result.containsKey( entries[j].getName() ) )
+                if ( result.containsKey( entry.getName() ) )
                 {
                     continue;
                 }
-                if ( entries[j] instanceof DirectoryEntry )
+                if ( entry instanceof DirectoryEntry )
                 {
-                    result.put( entries[j].getName(),
-                                new DefaultDirectoryEntry( this, directory, entries[j].getName() ) );
+                    result.put( entry.getName(),
+                                new DefaultDirectoryEntry( this, directory, entry.getName() ) );
                 }
-                else if ( entries[j] instanceof FileEntry )
+                else if ( entry instanceof FileEntry )
                 {
-                    result.put( entries[j].getName(), new LinkFileEntry( this, directory, (FileEntry) entries[j] ) );
+                    result.put( entry.getName(), new LinkFileEntry( this, directory, (FileEntry) entry ) );
                 }
             }
         }
@@ -107,9 +107,9 @@ public class CompositeFileSystem
      */
     public Entry get( String path )
     {
-        for ( int i = 0; i < delegates.length; i++ )
+        for ( FileSystem delegate : delegates )
         {
-            Entry entry = delegates[i].get( path );
+            Entry entry = delegate.get( path );
             if ( entry == null )
             {
                 continue;
@@ -130,11 +130,11 @@ public class CompositeFileSystem
         throws IOException
     {
         long lastModified = 0;
-        for ( int i = 0; i < delegates.length; i++ )
+        for ( FileSystem delegate : delegates )
         {
             try
             {
-                lastModified = Math.max( lastModified, delegates[i].getLastModified( entry ) );
+                lastModified = Math.max( lastModified, delegate.getLastModified( entry ) );
             }
             catch ( IOException e )
             {
