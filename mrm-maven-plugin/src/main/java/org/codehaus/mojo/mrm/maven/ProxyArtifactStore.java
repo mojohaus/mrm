@@ -1,3 +1,5 @@
+package org.codehaus.mojo.mrm.maven;
+
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.codehaus.mojo.mrm.maven;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -98,7 +98,7 @@ public class ProxyArtifactStore
     /**
      * A cache of what artifacts are present.
      */
-    private final Map<String,Map<String,Artifact>> children = new HashMap<String,Map<String,Artifact>>();
+    private final Map<String, Map<String, Artifact>> children = new HashMap<String, Map<String, Artifact>>();
 
     /**
      * Creates a new instance.
@@ -111,7 +111,8 @@ public class ProxyArtifactStore
      * @param artifactResolver           the {@link ArtifactResolver} to use.
      * @param log                        the {@link Log} to log to.
      */
-    public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager, List<ArtifactRepository> remoteArtifactRepositories,
+    public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager,
+                               List<ArtifactRepository> remoteArtifactRepositories,
                                List<ArtifactRepository> remotePluginRepositories, ArtifactRepository localRepository,
                                ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, Log log )
     {
@@ -147,13 +148,13 @@ public class ProxyArtifactStore
     {
         String path =
             artifact.getGroupId().replace( '.', '/' ) + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
-        Map<String,Artifact> children = this.children.get( path );
-        if ( children == null )
+        Map<String, Artifact> artifactMapper = this.children.get( path );
+        if ( artifactMapper == null )
         {
-            children = new HashMap<String,Artifact>();
-            this.children.put( path, children );
+            artifactMapper = new HashMap<String, Artifact>();
+            this.children.put( path, artifactMapper );
         }
-        children.put( artifact.getName(), artifact );
+        artifactMapper.put( artifact.getName(), artifact );
         addResolved( path );
     }
 
@@ -168,23 +169,23 @@ public class ProxyArtifactStore
         {
             String name = path.substring( index + 1 );
             path = path.substring( 0, index );
-            Map<String,Artifact> children = this.children.get( path );
-            if ( children == null )
+            Map<String, Artifact> artifactMapper = this.children.get( path );
+            if ( artifactMapper == null )
             {
-                children = new HashMap<String,Artifact>();
-                this.children.put( path, children );
+                artifactMapper = new HashMap<String, Artifact>();
+                this.children.put( path, artifactMapper );
             }
-            children.put( name, null );
+            artifactMapper.put( name, null );
         }
         if ( !StringUtils.isEmpty( path ) )
         {
-            Map<String,Artifact> children = this.children.get( "" );
-            if ( children == null )
+            Map<String, Artifact> artifactMapper = this.children.get( "" );
+            if ( artifactMapper == null )
             {
-                children = new HashMap<String,Artifact>();
-                this.children.put( "", children );
+                artifactMapper = new HashMap<String, Artifact>();
+                this.children.put( "", artifactMapper );
             }
-            children.put( path, null );
+            artifactMapper.put( path, null );
         }
     }
 
@@ -194,13 +195,13 @@ public class ProxyArtifactStore
     public synchronized Set<String> getGroupIds( String parentGroupId )
     {
         String path = parentGroupId.replace( '.', '/' );
-        Map<String,Artifact> children = this.children.get( path );
-        if ( children == null )
+        Map<String, Artifact> artifactMapper = this.children.get( path );
+        if ( artifactMapper == null )
         {
             return Collections.emptySet();
         }
         Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String,Artifact> e : children.entrySet() )
+        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
         {
             if ( e.getValue() == null )
             {
@@ -216,13 +217,13 @@ public class ProxyArtifactStore
     public synchronized Set<String> getArtifactIds( String groupId )
     {
         String path = groupId.replace( '.', '/' );
-        Map<String,Artifact> children = this.children.get( path );
-        if ( children == null )
+        Map<String, Artifact> artifactMapper = this.children.get( path );
+        if ( artifactMapper == null )
         {
             return Collections.emptySet();
         }
         Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String,Artifact> e : children.entrySet() )
+        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
         {
             if ( e.getValue() == null )
             {
@@ -238,13 +239,13 @@ public class ProxyArtifactStore
     public synchronized Set<String> getVersions( String groupId, String artifactId )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId;
-        Map<String,Artifact> children = this.children.get( path );
-        if ( children == null )
+        Map<String, Artifact> artifactMapper = this.children.get( path );
+        if ( artifactMapper == null )
         {
             return Collections.emptySet();
         }
         Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String,Artifact> e : children.entrySet() )
+        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
         {
             if ( e.getValue() == null )
             {
@@ -260,13 +261,13 @@ public class ProxyArtifactStore
     public synchronized Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
     {
         String path = groupId.replace( '.', '/' ) + '/' + artifactId + "/" + version;
-        Map<String,Artifact> children = this.children.get( path );
-        if ( children == null )
+        Map<String, Artifact> artifactMapper = this.children.get( path );
+        if ( artifactMapper == null )
         {
             return Collections.emptySet();
         }
         Set<Artifact> result = new HashSet<Artifact>();
-        for ( Artifact a : children.values() )
+        for ( Artifact a : artifactMapper.values() )
         {
             if ( a != null )
             {

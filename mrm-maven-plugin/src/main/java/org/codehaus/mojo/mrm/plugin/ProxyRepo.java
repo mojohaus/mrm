@@ -1,3 +1,5 @@
+package org.codehaus.mojo.mrm.plugin;
+
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -14,7 +16,6 @@
  * limitations under the License.
  */
 
-package org.codehaus.mojo.mrm.plugin;
 
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;

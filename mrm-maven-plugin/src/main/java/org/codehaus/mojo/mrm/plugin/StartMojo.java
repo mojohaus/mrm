@@ -1,3 +1,5 @@
+package org.codehaus.mojo.mrm.plugin;
+
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;

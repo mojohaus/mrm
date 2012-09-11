@@ -1,3 +1,5 @@
+package org.codehaus.mojo.mrm.plugin;
+
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -13,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
@@ -194,7 +194,6 @@ public class FileSystemServer
      * Blocks until the file system server has actually shut down.
      *
      * @throws InterruptedException  if interrupted.
-     * @throws IllegalStateException if called before a call to {@link #finish()}.
      */
     public void waitForFinished()
         throws InterruptedException
