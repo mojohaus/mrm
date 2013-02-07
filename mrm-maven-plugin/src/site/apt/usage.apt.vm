@@ -59,7 +59,7 @@ Usage
 mvn mrm:run
 ---
 
-  You can change the ports that the mock repository manager binds to either using the <<<mrm.port>>> property from the
+  You can change the port that the mock repository manager binds to either using the <<<mrm.port>>> property from the
   command line, e.g.
 
 ---
@@ -67,7 +67,7 @@ mvn mrm:run -Dmrm.port=8080
 ---
 
   Or in the <<<configuration>>> block in the plugin definition (which has the advantage that all invokations will use
-  the same parameters.
+  the same parameters).
 
 ---
 <project>
