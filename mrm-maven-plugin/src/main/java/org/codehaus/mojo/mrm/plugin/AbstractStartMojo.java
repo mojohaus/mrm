@@ -36,15 +36,15 @@ public abstract class AbstractStartMojo
     extends AbstractMRMMojo
 {
     /**
-     * The port to serve the remote repository on.
+     * The port to serve the repository on.
      */
     @Parameter( property = "mrm.port" )
     private int port;
 
     /**
-     * The repositories to serve if none specified then a proxy of the invoking maven's repositories will be served.
-     *
-     * 
+     * The repositories to serve. When more than one repository is specified, a merged repository view
+     * of those will be used. If none specified then a proxy of the invoking Maven's repositories will
+     * be served.
      */
     @Parameter
     private ArtifactStoreFactory[] repositories;
