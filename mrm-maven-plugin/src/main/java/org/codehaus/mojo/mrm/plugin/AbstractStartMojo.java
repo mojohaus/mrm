@@ -36,7 +36,7 @@ public abstract class AbstractStartMojo
     extends AbstractMRMMojo
 {
     /**
-     * The port to serve the repository on.
+     * The port to serve the repository on. If not specified a random port will be used.
      */
     @Parameter( property = "mrm.port" )
     private int port;
