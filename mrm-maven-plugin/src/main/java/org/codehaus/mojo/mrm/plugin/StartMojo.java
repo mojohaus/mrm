@@ -38,10 +38,8 @@ public class StartMojo
 {
     /**
      * The property to set the repository url to.
-     *
-     * 
      */
-    @Parameter( property = "mrm.propertyName" )
+    @Parameter( property = "mrm.propertyName", defaultValue = "mrm.repository.url" )
     private String propertyName;
 
     /**
