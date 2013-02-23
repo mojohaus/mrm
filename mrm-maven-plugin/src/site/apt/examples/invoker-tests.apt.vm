@@ -19,7 +19,7 @@
  ------
  Stephen Connolly
  ------
- 2011-11-22
+ 2013-02-23
  ------
 
 Using with Maven Invoker
@@ -40,8 +40,9 @@ Using with Maven Invoker
     <plugins>
       ...
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-invoker-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.8</version>
         <executions>
           <execution>
             <goals>
@@ -52,9 +53,9 @@ Using with Maven Invoker
           </execution>
         </executions>
         <configuration>
-          ...
           <localRepositoryPath>\${project.build.directory}/local-repo</localRepositoryPath>
-          <settingsFile>src/mrm/settings.xml</settingsFile>
+          <projectsDirectory>src/it/projects</projectsDirectory>
+          <settingsFile>src/it/mrm/settings.xml</settingsFile>
           <filterProperties>
             <repository.proxy.url>${repository.proxy.url}</repository.proxy.url>
           </filterProperties>
@@ -77,7 +78,7 @@ Using with Maven Invoker
           <propertyName>repository.proxy.url</propertyName>
           <repositories>
             <mockRepo>
-              <source>src/mrm/repository</source>
+              <source>src/it/mrm/repository</source>
             </mockRepo>
             <proxyRepo/>
           </repositories>
@@ -107,10 +108,10 @@ Using with Maven Invoker
 
   Additionally, when <<<mrm:start>>> is invoked, it will bind to an available port and set the property
   <<<repository.proxy.url>>> to the URL on which the repository is being hosted, and the repository content
-  will be the union of the mock content generated from all the <<<**/*.pom>>> files in <<<src/mrm/repository>>>
+  will be the union of the mock content generated from all the <<<**/*.pom>>> files in <<<src/it/mrm/repository>>>
   and all the repositories available to the current Maven instance.
 
-  We tell <<<maven-invoker-plugin>>> to use the <<<settings.xml>>> file from <<<src/mrm/settings.xml>>>
+  We tell <<<maven-invoker-plugin>>> to use the <<<settings.xml>>> file from <<<src/it/mrm/settings.xml>>>
   which will look something like:
 
 ---
