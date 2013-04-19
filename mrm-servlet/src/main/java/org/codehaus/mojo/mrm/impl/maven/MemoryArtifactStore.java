@@ -48,7 +48,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,19 +75,19 @@ public class MemoryArtifactStore
      *
      * @since 1.0
      */
-    private Map/*<String, Map<String, Map<String, Map<Artifact, Content>>>>*/ contents = new HashMap();
+    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
+        new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getGroupIds( String parentGroupId )
+    public synchronized Set<String> getGroupIds( String parentGroupId )
     {
-        TreeSet result = new TreeSet();
+        Set<String> result = new TreeSet<String>();
         if ( StringUtils.isEmpty( parentGroupId ) )
         {
-            for ( Iterator iterator = contents.keySet().iterator(); iterator.hasNext(); )
+            for ( String groupId : contents.keySet() )
             {
-                String groupId = (String) iterator.next();
                 int index = groupId.indexOf( '.' );
                 result.add( index == -1 ? groupId : groupId.substring( 0, index ) );
             }
@@ -97,9 +96,8 @@ public class MemoryArtifactStore
         {
             String prefix = parentGroupId + '.';
             int start = prefix.length();
-            for ( Iterator iterator = contents.keySet().iterator(); iterator.hasNext(); )
+            for ( String groupId : contents.keySet() )
             {
-                String groupId = (String) iterator.next();
                 if ( groupId.startsWith( prefix ) )
                 {
                     int index = groupId.indexOf( '.', start );
@@ -113,32 +111,32 @@ public class MemoryArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getArtifactIds( String groupId )
+    public synchronized Set<String> getArtifactIds( String groupId )
     {
-        Map artifactMap = (Map) contents.get( groupId );
-        return new TreeSet( artifactMap == null ? Collections.EMPTY_SET : artifactMap.keySet() );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
+        return new TreeSet<String>( artifactMap == null ? Collections.<String> emptySet() : artifactMap.keySet() );
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getVersions( String groupId, String artifactId )
+    public synchronized Set<String> getVersions( String groupId, String artifactId )
     {
-        Map artifactMap = (Map) contents.get( groupId );
-        Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        return new TreeSet( versionMap == null ? Collections.EMPTY_SET : versionMap.keySet() );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
+        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+        return new TreeSet<String>( versionMap == null ? Collections.<String> emptySet() : versionMap.keySet() );
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set getArtifacts( String groupId, String artifactId, String version )
+    public synchronized Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
     {
-        Map artifactMap = (Map) contents.get( groupId );
-        Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( version ) );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
+        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
 
-        return new HashSet( filesMap == null ? Collections.EMPTY_SET : filesMap.keySet() );
+        return new HashSet<Artifact>( filesMap == null ? Collections.<Artifact> emptySet() : filesMap.keySet() );
     }
 
     /**
@@ -147,23 +145,22 @@ public class MemoryArtifactStore
     public synchronized long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        Map artifactMap = (Map) contents.get( artifact.getGroupId() );
-        Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = (Content) ( filesMap == null ? null : filesMap.get( artifact ) );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
+        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
         {
             if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
             {
                 Artifact best = null;
-                for ( Iterator i = filesMap.entrySet().iterator(); i.hasNext(); )
+                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
                 {
-                    Map.Entry entry = (Map.Entry) i.next();
-                    Artifact a = (Artifact) entry.getKey();
+                    Artifact a = entry.getKey();
                     if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
                     {
                         best = a;
-                        content = (Content) entry.getValue();
+                        content = entry.getValue();
                     }
                 }
                 if ( content == null )
@@ -186,23 +183,22 @@ public class MemoryArtifactStore
     public synchronized long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        Map artifactMap = (Map) contents.get( artifact.getGroupId() );
-        Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = (Content) ( filesMap == null ? null : filesMap.get( artifact ) );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
+        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
         {
             if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
             {
                 Artifact best = null;
-                for ( Iterator i = filesMap.entrySet().iterator(); i.hasNext(); )
+                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
                 {
-                    Map.Entry entry = (Map.Entry) i.next();
-                    Artifact a = (Artifact) entry.getKey();
+                    Artifact a = entry.getKey();
                     if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
                     {
                         best = a;
-                        content = (Content) entry.getValue();
+                        content = entry.getValue();
                     }
                 }
                 if ( content == null )
@@ -225,23 +221,22 @@ public class MemoryArtifactStore
     public synchronized InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        Map artifactMap = (Map) contents.get( artifact.getGroupId() );
-        Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = (Content) ( filesMap == null ? null : filesMap.get( artifact ) );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
+        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
         {
             if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
             {
                 Artifact best = null;
-                for ( Iterator i = filesMap.entrySet().iterator(); i.hasNext(); )
+                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
                 {
-                    Map.Entry entry = (Map.Entry) i.next();
-                    Artifact a = (Artifact) entry.getKey();
+                    Artifact a = entry.getKey();
                     if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
                     {
                         best = a;
-                        content = (Content) entry.getValue();
+                        content = entry.getValue();
                     }
                 }
                 if ( content == null )
@@ -264,22 +259,22 @@ public class MemoryArtifactStore
     public synchronized void set( Artifact artifact, InputStream content )
         throws IOException
     {
-        Map artifactMap = (Map) contents.get( artifact.getGroupId() );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
         if ( artifactMap == null )
         {
-            artifactMap = new HashMap();
+            artifactMap = new HashMap<String, Map<String, Map<Artifact, Content>>>();
             contents.put( artifact.getGroupId(), artifactMap );
         }
-        Map versionMap = (Map) artifactMap.get( artifact.getArtifactId() );
+        Map<String, Map<Artifact, Content>> versionMap = artifactMap.get( artifact.getArtifactId() );
         if ( versionMap == null )
         {
-            versionMap = new HashMap();
+            versionMap = new HashMap<String, Map<Artifact, Content>>();
             artifactMap.put( artifact.getArtifactId(), versionMap );
         }
-        Map filesMap = (Map) versionMap.get( artifact.getVersion() );
+        Map<Artifact, Content> filesMap = versionMap.get( artifact.getVersion() );
         if ( filesMap == null )
         {
-            filesMap = new HashMap();
+            filesMap = new HashMap<Artifact, Content>();
             versionMap.put( artifact.getVersion(), filesMap );
         }
         try
@@ -302,14 +297,13 @@ public class MemoryArtifactStore
         boolean foundMetadata = false;
         path = StringUtils.stripEnd( StringUtils.stripStart( path, "/" ), "/" );
         String groupId = path.replace( '/', '.' );
-        Set pluginArtifactIds = getArtifactIds( groupId );
+        Set<String> pluginArtifactIds = getArtifactIds( groupId );
         if ( pluginArtifactIds != null )
         {
-            List plugins = new ArrayList();
-            for ( Iterator i = pluginArtifactIds.iterator(); i.hasNext(); )
+            List<Plugin> plugins = new ArrayList<Plugin>();
+            for ( String artifactId : pluginArtifactIds )
             {
-                String artifactId = (String) i.next();
-                Set pluginVersions = getVersions( groupId, artifactId );
+                Set<String> pluginVersions = getVersions( groupId, artifactId );
                 if ( pluginVersions == null || pluginVersions.isEmpty() )
                 {
                     continue;
@@ -389,18 +383,17 @@ public class MemoryArtifactStore
         String artifactId = ( index == -1 ? null : path.substring( index + 1 ) );
         if ( artifactId != null )
         {
-            Set artifactVersions = getVersions( groupId, artifactId );
+            Set<String> artifactVersions = getVersions( groupId, artifactId );
             if ( artifactVersions != null && !artifactVersions.isEmpty() )
             {
                 metadata.setGroupId( groupId );
                 metadata.setArtifactId( artifactId );
                 Versioning versioning = new Versioning();
-                List versions = new ArrayList( artifactVersions );
+                List<String> versions = new ArrayList<String>( artifactVersions );
                 Collections.sort( versions, new VersionComparator() ); // sort the Maven way
                 long lastUpdated = 0;
-                for ( Iterator i = versions.iterator(); i.hasNext(); )
+                for ( String version : versions )
                 {
-                    String version = (String) i.next();
                     try
                     {
                         long lastModified = getLastModified( new Artifact( groupId, artifactId, version, "pom" ) );
@@ -432,21 +425,20 @@ public class MemoryArtifactStore
         String version = index2 == -1 ? null : path.substring( index + 1 );
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
-            Map artifactMap = (Map) contents.get( groupId );
-            Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-            Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( version ) );
+            Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
+            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
-                List snapshotVersions = new ArrayList();
+                List<SnapshotVersion> snapshotVersions = new ArrayList<SnapshotVersion>();
                 int maxBuildNumber = 0;
                 long lastUpdated = 0;
                 String timestamp = null;
                 boolean found = false;
-                for ( Iterator i = filesMap.entrySet().iterator(); i.hasNext(); )
+                for ( final Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
                 {
-                    final Map.Entry entry = (Map.Entry) i.next();
-                    final Artifact artifact = (Artifact) entry.getKey();
-                    final Content content = (Content) entry.getValue();
+                    final Artifact artifact = entry.getKey();
+                    final Content content = entry.getValue();
                     SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss" );
                     fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
                     String lastUpdatedTime = fmt.format( new Date( content.getLastModified() ) );
@@ -524,18 +516,15 @@ public class MemoryArtifactStore
         long result = 0;
         path = StringUtils.stripEnd( StringUtils.stripStart( path, "/" ), "/" );
         String groupId = path.replace( '/', '.' );
-        Map artifactMap = (Map) contents.get( groupId );
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
         if ( artifactMap != null )
         {
-            for ( Iterator i = artifactMap.values().iterator(); i.hasNext(); )
+            for ( Map<String, Map<Artifact, Content>> versionMap : artifactMap.values() )
             {
-                Map versionMap = (Map) i.next();
-                for ( Iterator j = versionMap.values().iterator(); j.hasNext(); )
+                for ( Map<Artifact, Content> filesMap : versionMap.values() )
                 {
-                    Map filesMap = (Map) j.next();
-                    for ( Iterator k = filesMap.values().iterator(); k.hasNext(); )
+                    for ( Content content : filesMap.values() )
                     {
-                        Content content = (Content) k.next();
                         haveResult = true;
                         result = Math.max( result, content.getLastModified() );
                     }
@@ -547,16 +536,14 @@ public class MemoryArtifactStore
         String artifactId = ( index == -1 ? null : path.substring( index + 1 ) );
         if ( artifactId != null )
         {
-            artifactMap = (Map) contents.get( groupId );
-            Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            artifactMap = contents.get( groupId );
+            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             if ( versionMap != null )
             {
-                for ( Iterator j = versionMap.values().iterator(); j.hasNext(); )
+                for ( Map<Artifact, Content> filesMap : versionMap.values() )
                 {
-                    Map filesMap = (Map) j.next();
-                    for ( Iterator k = filesMap.values().iterator(); k.hasNext(); )
+                    for ( Content content : filesMap.values() )
                     {
-                        Content content = (Content) k.next();
                         haveResult = true;
                         result = Math.max( result, content.getLastModified() );
                     }
@@ -569,14 +556,13 @@ public class MemoryArtifactStore
         String version = index2 == -1 ? null : path.substring( index + 1 );
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
-            artifactMap = (Map) contents.get( groupId );
-            Map versionMap = (Map) ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-            Map filesMap = (Map) ( versionMap == null ? null : versionMap.get( version ) );
+            artifactMap = contents.get( groupId );
+            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
-                for ( Iterator k = filesMap.values().iterator(); k.hasNext(); )
+                for ( Content content : filesMap.values() )
                 {
-                    Content content = (Content) k.next();
                     haveResult = true;
                     result = Math.max( result, content.getLastModified() );
                 }
@@ -598,12 +584,10 @@ public class MemoryArtifactStore
      * @return <code>true</code> if the prefix has been set.
      * @since 1.0
      */
-    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List pluginConfigs )
+    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs )
     {
-        Iterator iterator = pluginConfigs.iterator();
-        while ( iterator.hasNext() )
+        for ( org.apache.maven.model.Plugin def : pluginConfigs )
         {
-            org.apache.maven.model.Plugin def = (org.apache.maven.model.Plugin) iterator.next();
             if ( ( def.getGroupId() == null || StringUtils.equals( "org.apache.maven.plugins", def.getGroupId() ) )
                 && StringUtils.equals( "maven-plugin-plugin", def.getArtifactId() ) )
             {
@@ -629,15 +613,15 @@ public class MemoryArtifactStore
      * @since 1.0
      */
     private static class VersionComparator
-        implements Comparator
+        implements Comparator<String>
     {
         /**
          * {@inheritDoc}
          */
-        public int compare( Object o1, Object o2 )
+        public int compare( String o1, String o2 )
         {
-            ArtifactVersion v1 = new DefaultArtifactVersion( (String) o1 );
-            ArtifactVersion v2 = new DefaultArtifactVersion( (String) o2 );
+            ArtifactVersion v1 = new DefaultArtifactVersion( o1 );
+            ArtifactVersion v2 = new DefaultArtifactVersion( o2 );
             return v1.compareTo( v2 );
         }
     }
@@ -724,7 +708,7 @@ public class MemoryArtifactStore
          * @param lastUpdatedTime  the time to flag for last updated.
          * @since 1.0
          */
-        private static void addSnapshotVersion( List snapshotVersions, Artifact artifact, String lastUpdatedTime )
+        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact, String lastUpdatedTime )
         {
             try
             {
@@ -748,13 +732,12 @@ public class MemoryArtifactStore
          * @param snapshotVersions the snapshot versions to add.
          * @since 1.0
          */
-        private static void addSnapshotVersions( Versioning versioning, List snapshotVersions )
+        private static void addSnapshotVersions( Versioning versioning, List<SnapshotVersion> snapshotVersions )
         {
             try
             {
-                for ( Iterator i = snapshotVersions.iterator(); i.hasNext(); )
+                for ( SnapshotVersion snapshotVersion : snapshotVersions )
                 {
-                    SnapshotVersion snapshotVersion = (SnapshotVersion) i.next();
                     versioning.addSnapshotVersion( snapshotVersion );
                 }
             }
