@@ -3,6 +3,8 @@ package org.codehaus.mojo.mrm.api.maven;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+
 /**
  * Base implementation of {@link ArtifactStore}.
  *
@@ -38,4 +40,21 @@ public abstract class BaseArtifactStore
         throw new UnsupportedOperationException( "Read-only artifact store" );
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    public ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        throw new UnsupportedOperationException( "getArchetypeCatalog() has not been implemented" );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getArchetypeCatalogLastModified()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        throw new UnsupportedOperationException( "getArchetypeCatalogLastModified() has not been implemented" );
+    }
 }
