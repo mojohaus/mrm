@@ -47,6 +47,10 @@
       <artifactId>maven-plugin-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.archetype</groupId>
+      <artifactId>archetype-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

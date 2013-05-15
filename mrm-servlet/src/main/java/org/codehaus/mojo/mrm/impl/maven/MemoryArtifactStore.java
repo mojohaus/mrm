@@ -18,6 +18,8 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
@@ -28,6 +30,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
@@ -77,6 +80,8 @@ public class MemoryArtifactStore
      */
     private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
         new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
+    
+    private Content archetypeCatalog;
 
     /**
      * {@inheritDoc}
@@ -574,6 +579,54 @@ public class MemoryArtifactStore
         }
         throw new MetadataNotFoundException( path );
     }
+    
+    @Override
+    public synchronized void setArchetypeCatalog( InputStream content )
+        throws IOException
+    {
+        archetypeCatalog = new Content( IOUtils.toByteArray( content ) );
+    }
+    
+    public synchronized ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        if ( archetypeCatalog != null )
+        {
+            ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
+            InputStream inputStream = null;
+            try
+            {
+                inputStream = new ByteArrayInputStream( archetypeCatalog.getBytes() );
+                return reader.read( inputStream );
+            }
+            catch ( XmlPullParserException e )
+            {
+                throw new ArchetypeCatalogNotFoundException( e.getMessage(), e );
+            }
+            finally
+            {
+                IOUtils.closeQuietly( inputStream );
+            }
+        }
+        else
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
+    }
+    
+    public synchronized long getArchetypeCatalogLastModified()
+        throws ArchetypeCatalogNotFoundException
+    {
+        if ( archetypeCatalog != null )
+        {
+            return archetypeCatalog.getLastModified();
+        }
+        else
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
+    }
+    
 
     /**
      * If the plugin configurations contain a reference to the <code>maven-plugin-plugin</code> and that contains

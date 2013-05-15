@@ -46,7 +46,7 @@ public class ProxyRepo
         return new ProxyArtifactStore( factoryHelper.getRepositoryMetadataManager(),
                                        factoryHelper.getRemoteArtifactRepositories(),
                                        factoryHelper.getRemotePluginRepositories(), factoryHelper.getLocalRepository(),
-                                       factoryHelper.getArtifactFactory(), factoryHelper.getArtifactResolver(),
+                                       factoryHelper.getArtifactFactory(), factoryHelper.getArtifactResolver(), factoryHelper.getArchetypeManager(),
                                        factoryHelper.getLog() );
     }
 

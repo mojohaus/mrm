@@ -67,6 +67,7 @@ public interface Entry
 
     /**
      * Returns the path of this entry relative to the root of the filesystem.
+     * Must not start with a '<code>/</code>'.
      *
      * @return the path of this entry relative to the root of the filesystem.
      * @since 1.0

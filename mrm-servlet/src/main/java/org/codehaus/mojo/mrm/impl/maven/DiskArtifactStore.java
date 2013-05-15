@@ -32,8 +32,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
@@ -360,5 +363,42 @@ public class DiskArtifactStore
         }
         return file.lastModified();
     }
+    
+    public ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        File file = new File( root, "archetype-catalog.xml" );
+        if ( !file.isFile() )
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
+        ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
+        InputStream inputStream = null;
+        try
+        {
+            inputStream = new FileInputStream( file );
+            return reader.read( inputStream );
+        }
+        catch ( XmlPullParserException e )
+        {
+            IOException ioe = new IOException( e.getMessage() );
+            ioe.initCause( e );
+            throw ioe;
+        }
+        finally
+        {
+            IOUtils.closeQuietly( inputStream );
+        }
+    }
 
+    public long getArchetypeCatalogLastModified()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        File file = new File( root, "archetype-catalog.xml" );
+        if ( !file.isFile() )
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
+        return file.lastModified();
+    }
 }

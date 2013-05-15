@@ -16,6 +16,7 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 
 import java.io.IOException;
@@ -186,5 +187,31 @@ public interface ArtifactStore
      */
     long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException;
+    
+    /**
+     * 
+     * @return 
+     * @throws IOException                       if an I/O error occurs.
+     * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
+     * @since 1.0
+     */
+    ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException;
+    
+    /**
+     * 
+     * @return
+     * @throws IOException                       if an I/O error occurs.
+     * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
+     * @since 1.0
+     */
+    long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException;
+
+    /**
+     * 
+     * @param content
+     * @throws IOException                       if an I/O error occurs.
+     * @since 1.0
+     */
+    void setArchetypeCatalog( InputStream content ) throws IOException;
 
 }

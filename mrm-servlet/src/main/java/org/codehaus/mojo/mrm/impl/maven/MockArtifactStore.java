@@ -41,6 +41,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
@@ -52,6 +54,7 @@ import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
@@ -69,6 +72,8 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 public class MockArtifactStore
     extends BaseArtifactStore
 {
+    
+    private final Log log;
 
     /**
      * The extensions to search for when looking for POMs to mock.
@@ -87,6 +92,9 @@ public class MockArtifactStore
     private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
         new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
 
+    
+    private Content archetypeCatalog;
+    
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
@@ -107,9 +115,10 @@ public class MockArtifactStore
      */
     public MockArtifactStore( Log log, File root )
     {
+        this.log = log;
         if ( root.isDirectory() )
         {
-            MavenXpp3Reader reader = new MavenXpp3Reader();
+            MavenXpp3Reader pomReader = new MavenXpp3Reader();
             Collection<File> poms = FileUtils.listFiles( root, POM_EXTENSIONS, true );
             for ( File file : poms )
             {
@@ -117,7 +126,7 @@ public class MockArtifactStore
                 try
                 {
                     fileReader = new FileReader( file );
-                    Model model = reader.read( fileReader );
+                    Model model = pomReader.read( fileReader );
                     String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
                     String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
                     set( new Artifact( groupId, model.getArtifactId(), version, "pom" ),
@@ -165,6 +174,12 @@ public class MockArtifactStore
                         log.warn( "Could not parse " + file, e );
                     }
                 }
+            }
+            
+            File archetypeCatalogFile = new File( root, "archetype-catalog.xml" );
+            if ( archetypeCatalogFile.isFile() )
+            {
+                archetypeCatalog = new FileContent( archetypeCatalogFile );
             }
         }
     }
@@ -673,6 +688,49 @@ public class MockArtifactStore
             return result;
         }
         throw new MetadataNotFoundException( path );
+    }
+    
+    public ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        if( archetypeCatalog != null )
+        {
+            ArchetypeCatalogXpp3Reader reader = new  ArchetypeCatalogXpp3Reader();
+            try
+            {
+                return reader.read( archetypeCatalog.getInputStream() );
+            }
+            catch ( IOException e )
+            {
+                if ( log != null )
+                {
+                    log.warn( "Could not read from archetype-catalog.xml", e );
+                }
+            }
+            catch ( XmlPullParserException e )
+            {
+                
+                if ( log != null )
+                {
+                    log.warn( "Could not parse archetype-catalog.xml", e );
+                }
+            }
+        }
+        throw new ArchetypeCatalogNotFoundException();
+    }
+    
+    
+    public long getArchetypeCatalogLastModified()
+        throws ArchetypeCatalogNotFoundException
+    {
+        if ( archetypeCatalog != null )
+        {
+            return archetypeCatalog.getLastModified();
+        }
+        else
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
     }
 
     private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs )

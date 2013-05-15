@@ -17,6 +17,8 @@ package org.codehaus.mojo.mrm.maven;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archetype.ArchetypeManager;
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -32,6 +34,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
@@ -84,6 +87,9 @@ public class ProxyArtifactStore
      * The {@link ArtifactResolver} provided by Maven.
      */
     private final ArtifactResolver artifactResolver;
+    
+    
+    private final ArchetypeManager archetypeManager;
 
     /**
      * The {@link Log} to log to.
@@ -114,13 +120,14 @@ public class ProxyArtifactStore
     public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager,
                                List<ArtifactRepository> remoteArtifactRepositories,
                                List<ArtifactRepository> remotePluginRepositories, ArtifactRepository localRepository,
-                               ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, Log log )
+                               ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, ArchetypeManager archetypeManager, Log log )
     {
         this.repositoryMetadataManager = repositoryMetadataManager;
         this.remotePluginRepositories = remotePluginRepositories;
         this.localRepository = localRepository;
         this.artifactFactory = artifactFactory;
         this.artifactResolver = artifactResolver;
+        this.archetypeManager = archetypeManager;
         this.log = log;
         remoteRepositories = new ArrayList<ArtifactRepository>();
         remoteRepositories.addAll( remoteArtifactRepositories );
@@ -543,5 +550,24 @@ public class ProxyArtifactStore
             }
         }
         throw new MetadataNotFoundException( path );
+    }
+
+    public ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        return archetypeManager.getDefaultLocalCatalog();
+    }
+
+    public long getArchetypeCatalogLastModified()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        if( archetypeManager.getDefaultLocalCatalog() != null )
+        {
+            return System.currentTimeMillis();
+        }
+        else
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
     }
 }

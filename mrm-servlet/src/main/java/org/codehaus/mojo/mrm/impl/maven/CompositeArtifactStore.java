@@ -23,11 +23,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
@@ -350,6 +352,61 @@ public class CompositeArtifactStore
         if ( !found )
         {
             throw new MetadataNotFoundException( path );
+        }
+        return lastModified;
+    }
+    
+    public ArchetypeCatalog getArchetypeCatalog()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        boolean found = false;
+        ArchetypeCatalog result = new ArchetypeCatalog();
+        for ( ArtifactStore store : stores )
+        {
+            try
+            {
+                ArchetypeCatalog partial = store.getArchetypeCatalog();
+                result.getArchetypes().addAll( partial.getArchetypes() );
+            }
+            catch ( ArchetypeCatalogNotFoundException e )
+            {
+                // ignore
+            }
+        }
+        if ( !found )
+        {
+            throw new ArchetypeCatalogNotFoundException();
+        }
+        return result;
+    }
+    
+    public long getArchetypeCatalogLastModified()
+        throws IOException, ArchetypeCatalogNotFoundException
+    {
+        boolean found = false;
+        long lastModified = 0;
+        for ( ArtifactStore store : stores )
+        {
+            try
+            {
+                if ( !found )
+                {
+                    lastModified = store.getArchetypeCatalogLastModified();
+                    found = true;
+                }
+                else
+                {
+                    lastModified = Math.max( lastModified, store.getArchetypeCatalogLastModified() );
+                }
+            }
+            catch ( ArchetypeCatalogNotFoundException e )
+            {
+                // ignore
+            }
+        }
+        if ( !found )
+        {
+            throw new ArchetypeCatalogNotFoundException( );
         }
         return lastModified;
     }

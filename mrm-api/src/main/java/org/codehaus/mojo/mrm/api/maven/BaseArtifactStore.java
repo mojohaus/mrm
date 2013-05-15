@@ -28,4 +28,14 @@ public abstract class BaseArtifactStore
     {
         throw new UnsupportedOperationException( "Read-only artifact store" );
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setArchetypeCatalog( InputStream content )
+        throws IOException
+    {
+        throw new UnsupportedOperationException( "Read-only artifact store" );
+    }
+    
 }

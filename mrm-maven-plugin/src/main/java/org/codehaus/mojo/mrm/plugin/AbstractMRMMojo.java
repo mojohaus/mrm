@@ -16,6 +16,7 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
@@ -83,6 +84,12 @@ public abstract class AbstractMRMMojo
      */
     @Component
     protected ArtifactResolver artifactResolver;
+    
+    /**
+     * The archetype manager
+     */
+    @Component
+    protected ArchetypeManager archetypeManager;
 
     /**
      * The Maven Session Object
@@ -154,7 +161,7 @@ public abstract class AbstractMRMMojo
     protected ProxyArtifactStore createProxyArtifactStore()
     {
         return new ProxyArtifactStore( repositoryMetadataManager, remoteArtifactRepositories, remotePluginRepositories,
-                                       localRepository, artifactFactory, artifactResolver, getLog() );
+                                       localRepository, artifactFactory, artifactResolver, archetypeManager, getLog() );
     }
 
     /**
@@ -223,6 +230,14 @@ public abstract class AbstractMRMMojo
             return artifactResolver;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        public ArchetypeManager getArchetypeManager()
+        {
+            return archetypeManager;
+        }
+        
         /**
          * {@inheritDoc}
          */

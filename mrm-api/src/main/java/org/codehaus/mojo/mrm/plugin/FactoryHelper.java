@@ -16,6 +16,7 @@
 
 package org.codehaus.mojo.mrm.plugin;
 
+import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
@@ -87,6 +88,14 @@ public interface FactoryHelper
      * @since 1.0
      */
     Log getLog();
+
+    /**
+     * Returns the {@ ArchetypeManager}
+     * 
+     * @return The {@ ArchetypeManager}
+     * @since 1.0
+     */
+    ArchetypeManager getArchetypeManager();
 
 
 }

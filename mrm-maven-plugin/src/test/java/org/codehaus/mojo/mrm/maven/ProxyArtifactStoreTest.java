@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
@@ -47,7 +48,7 @@ public class ProxyArtifactStoreTest
         ProxyArtifactStore store =
             new ProxyArtifactStore( null, Collections.<ArtifactRepository> emptyList(),
                                     Collections.<ArtifactRepository> emptyList(), null, artifactFactory,
-                                    artifactResolver, null );
+                                    artifactResolver, null ,null );
 
         doThrow( org.apache.maven.artifact.resolver.ArtifactNotFoundException.class ).when( artifactResolver ).resolve( any( org.apache.maven.artifact.Artifact.class ),
                                                                                                                         eq( Collections.<ArtifactRepository> emptyList() ),
@@ -66,7 +67,7 @@ public class ProxyArtifactStoreTest
         ProxyArtifactStore store =
             new ProxyArtifactStore( null, Collections.<ArtifactRepository> emptyList(),
                                     Collections.<ArtifactRepository> emptyList(), null, artifactFactory,
-                                    artifactResolver, null );
+                                    artifactResolver, null, null );
 
         doThrow( IOException.class ).when( artifactResolver ).resolve( any( org.apache.maven.artifact.Artifact.class ),
                                                                        eq( Collections.<ArtifactRepository> emptyList() ),
@@ -75,4 +76,18 @@ public class ProxyArtifactStoreTest
         Artifact artifact = new Artifact( "localhost", "test", "1.0-SNAPSHOT", "pom" );
         store.get( artifact );
     }
+    
+    @Test( expected = IOException.class )
+    public void verifyArchetypeCatalogNotFoundException()
+        throws Exception
+    {
+        ArchetypeManager archetypeManager = mock( ArchetypeManager.class );
+        ProxyArtifactStore store =
+            new ProxyArtifactStore( null, Collections.<ArtifactRepository> emptyList(),
+                                    Collections.<ArtifactRepository> emptyList(), null, null, null, archetypeManager,
+                                    null );
+        doThrow( IOException.class ).when( archetypeManager ).getDefaultLocalCatalog();
+        store.getArchetypeCatalog();
+    }
+    
 }

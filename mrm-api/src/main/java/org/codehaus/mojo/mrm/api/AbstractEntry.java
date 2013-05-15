@@ -142,7 +142,7 @@ public abstract class AbstractEntry
      */
     public String toString()
     {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append( "Entry[" );
         sb.append( fileSystem );
         sb.append( ':' ).append( toPath() ).append( ']' );
@@ -163,11 +163,12 @@ public abstract class AbstractEntry
             entry = entry.getParent();
         }
         StringBuffer buf = new StringBuffer();
-        while ( !stack.empty() )
+        while ( stack.size() > 1 )
         {
-            buf.append( '/' );
             buf.append( stack.pop() );
+            buf.append( '/' );
         }
+        buf.append( stack.pop() );
         return buf.toString();
     }
 

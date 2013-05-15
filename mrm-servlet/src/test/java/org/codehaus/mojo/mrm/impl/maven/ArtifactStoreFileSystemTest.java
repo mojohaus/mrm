@@ -22,18 +22,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.regex.Matcher;
 
+import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.FileEntry;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.junit.Test;
-import org.mockito.verification.VerificationMode;
 
 public class ArtifactStoreFileSystemTest
 {
@@ -172,6 +171,15 @@ public class ArtifactStoreFileSystemTest
         when( store.get( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
         FileEntry entry = (FileEntry) system.get( "/localhost/mmockrm-5/1.0-SNAPSHOT/mmockrm-5-1.0-SNAPSHOT-site_en.xml" );
+        assertNull( entry );
+    }
+    
+    public void testArchetypeCatalog() throws Exception
+    {
+        ArtifactStore store = mock( ArtifactStore.class );
+        when( store.getArchetypeCatalog() ).thenThrow( ArchetypeCatalogNotFoundException.class );
+        ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
+        Entry entry = system.get( "/archetype-catalog.xml" );
         assertNull( entry );
     }
 

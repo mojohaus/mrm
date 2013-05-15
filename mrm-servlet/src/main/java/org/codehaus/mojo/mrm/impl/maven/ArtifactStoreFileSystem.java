@@ -85,6 +85,8 @@ public class ArtifactStoreFileSystem
      */
     /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
 
+    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "archetype-catalog\\.xml" ); 
+    
     /**
      * Regex to match a release artifact path.
      *
@@ -138,7 +140,7 @@ public class ArtifactStoreFileSystem
         }
         List<Entry> result = new ArrayList<Entry>();
         Set<String> names = new HashSet<String>();
-        String path = directory.toPath().substring( 1 ); // skip initial '/'
+        String path = directory.toPath();
 
         try
         {
@@ -187,7 +189,7 @@ public class ArtifactStoreFileSystem
         if ( parent != null && !getRoot().equals( parent ) )
         {
             // get all the versions that belong to the groupId/artifactId path
-            groupId = parent.toPath().substring( 1 ).replace( '/', '.' );
+            groupId = parent.toPath().replace( '/', '.' );
             String artifactId = directory.getName();
             for ( String name : store.getVersions( groupId, artifactId ) )
             {
@@ -201,7 +203,7 @@ public class ArtifactStoreFileSystem
             if ( grandParent != null && !getRoot().equals( grandParent ) )
             {
                 // get all the versions that belong to the groupId/artifactId path
-                groupId = grandParent.toPath().substring( 1 ).replace( '/', '.' );
+                groupId = grandParent.toPath().replace( '/', '.' );
                 artifactId = parent.getName();
                 String version = directory.getName();
                 for ( Artifact a : store.getArtifacts( groupId, artifactId, version ) )
@@ -233,7 +235,7 @@ public class ArtifactStoreFileSystem
     protected Entry get( DirectoryEntry parent, String name )
     {
 
-        String path = parent.toPath() + "/" + name;
+        String path = "/" + parent.toPath() + "/" + name;
 
         if ( "favicon.ico".equals( name ) )
         {
@@ -242,6 +244,19 @@ public class ArtifactStoreFileSystem
         if ( METADATA.matcher( path ).matches() )
         {
             MetadataFileEntry entry = new MetadataFileEntry( this, parent, parent.toPath(), store );
+            try
+            {
+                entry.getLastModified();
+                return entry;
+            }
+            catch ( IOException e )
+            {
+                return null;
+            }
+        }
+        else if ( ARCHETYPE_CATALOG.matcher( path ).matches() )
+        {
+            ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry( this, parent, store );
             try
             {
                 entry.getLastModified();
