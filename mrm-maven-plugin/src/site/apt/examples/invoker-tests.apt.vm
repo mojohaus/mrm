@@ -108,8 +108,17 @@ Using with Maven Invoker
 
   Additionally, when <<<mrm:start>>> is invoked, it will bind to an available port and set the property
   <<<repository.proxy.url>>> to the URL on which the repository is being hosted, and the repository content
-  will be the union of the mock content generated from all the <<<**/*.pom>>> files in <<<src/it/mrm/repository>>>
-  and all the repositories available to the current Maven instance.
+  will be based on the mock content generated from the following files in <<<src/it/mrm/repository>>>:
+  
+  * <<<**/*.pom>>>
+  
+  * <<<**/*-\{classifier\}.xml>>>, which will use the GAV of the corresponding <<<pom>>> -file (e.g. <<<mojo-parent-10.pom>>> with <<<mojo-parent-10-site.xml>>> )
+
+  * <<<archetype-catalog.xml>>> 
+  
+  []
+  
+  In addition, all the repositories available to the current Maven instance will be available too.
 
   We tell <<<maven-invoker-plugin>>> to use the <<<settings.xml>>> file from <<<src/it/mrm/settings.xml>>>
   which will look something like:
