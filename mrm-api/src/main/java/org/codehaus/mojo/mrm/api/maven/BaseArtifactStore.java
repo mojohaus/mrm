@@ -46,7 +46,7 @@ public abstract class BaseArtifactStore
     public ArchetypeCatalog getArchetypeCatalog()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        throw new UnsupportedOperationException( "getArchetypeCatalog() has not been implemented" );
+        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available", new UnsupportedOperationException() );
     }
     
     /**
@@ -55,6 +55,6 @@ public abstract class BaseArtifactStore
     public long getArchetypeCatalogLastModified()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        throw new UnsupportedOperationException( "getArchetypeCatalogLastModified() has not been implemented" );
+        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available", new UnsupportedOperationException() );
     }
 }
