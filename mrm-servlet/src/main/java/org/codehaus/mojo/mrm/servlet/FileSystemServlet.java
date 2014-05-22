@@ -16,6 +16,25 @@
 
 package org.codehaus.mojo.mrm.servlet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
@@ -25,19 +44,8 @@ import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.impl.MemoryFileSystem;
 import org.codehaus.mojo.mrm.impl.Utils;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.InterpolationFilterReader;
 
 /**
  * Servlet that serves a {@link FileSystem}.
@@ -69,6 +77,13 @@ public class FileSystemServlet
      */
     private FileSystem fileSystem;
 
+    
+    /**
+     * @since 1.0
+     */
+    private String settingsServletPath;
+    
+    
     /**
      * Default constructor.
      *
@@ -85,9 +100,10 @@ public class FileSystemServlet
      * @param fileSystem the file systen to serve.
      * @since 1.0
      */
-    public FileSystemServlet( FileSystem fileSystem )
+    public FileSystemServlet( FileSystem fileSystem, String settingsServletPath )
     {
         this.fileSystem = fileSystem;
+        this.settingsServletPath = settingsServletPath;
     }
 
     /**
@@ -107,6 +123,37 @@ public class FileSystemServlet
         {
             context = req.getContextPath() + req.getServletPath();
         }
+        
+        if ( path.equals( "/" + settingsServletPath ) )
+        {
+            resp.setContentType( "text/xml" );
+            PrintWriter w = resp.getWriter();
+            
+            Reader settingsReader = null;
+            try 
+            {
+                String hostAddress;
+                try
+                {
+                    hostAddress = InetAddress.getLocalHost().getHostAddress();
+                }
+                catch ( UnknownHostException e )
+                {
+                    hostAddress = req.getServerName();
+                }
+
+                String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort(); 
+                Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
+                settingsReader = new InterpolationFilterReader( in, Collections.singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" );
+                IOUtil.copy( settingsReader, w );
+            }
+            finally
+            {
+                IOUtil.close( settingsReader );
+            }
+            return;
+        }
+        
         Entry entry = fileSystem.get( path );
         if ( entry instanceof FileEntry )
         {

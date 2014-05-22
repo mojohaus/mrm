@@ -16,9 +16,14 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import java.net.UnknownHostException;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
@@ -31,6 +36,12 @@ import org.apache.maven.plugins.annotations.Mojo;
 public class RunMojo
     extends AbstractStartMojo
 {
+    /**
+     * ServletPath for the settings.xml, so it can be downloaded.
+     */
+    @Parameter( property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml" )
+    private String settingsServletPath; 
+    
     /**
      * {@inheritDoc}
      */
@@ -50,6 +61,23 @@ public class RunMojo
         try
         {
             getLog().info( "Mock Repository Manager " + url + " is started." );
+            if ( StringUtils.isNotEmpty( settingsServletPath ) )
+            {
+                String downloadUrl;
+                try
+                {
+                    downloadUrl = mrm.getRemoteUrl();
+                }
+                catch ( UnknownHostException e )
+                {
+                    downloadUrl = mrm.getUrl();
+                }
+                
+                String settings = FileUtils.filename( settingsServletPath );
+                
+                getLog().info( "To share this repository manager, let users download " + downloadUrl + "/" + settingsServletPath );
+                getLog().info( "Maven should be started as 'mvn --settings " + settings +" [phase|goal]'" );
+            }
             ConsoleScanner consoleScanner = new ConsoleScanner();
             consoleScanner.start();
             getLog().info( "Hit ENTER on the console to stop the Mock Repository Manager and continue the build." );
@@ -73,6 +101,15 @@ public class RunMojo
                 // ignore
             }
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getSettingsServletPath()
+    {
+        return settingsServletPath;
     }
 
 }

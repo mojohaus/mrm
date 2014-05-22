@@ -59,7 +59,18 @@ public abstract class AbstractStartMojo
     {
         return new FileSystemServer( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
                                      Math.max( 0, Math.min( port, 65535 ) ),
-                                     new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ) );
+                                     new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ), 
+                                     getSettingsServletPath() );
+    }
+
+    /**
+     * When set, this points to the to the location from where the settings file can be downloaded. 
+     * 
+     * @return the servlet path to the settings file of {@code null}
+     */
+    protected String getSettingsServletPath()
+    {
+        return null;
     }
 
     /**

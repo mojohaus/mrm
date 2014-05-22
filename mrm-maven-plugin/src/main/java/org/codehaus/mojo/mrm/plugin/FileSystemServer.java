@@ -25,6 +25,8 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * A file system server.
@@ -93,6 +95,11 @@ public class FileSystemServer
      * The port to try and serve on.
      */
     private final int requestedPort;
+    
+    /**
+     * The path to settingsFile containing the configuration to connect to this repository manager.
+     */
+    private final String settingsServletPath;
 
     /**
      * Creates a new file system server that will serve a {@link FileSystem} over HTTP on the specified port.
@@ -101,11 +108,12 @@ public class FileSystemServer
      * @param port       The port to server on or <code>0</code> to pick a random, but available, port.
      * @param fileSystem the file system to serve.
      */
-    public FileSystemServer( String name, int port, FileSystem fileSystem )
+    public FileSystemServer( String name, int port, FileSystem fileSystem, String settingsServletPath )
     {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
+        this.settingsServletPath = settingsServletPath;
     }
 
     /**
@@ -231,6 +239,17 @@ public class FileSystemServer
     }
 
     /**
+     * Same as {@link #getUrl()}, but now for remote users
+     * 
+     * @return the scheme + raw IP address + port 
+     * @throws UnknownHostException if the local host name could not be resolved into an address. 
+     */
+    public String getRemoteUrl() throws UnknownHostException
+    {
+        return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort();
+    }
+    
+    /**
      * The work to monitor and control the Jetty instance that hosts the file system.
      */
     private final class Worker
@@ -247,7 +266,7 @@ public class FileSystemServer
                 try
                 {
                     Context root = new Context( server, "/", Context.SESSIONS );
-                    root.addServlet( new ServletHolder( new FileSystemServlet( fileSystem ) ), "/*" );
+                    root.addServlet( new ServletHolder( new FileSystemServlet( fileSystem, settingsServletPath ) ), "/*" );
                     server.start();
                     synchronized ( lock )
                     {
