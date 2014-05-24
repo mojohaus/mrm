@@ -157,11 +157,13 @@ public abstract class AbstractEntry
         Stack<String> stack = new Stack<String>();
         Entry root = getFileSystem().getRoot();
         Entry entry = this;
-        while ( entry != null && !root.equals( entry ) )
+        do
         {
             stack.push( entry.getName() );
             entry = entry.getParent();
         }
+        while ( entry != null && !root.equals( entry ) );
+        
         StringBuffer buf = new StringBuffer();
         while ( stack.size() > 1 )
         {
