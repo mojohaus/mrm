@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>31</version>
+    <version>36</version>
   </parent>
 
   <groupId>org.codehaus.mojo</groupId>
@@ -75,16 +75,21 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/mrm</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/mrm</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/mrm</url>
+    <connection>scm:git:https://github.com/mojohaus/mrm.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mojohaus/mrm.git</developerConnection>
+    <url>https://github.com/mojohaus/mrm</url>
   </scm>
   <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MMOCKRM</url>
+    <system>GitHub</system>
+    <url>https://github.com/mojohaus/mrm/issues</url>
   </issueManagement>
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/mojohaus/mrm</url>
+  </ciManagement>
 
   <properties>
+    <scmpublish.content>target/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.5</mojo.java.target>
   </properties>
@@ -199,7 +204,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>enforce-java</id>
@@ -242,7 +247,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
-        <version>1.7</version>
+        <version>1.10</version>
         <configuration>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
           <showErrors>true</showErrors>
@@ -254,7 +259,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>${sitePluginVersion}</version>
+        <version>3.4</version>
         <executions>
           <execution>
             <inherited>false</inherited>
@@ -275,8 +280,14 @@
       <!-- run integration tests
           to use this profile:
           or run integration tests: mvn -Prun-its
+          Always run on travis
       -->
       <id>run-its</id>
+      <activation>
+        <property>
+          <name>env.CONTINUOUS_INTEGRATION</name>
+        </property>
+      </activation>
       <build>
         <defaultGoal>verify</defaultGoal>
         <plugins>
