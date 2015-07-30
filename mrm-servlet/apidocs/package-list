@@ -1,0 +1,5 @@
+org.codehaus.mojo.mrm.impl
+org.codehaus.mojo.mrm.impl.digest
+org.codehaus.mojo.mrm.impl.maven
+org.codehaus.mojo.mrm.plugin
+org.codehaus.mojo.mrm.servlet
