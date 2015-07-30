@@ -29,16 +29,7 @@
   <packaging>maven-plugin</packaging>
 
   <name>Mock Repository Manager: Maven Plugin</name>
-  <url>http://mojo.codehaus.org/mrm-maven-plugin</url>
 
-  <distributionManagement>
-    <site>
-      <id>codehaus.org</id>
-      <name>Mojo Website</name>
-      <url>dav:https://dav.codehaus.org/mojo/mrm-maven-plugin</url>
-    </site>
-  </distributionManagement>
-  
   <build>
     <plugins>
       <plugin>
