@@ -27,7 +27,7 @@
       <item name="API" href="mrm-api/index.html"/>
       <item name="Servlet" href="mrm-servlet/index.html"/>
       <item name="Webapp" href="mrm-webapp/index.html"/>
-      <item name="Maven Plugin" href="../mrm-maven-plugin/index.html"/>
+      <item name="Maven Plugin" href="mrm-maven-plugin/index.html"/>
     </menu>
     <menu ref="reports"/>
   </body>
