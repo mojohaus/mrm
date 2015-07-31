@@ -280,7 +280,13 @@
 
   <profiles>
     <profile>
-      <id>run</id>
+      <id>disable-doclint-for-jdk8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <properties>
+        <additionalparam>-Xdoclint:none</additionalparam>
+      </properties>
     </profile>
     <profile>
       <!-- run integration tests
