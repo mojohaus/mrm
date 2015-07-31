@@ -46,104 +46,6 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException.java">org/codehaus/mojo/mrm/api/maven/MetadataNotFoundException.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.Artifact.java">org/codehaus/mojo/mrm/api/maven/Artifact.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FactoryHelper.java">org/codehaus/mojo/mrm/plugin/FactoryHelper.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FactoryHelperRequired.java">org/codehaus/mojo/mrm/plugin/FactoryHelperRequired.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.FileEntry.java">org/codehaus/mojo/mrm/api/FileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.BaseFileEntry.java">org/codehaus/mojo/mrm/api/BaseFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.AbstractEntry.java">org/codehaus/mojo/mrm/api/AbstractEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.FileSystem.java">org/codehaus/mojo/mrm/api/FileSystem.java</a>
                 </td>
                 <td>
@@ -158,35 +60,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.BaseArtifactStore.java">org/codehaus/mojo/mrm/api/maven/BaseArtifactStore.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  3
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FileSystemFactory.java">org/codehaus/mojo/mrm/plugin/FileSystemFactory.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.DefaultDirectoryEntry.java">org/codehaus/mojo/mrm/api/DefaultDirectoryEntry.java</a>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException.java">org/codehaus/mojo/mrm/api/maven/MetadataNotFoundException.java</a>
                 </td>
                 <td>
                   0
@@ -228,6 +102,34 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.Artifact.java">org/codehaus/mojo/mrm/api/maven/Artifact.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException.java">org/codehaus/mojo/mrm/api/maven/ArtifactNotFoundException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.Entry.java">org/codehaus/mojo/mrm/api/Entry.java</a>
                 </td>
                 <td>
@@ -256,7 +158,105 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException.java">org/codehaus/mojo/mrm/api/maven/ArtifactNotFoundException.java</a>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FactoryHelper.java">org/codehaus/mojo/mrm/plugin/FactoryHelper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.AbstractEntry.java">org/codehaus/mojo/mrm/api/AbstractEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArtifactStore.java">org/codehaus/mojo/mrm/api/maven/ArtifactStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.DefaultDirectoryEntry.java">org/codehaus/mojo/mrm/api/DefaultDirectoryEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.BaseArtifactStore.java">org/codehaus/mojo/mrm/api/maven/BaseArtifactStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FileSystemFactory.java">org/codehaus/mojo/mrm/plugin/FileSystemFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.BaseFileEntry.java">org/codehaus/mojo/mrm/api/BaseFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.FileEntry.java">org/codehaus/mojo/mrm/api/FileEntry.java</a>
                 </td>
                 <td>
                   0
@@ -284,16 +284,16 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArtifactStore.java">org/codehaus/mojo/mrm/api/maven/ArtifactStore.java</a>
+                  <a href="http://www.mojohaus.org/mrm-api/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FactoryHelperRequired.java">org/codehaus/mojo/mrm/plugin/FactoryHelperRequired.java</a>
                 </td>
                 <td>
                   0
                 </td>
                 <td>
-                  4
+                  0
                 </td>
                 <td>
-                  4
+                  1
                 </td>
               </tr>
                       </tbody>

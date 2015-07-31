@@ -60,7 +60,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.MetadataFileEntry.java">org/codehaus/mojo/mrm/impl/maven/MetadataFileEntry.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArtifactFileEntry.java">org/codehaus/mojo/mrm/impl/maven/ArtifactFileEntry.java</a>
                 </td>
                 <td>
                   0
@@ -74,7 +74,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.Utils.java">org/codehaus/mojo/mrm/impl/Utils.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem.java">org/codehaus/mojo/mrm/impl/maven/ArtifactStoreFileSystem.java</a>
                 </td>
                 <td>
                   0
@@ -88,86 +88,30 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.GenerateOnErrorFileEntry.java">org/codehaus/mojo/mrm/impl/GenerateOnErrorFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.DiskFileSystem.java">org/codehaus/mojo/mrm/impl/DiskFileSystem.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.BaseDigestFileEntryFactory.java">org/codehaus/mojo/mrm/impl/digest/BaseDigestFileEntryFactory.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.SHA1DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/SHA1DigestFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  3
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.LinkFileEntry.java">org/codehaus/mojo/mrm/impl/LinkFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.MD5DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/MD5DigestFileEntry.java</a>
-                </td>
-                <td>
-                  0
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.FileSystemArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/FileSystemArtifactStore.java</a>
                 </td>
                 <td>
                   0
                 </td>
                 <td>
                   2
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.MemoryFileSystem.java">org/codehaus/mojo/mrm/impl/MemoryFileSystem.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
                 </td>
               </tr>
                           <tr>
@@ -200,7 +144,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.DigestFileEntryFactory.java">org/codehaus/mojo/mrm/impl/digest/DigestFileEntryFactory.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.GenerateOnErrorFileEntry.java">org/codehaus/mojo/mrm/impl/GenerateOnErrorFileEntry.java</a>
                 </td>
                 <td>
                   0
@@ -214,21 +158,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.DiskArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/DiskArtifactStore.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  2
-                </td>
-                <td>
-                  2
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.plugin.LocalRepo.java">org/codehaus/mojo/mrm/plugin/LocalRepo.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.LinkFileEntry.java">org/codehaus/mojo/mrm/impl/LinkFileEntry.java</a>
                 </td>
                 <td>
                   0
@@ -242,7 +172,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem.java">org/codehaus/mojo/mrm/impl/maven/ArtifactStoreFileSystem.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.Utils.java">org/codehaus/mojo/mrm/impl/Utils.java</a>
                 </td>
                 <td>
                   0
@@ -270,91 +200,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArchetypeCatalogFileEntry.java">org/codehaus/mojo/mrm/impl/maven/ArchetypeCatalogFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.MemoryFileSystem.java">org/codehaus/mojo/mrm/impl/MemoryFileSystem.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.MockArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/MockArtifactStore.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  2
-                </td>
-                <td>
-                  13
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.FileSystemArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/FileSystemArtifactStore.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  2
-                </td>
-                <td>
-                  2
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.CompositeFileSystem.java">org/codehaus/mojo/mrm/impl/CompositeFileSystem.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.DiskFileEntry.java">org/codehaus/mojo/mrm/impl/DiskFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArtifactFileEntry.java">org/codehaus/mojo/mrm/impl/maven/ArtifactFileEntry.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.DigestFileEntryFactory.java">org/codehaus/mojo/mrm/impl/digest/DigestFileEntryFactory.java</a>
                 </td>
                 <td>
                   0
@@ -382,7 +228,49 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/CompositeArtifactStore.java</a>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.DiskFileSystem.java">org/codehaus/mojo/mrm/impl/DiskFileSystem.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.MetadataFileEntry.java">org/codehaus/mojo/mrm/impl/maven/MetadataFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.CompositeFileSystem.java">org/codehaus/mojo/mrm/impl/CompositeFileSystem.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.DiskArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/DiskArtifactStore.java</a>
                 </td>
                 <td>
                   0
@@ -391,7 +279,7 @@ under the License.
                   2
                 </td>
                 <td>
-                  1
+                  2
                 </td>
               </tr>
                           <tr>
@@ -406,6 +294,118 @@ under the License.
                 </td>
                 <td>
                   14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.ArchetypeCatalogFileEntry.java">org/codehaus/mojo/mrm/impl/maven/ArchetypeCatalogFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.SHA1DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/SHA1DigestFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.MockArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/MockArtifactStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/CompositeArtifactStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.MD5DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/MD5DigestFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.DiskFileEntry.java">org/codehaus/mojo/mrm/impl/DiskFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.BaseDigestFileEntryFactory.java">org/codehaus/mojo/mrm/impl/digest/BaseDigestFileEntryFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.plugin.LocalRepo.java">org/codehaus/mojo/mrm/plugin/LocalRepo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
                 </td>
               </tr>
                       </tbody>
