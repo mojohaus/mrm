@@ -144,7 +144,7 @@ public class FileSystemServlet
 
                 String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort(); 
                 Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
-                settingsReader = new InterpolationFilterReader( in, Collections.singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" );
+                settingsReader = new InterpolationFilterReader( in, Collections.<String, Object>singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" );
                 IOUtil.copy( settingsReader, w );
             }
             finally
