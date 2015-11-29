@@ -46,7 +46,7 @@ public abstract class AbstractMRMMojo
     /**
      * The Maven project.
      */
-    @Component
+    @Parameter( defaultValue = "${project}", required = true, readonly = true )
     protected MavenProject project;
 
     /**
@@ -84,7 +84,7 @@ public abstract class AbstractMRMMojo
      */
     @Component
     protected ArtifactResolver artifactResolver;
-    
+
     /**
      * The archetype manager
      */
@@ -94,16 +94,13 @@ public abstract class AbstractMRMMojo
     /**
      * The Maven Session Object
      */
-    @Component
+    @Parameter( defaultValue = "${session}", required = true, readonly = true )
     protected MavenSession session;
 
     /**
      * This plugins descriptor.
-     *
-     * @parameter expression="${plugin}"
-     * @readonly
      */
-    @Component
+    @Parameter( defaultValue = "${plugin}", required = true, readonly = true )
     protected PluginDescriptor pluginDescriptor;
 
     /**
@@ -114,8 +111,6 @@ public abstract class AbstractMRMMojo
 
     /**
      * If true, execution of the plugin is skipped.
-     *
-     * 
      */
     @Parameter( property = "mrm.skip", defaultValue = "false" )
     protected boolean skip;
@@ -124,7 +119,7 @@ public abstract class AbstractMRMMojo
      * Executes the plugin goal (if the plugin is not skipped)
      *
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
-     * @throws MojoFailureException   If there is an exception occuring during the execution of the plugin.
+     * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
     public final void execute()
         throws MojoExecutionException, MojoFailureException
@@ -132,7 +127,7 @@ public abstract class AbstractMRMMojo
         if ( skip )
         {
             getLog().info( "Skipping invocation per configuration."
-                               + " If this is incorrect, ensure the skip parameter is not set to true." );
+                + " If this is incorrect, ensure the skip parameter is not set to true." );
             return;
         }
         if ( pluginDescriptor == null )
@@ -146,17 +141,17 @@ public abstract class AbstractMRMMojo
      * Performs this plugin's action.
      *
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
-     * @throws MojoFailureException   If there is an exception occuring during the execution of the plugin.
+     * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
     protected abstract void doExecute()
         throws MojoExecutionException, MojoFailureException;
 
     /**
-     * Creates an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available
-     * to Maven itself.
+     * Creates an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
+     * Maven itself.
      *
-     * @return an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available
-     *         to Maven itself.
+     * @return an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
+     *         Maven itself.
      */
     protected ProxyArtifactStore createProxyArtifactStore()
     {
@@ -237,7 +232,7 @@ public abstract class AbstractMRMMojo
         {
             return archetypeManager;
         }
-        
+
         /**
          * {@inheritDoc}
          */
