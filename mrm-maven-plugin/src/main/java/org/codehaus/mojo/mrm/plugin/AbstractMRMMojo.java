@@ -1,5 +1,7 @@
 package org.codehaus.mojo.mrm.plugin;
 
+import java.util.List;
+
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -32,8 +34,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
-
-import java.util.List;
 
 /**
  * Base class for all the Mock Repository Manager's Mojos.
