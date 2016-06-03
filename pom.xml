@@ -27,7 +27,7 @@
 
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>mrm</artifactId>
-  <version>1.0-beta-3-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager: Project</name>
