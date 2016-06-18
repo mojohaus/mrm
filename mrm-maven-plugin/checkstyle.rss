@@ -23,10 +23,10 @@ under the License.
     <link>http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin</link>
     <description>Mock Repository Manager: Maven Plugin - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2009 - 2015 MojoHaus</copyright>
+    <copyright>&#169;2009 - 2016 MojoHaus</copyright>
     <item>
-      <title>File: 10,
-             Errors: 20,
+      <title>File: 9,
+             Errors: 19,
              Warnings: 4,
              Infos: 0
       </title>
@@ -46,34 +46,6 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.ConsoleScanner.java">org/codehaus/mojo/mrm/plugin/ConsoleScanner.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  2
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.StartMojo.java">org/codehaus/mojo/mrm/plugin/StartMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.FileSystemServer.java">org/codehaus/mojo/mrm/plugin/FileSystemServer.java</a>
                 </td>
                 <td>
@@ -88,35 +60,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.HelpMojo.java">org/codehaus/mojo/mrm/plugin/HelpMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.maven.ProxyArtifactStore.java">org/codehaus/mojo/mrm/maven/ProxyArtifactStore.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  3
-                </td>
-                <td>
-                  4
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.ProxyRepo.java">org/codehaus/mojo/mrm/plugin/ProxyRepo.java</a>
+                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.ConsoleScanner.java">org/codehaus/mojo/mrm/plugin/ConsoleScanner.java</a>
                 </td>
                 <td>
                   0
@@ -144,6 +88,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.AbstractStartMojo.java">org/codehaus/mojo/mrm/plugin/AbstractStartMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.AbstractMRMMojo.java">org/codehaus/mojo/mrm/plugin/AbstractMRMMojo.java</a>
                 </td>
                 <td>
@@ -154,6 +112,20 @@ under the License.
                 </td>
                 <td>
                   1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.ProxyRepo.java">org/codehaus/mojo/mrm/plugin/ProxyRepo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
                 </td>
               </tr>
                           <tr>
@@ -172,7 +144,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.AbstractStartMojo.java">org/codehaus/mojo/mrm/plugin/AbstractStartMojo.java</a>
+                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.plugin.StartMojo.java">org/codehaus/mojo/mrm/plugin/StartMojo.java</a>
                 </td>
                 <td>
                   0
@@ -181,7 +153,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  2
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.mojohaus.org/mrm-maven-plugin/mrm/mrm-maven-plugin/checkstyle.html#org.codehaus.mojo.mrm.maven.ProxyArtifactStore.java">org/codehaus/mojo/mrm/maven/ProxyArtifactStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+                <td>
+                  4
                 </td>
               </tr>
                       </tbody>
