@@ -30,6 +30,10 @@
 
   <name>Mock Repository Manager: Maven Plugin</name>
 
+  <prerequisites>
+    <maven>${mavenVersion}</maven>
+  </prerequisites>
+
   <build>
     <plugins>
       <plugin>
