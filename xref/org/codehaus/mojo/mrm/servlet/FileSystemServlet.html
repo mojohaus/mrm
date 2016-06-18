@@ -152,7 +152,7 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>                 String repositoryProxyUrl = req.getScheme() + <span class="jxr_string">"://"</span> + hostAddress + <span class="jxr_string">":"</span> + req.getServerPort(); 
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>                 Reader in = <strong class="jxr_keyword">new</strong> InputStreamReader( FileSystemServlet.<strong class="jxr_keyword">class</strong>.getResourceAsStream( <span class="jxr_string">"/settings-mrm.xml"</span> ) );
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>                 settingsReader = <strong class="jxr_keyword">new</strong> InterpolationFilterReader( in, Collections.singletonMap( <span class="jxr_string">"repository.proxy.url"</span>, repositoryProxyUrl ), <span class="jxr_string">"@"</span>, <span class="jxr_string">"@"</span> );
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>                 settingsReader = <strong class="jxr_keyword">new</strong> InterpolationFilterReader( in, Collections.&lt;String, Object&gt;singletonMap( <span class="jxr_string">"repository.proxy.url"</span>, repositoryProxyUrl ), <span class="jxr_string">"@"</span>, <span class="jxr_string">"@"</span> );
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>                 IOUtil.copy( settingsReader, w );
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>             }
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>             <strong class="jxr_keyword">finally</strong>
@@ -400,6 +400,6 @@
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2015 <a href="http://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2016 <a href="http://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
 </body>
 </html>
