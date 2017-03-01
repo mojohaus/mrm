@@ -367,6 +367,7 @@ public class CompositeArtifactStore
             {
                 ArchetypeCatalog partial = store.getArchetypeCatalog();
                 result.getArchetypes().addAll( partial.getArchetypes() );
+                found = true;
             }
             catch ( ArchetypeCatalogNotFoundException e )
             {

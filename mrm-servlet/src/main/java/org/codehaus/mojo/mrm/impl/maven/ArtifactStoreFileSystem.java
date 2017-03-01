@@ -85,7 +85,7 @@ public class ArtifactStoreFileSystem
      */
     /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
 
-    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "archetype-catalog\\.xml" ); 
+    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "/archetype-catalog\\.xml" ); 
     
     /**
      * Regex to match a release artifact path.
@@ -234,8 +234,12 @@ public class ArtifactStoreFileSystem
      */
     protected Entry get( DirectoryEntry parent, String name )
     {
-
-        String path = "/" + parent.toPath() + "/" + name;
+        String path = "/";
+        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        {
+            path += parent.toPath() + "/";
+        }
+        path += name;
 
         if ( "favicon.ico".equals( name ) )
         {

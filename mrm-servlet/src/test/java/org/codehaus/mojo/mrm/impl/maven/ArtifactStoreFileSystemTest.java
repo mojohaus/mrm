@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.regex.Matcher;
 
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
@@ -174,13 +175,24 @@ public class ArtifactStoreFileSystemTest
         assertNull( entry );
     }
     
-    public void testArchetypeCatalog() throws Exception
+    @Test
+    public void testArchetypeCatalogNotFound() throws Exception
     {
         ArtifactStore store = mock( ArtifactStore.class );
-        when( store.getArchetypeCatalog() ).thenThrow( ArchetypeCatalogNotFoundException.class );
+        when( store.getArchetypeCatalogLastModified() ).thenThrow( ArchetypeCatalogNotFoundException.class );
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
         Entry entry = system.get( "/archetype-catalog.xml" );
         assertNull( entry );
+    }
+
+    @Test
+    public void testArchetypeCatalog() throws Exception
+    {
+        ArtifactStore store = mock( ArtifactStore.class );
+        when( store.getArchetypeCatalog() ).thenReturn( new ArchetypeCatalog() ) ;
+        ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
+        FileEntry entry = (FileEntry) system.get( "archetype-catalog.xml" );
+        assertEquals( "archetype-catalog.xml", entry.getName() );
     }
 
 }
