@@ -6,6 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archetype.catalog.Archetype;
@@ -54,5 +58,35 @@ public class MockArtifactStoreTest
         assertEquals( "1.0",  archetype.getVersion() );
         assertEquals( "Fileset test archetype",  archetype.getDescription() );
         assertEquals( "file://${basedir}/target/test-classes/repositories/central", archetype.getRepository() );
+    }
+    
+    @Test
+    public void testDirectoryContent() throws Exception
+    {
+        MockArtifactStore artifactStore = new MockArtifactStore( new File( "target/test-classes/mrm-15" ) );
+        
+        Artifact pomArtifact = new Artifact( "localhost", "mrm-15", "1.0", "pom" );
+        assertNotNull( artifactStore.get( pomArtifact ) );
+        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-15/mrm-15-1.0.pom" ), artifactStore.get( pomArtifact ) ) );
+
+        Artifact mainArtifact = new Artifact( "localhost", "mrm-15", "1.0", "jar" );
+        assertNotNull( artifactStore.get( mainArtifact ) );
+
+        List<String> names = new ArrayList<String>();
+        JarInputStream jis = new JarInputStream( artifactStore.get( mainArtifact ) );
+        try
+        {
+            JarEntry jarEntry;
+            while ( ( jarEntry = jis.getNextJarEntry() ) != null )
+            {
+                names.add( jarEntry.getName() );
+            }
+        }
+        finally
+        {
+            jis.close();
+        }
+        
+        assertTrue( names.contains( "README.txt" ) );
     }
 }

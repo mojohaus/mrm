@@ -60,6 +60,8 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.impl.Utils;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -74,6 +76,8 @@ public class MockArtifactStore
 {
     
     private final Log log;
+    
+    private final boolean lazyArchiver;
 
     /**
      * The extensions to search for when looking for POMs to mock.
@@ -115,7 +119,21 @@ public class MockArtifactStore
      */
     public MockArtifactStore( Log log, File root )
     {
+        this( log, root, true );
+    }
+    
+    /**
+     * Create a mock artifact store by scanning for POMs within the specified root.
+     *
+     * @param root the root to search for POMs within.
+     * @param log  the {@link Log} to log to.
+     * @since 1.0
+     */
+    public MockArtifactStore( Log log, File root, boolean lazyArchiver )
+    {
         this.log = log;
+        this.lazyArchiver = lazyArchiver;
+        
         if ( root.isDirectory() )
         {
             MavenXpp3Reader pomReader = new MavenXpp3Reader();
@@ -131,12 +149,26 @@ public class MockArtifactStore
                     String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
                     set( new Artifact( groupId, model.getArtifactId(), version, "pom" ),
                          new FileContent( file ) );
+
+                    final String basename = FilenameUtils.getBaseName( file.getName() );
+
                     if ( StringUtils.isEmpty( model.getPackaging() ) || "jar".equals( model.getPackaging() ) )
                     {
-                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
-                             new BytesContent( Utils.newEmptyJarContent() ) );
+                        File mainFile = new File( file.getParentFile(), basename + ".jar" );
+                        
+                        Content content;
+                        if( mainFile.isDirectory() )
+                        {
+                            content = new DirectoryContent( mainFile, lazyArchiver );
+                        }
+                        else
+                        {
+                            content = new BytesContent( Utils.newEmptyJarContent() );
+                        }
+                        
+                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ), content );
                     }
-                    if ( "maven-plugin".equals( model.getPackaging() ) )
+                    else if ( "maven-plugin".equals( model.getPackaging() ) )
                     {
                         set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
                              new BytesContent(
@@ -144,8 +176,6 @@ public class MockArtifactStore
                                                                       version ) ) );
                     }
                     
-                    // Search for classified files in the same directory
-                    final String basename = FilenameUtils.getBaseName( file.getName() );
                     
                     Collection<File> classifiedFiles = FileUtils.listFiles( root, CLASSIFIER_EXTENSIONS, false );
                     for ( File classifiedFile : classifiedFiles )
@@ -920,6 +950,77 @@ public class MockArtifactStore
         public long getLength()
         {
             return file.length();
+        }
+    }
+    
+    private static class DirectoryContent implements Content
+    {
+        private final File directory;
+
+        private File archivedFile;
+
+        /**
+         * 
+         * @param directory the directory to archive
+         * @param lazy {@code false} if the archive should be created immediately 
+         */
+        private DirectoryContent( File directory, boolean lazy )
+        {
+            this.directory = directory;
+            
+            if (!lazy)
+            {
+                createArchive();
+            }
+        }
+
+        private void createArchive()
+        {
+            JarArchiver archiver = new JarArchiver();
+            archivedFile = new File( directory.getParentFile() , "_" + directory.getName() );
+            archiver.setDestFile( archivedFile );
+            archiver.addDirectory( directory );
+            
+            try
+            {
+                archiver.createArchive();
+            }
+            catch ( ArchiverException e )
+            {
+                throw new RuntimeException( e.getMessage(), e );
+            }
+            catch ( IOException e )
+            {
+                throw new RuntimeException( e.getMessage(), e );
+            }
+        }
+
+        public long getLastModified()
+        {
+            if ( archivedFile == null )
+            {
+                createArchive();
+            }
+            return archivedFile.lastModified();
+        }
+
+        public InputStream getInputStream()
+            throws IOException
+        {
+            if ( archivedFile == null )
+            {
+                createArchive();
+            }
+            return new FileInputStream( archivedFile );
+        }
+
+        public long getLength()
+        {
+            if ( archivedFile == null )
+            {
+                createArchive();
+            }
+            return archivedFile.length();
         }
     }
 

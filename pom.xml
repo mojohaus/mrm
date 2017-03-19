@@ -138,6 +138,11 @@
         <version>3.0.24</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-archiver</artifactId>
+        <version>3.4</version>
+      </dependency>
+      <dependency>
         <groupId>backport-util-concurrent</groupId>
         <artifactId>backport-util-concurrent</artifactId>
         <version>3.1</version>
@@ -230,7 +235,6 @@
         <executions>
           <execution>
             <id>check-java</id>
-            <phase>test</phase>
             <goals>
               <goal>check</goal>
             </goals>
@@ -240,9 +244,6 @@
                 <artifactId>java15</artifactId>
                 <version>1.0</version>
               </signature>
-              <ignores>
-                <ignore>net.sourceforge.cobertura.coveragedata.TouchCollector</ignore>
-              </ignores>
             </configuration>
           </execution>
         </executions>

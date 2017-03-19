@@ -79,6 +79,9 @@ Using with Maven Invoker
           <repositories>
             <mockRepo>
               <source>src/it/mrm/repository</source>
+              <!-- cloneTo>target/mock-repo</cloneTo -->
+              <!-- cloneClean>true</cloneClean -->
+              <!-- lazyArchiver>false</lazyArchiver -->
             </mockRepo>
             <proxyRepo/>
           </repositories>
@@ -114,8 +117,10 @@ Using with Maven Invoker
   
   * <<<**/*-\{classifier\}.xml>>>, which will use the GAV of the corresponding <<<pom>>> -file (e.g. <<<mojo-parent-10.pom>>> with <<<mojo-parent-10-site.xml>>> )
 
+  * <<<**/*.jar>>> as directory, which will use the GAV of the corresponding <<<pom>>> -file. MRM will create an archive of this directory.
+
   * <<<archetype-catalog.xml>>> 
-  
+
   []
   
   In addition, all the repositories available to the current Maven instance will be available too.
@@ -137,9 +142,6 @@ Using with Maven Invoker
   <profiles>
     <profile>
       <id>it-repo</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <repositories>
         <repository>
           <id>snapshots</id>
@@ -174,6 +176,10 @@ Using with Maven Invoker
       </pluginRepositories>
     </profile>
   </profiles>
+  <activeProfiles>
+    <activeProfile>it-repo</activeProfile>
+  </activeProfiles>
+  
 </settings>
 ---
 
