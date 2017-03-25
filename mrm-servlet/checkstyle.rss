@@ -25,9 +25,9 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2009 - 2017 MojoHaus</copyright>
     <item>
-      <title>File: 26,
-             Errors: 62,
-             Warnings: 12,
+      <title>File: 27,
+             Errors: 72,
+             Warnings: 15,
              Infos: 0
       </title>
             <link>http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html</link>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  1
+                  2
                 </td>
               </tr>
                           <tr>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  3
+                  4
                 </td>
               </tr>
                           <tr>
@@ -228,6 +228,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.plugin.HostedRepo.java">org/codehaus/mojo/mrm/plugin/HostedRepo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.DiskFileSystem.java">org/codehaus/mojo/mrm/impl/DiskFileSystem.java</a>
                 </td>
                 <td>
@@ -276,10 +290,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  2
+                  4
                 </td>
                 <td>
-                  2
+                  6
                 </td>
               </tr>
                           <tr>
@@ -332,10 +346,10 @@ under the License.
                   0
                 </td>
                 <td>
-                  2
+                  3
                 </td>
                 <td>
-                  13
+                  16
                 </td>
               </tr>
                           <tr>
