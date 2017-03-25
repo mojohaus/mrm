@@ -51,6 +51,17 @@
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-invoker-plugin</artifactId>
+        <configuration>
+          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          <projectsDirectory>src/it</projectsDirectory>
+          <goals>
+            <goal>verify</goal>
+          </goals>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   

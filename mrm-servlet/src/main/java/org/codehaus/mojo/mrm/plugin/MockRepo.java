@@ -1,7 +1,6 @@
 package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
 

@@ -64,6 +64,8 @@ Mock Repository Manager Maven Plugin
   To provide you with better understanding of some usages of the Plugin Name,
   you can take a look into the following examples:
 
-  * {{{./examples/invoker-tests.html}Using with Maven Invoker}}
+  * {{{./examples/invoker-tests.html}Using with Maven Invoker with repositories}}
+
+  * {{{./examples/invoker-tests-dist.html}Using with Maven Invoker with distributionManagement}}
 
   []

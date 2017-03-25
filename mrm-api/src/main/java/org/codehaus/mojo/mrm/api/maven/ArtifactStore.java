@@ -173,6 +173,16 @@ public interface ArtifactStore
         throws IOException, MetadataNotFoundException;
 
     /**
+     * Create/update the specified metadata.
+     * 
+     * @param path of the metadata (should not include the <code>maven-metadata.xml</code>.
+     * @param content the metadata, never <code>null</code>.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.1.0
+     */
+    void setMetadata( String path, Metadata content ) throws IOException;
+
+    /**
      * Returns the time that the specified metadata was last modified.
      *
      * @param path of the metadata (should not include the <code>maven-metadata.xml</code>.

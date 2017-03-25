@@ -17,6 +17,7 @@
 package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -31,14 +32,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
+import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileSystem} that delegates to a {@link ArtifactStore}.
@@ -401,5 +406,135 @@ public class ArtifactStoreFileSystem
     {
         return System.currentTimeMillis();
     }
+    
+    @Override
+    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
+        throws IOException
+    {
+        String path = "/";
+        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        {
+            path += parent.toPath() + "/";
+        }
 
+        if ( "maven-metadata.xml".equals( name ) )
+        {
+            MetadataXpp3Reader reader = new MetadataXpp3Reader();
+            try
+            {
+                Metadata metadata = reader.read( content );
+                
+                if ( metadata == null )
+                {
+                    return null;
+                }
+                
+                store.setMetadata( path, metadata );
+            }
+            catch ( XmlPullParserException e1 )
+            {
+                throw new IOException();
+            }
+            
+            return new MetadataFileEntry( this, parent, path, store );
+        }
+        
+        Artifact artifact = getArtifact( parent, name );
+        
+        if ( artifact == null )
+        {
+            return null;
+        }
+        
+        store.set( artifact , content );
+        
+        return new ArtifactFileEntry( this, parent, artifact, store );
+    }
+
+    private Artifact getArtifact( DirectoryEntry parent, String name )
+    {
+        String path = "/";
+        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        {
+            path += parent.toPath() + "/";
+        }
+        path += name;
+        
+        Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher( path );
+        if ( snapshotArtifact.matches() )
+        {
+            String groupId = StringUtils.stripEnd( snapshotArtifact.group( 1 ), "/" ).replace( '/', '.' );
+            String artifactId = snapshotArtifact.group( 2 );
+            String version = snapshotArtifact.group( 3 ) + "-SNAPSHOT";
+            Pattern rule = Pattern.compile(
+                "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
+                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
+            Matcher matcher = rule.matcher( name );
+            if ( !matcher.matches() )
+            {
+                String classifier = snapshotArtifact.group( 5 );
+                String type = snapshotArtifact.group( 6 );
+                if ( classifier != null )
+                {
+                    classifier = classifier.substring( 1 );
+                }
+                if ( StringUtils.isEmpty( classifier ) )
+                {
+                    classifier = null;
+                }
+                return new Artifact( groupId, artifactId, version, classifier, type );
+            }
+            if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
+            {
+                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
+                                                  matcher.group( 10 ) );
+            }
+            try
+            {
+                Calendar cal = new GregorianCalendar();
+                cal.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+                cal.set( Calendar.YEAR, Integer.parseInt( matcher.group( 2 ) ) );
+                cal.set( Calendar.MONTH, Integer.parseInt( matcher.group( 3 ) ) - 1 );
+                cal.set( Calendar.DAY_OF_MONTH, Integer.parseInt( matcher.group( 4 ) ) );
+                cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
+                cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
+                cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
+                long timestamp = cal.getTimeInMillis();
+                int buildNumber = Integer.parseInt( matcher.group( 8 ) );
+                
+                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
+                                                  matcher.group( 10 ), timestamp, buildNumber );
+            }
+            catch ( NullPointerException e )
+            {
+                return null;
+            }
+        }
+        else
+        {
+            Matcher matcher = ARTIFACT.matcher( path );
+            if ( matcher.matches() )
+            {
+                String groupId = StringUtils.stripEnd( matcher.group( 1 ), "/" ).replace( '/', '.' );
+                String artifactId = matcher.group( 2 );
+                String version = matcher.group( 3 );
+                String classifier = matcher.group( 5 );
+                String type = matcher.group( 6 );
+                if ( classifier != null )
+                {
+                    classifier = classifier.substring( 1 );
+                }
+                if ( StringUtils.isEmpty( classifier ) )
+                {
+                    classifier = null;
+                }
+                
+                return new Artifact( groupId, artifactId, version, classifier, type );
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 }

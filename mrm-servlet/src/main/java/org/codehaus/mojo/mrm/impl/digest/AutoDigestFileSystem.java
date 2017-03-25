@@ -17,6 +17,7 @@
 package org.codehaus.mojo.mrm.impl.digest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -234,6 +235,13 @@ public class AutoDigestFileSystem
             }
         }
         return null;
+    }
+    
+    @Override
+    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
+        throws IOException
+    {
+        return backing.put( parent, name, content );
     }
 
 }

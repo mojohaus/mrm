@@ -18,8 +18,10 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -36,6 +38,7 @@ import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
@@ -57,6 +60,8 @@ public class DiskArtifactStore
      * @since 1.0
      */
     private final File root;
+    
+    private boolean canWrite;
 
     /**
      * Creates a new artifact store hosted at the supplied root directory.
@@ -69,6 +74,12 @@ public class DiskArtifactStore
         this.root = root;
     }
 
+    public DiskArtifactStore canWrite( boolean canWrite )
+    {
+        this.canWrite = canWrite;
+        return this;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -238,10 +249,7 @@ public class DiskArtifactStore
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifact.getArtifactId() );
-        File versionDir = new File( artifactDir, artifact.getVersion() );
-        File file = new File( versionDir, artifact.getName() );
+        File file = getFile( artifact );
         if ( !file.isFile() )
         {
             throw new ArtifactNotFoundException( artifact );
@@ -255,10 +263,7 @@ public class DiskArtifactStore
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifact.getArtifactId() );
-        File versionDir = new File( artifactDir, artifact.getVersion() );
-        File file = new File( versionDir, artifact.getName() );
+        File file = getFile( artifact );
         if ( !file.isFile() )
         {
             throw new ArtifactNotFoundException( artifact );
@@ -272,10 +277,7 @@ public class DiskArtifactStore
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifact.getArtifactId() );
-        File versionDir = new File( artifactDir, artifact.getVersion() );
-        File file = new File( versionDir, artifact.getName() );
+        File file = getFile( artifact );
         if ( !file.isFile() )
         {
             throw new ArtifactNotFoundException( artifact );
@@ -289,7 +291,27 @@ public class DiskArtifactStore
     public void set( Artifact artifact, InputStream content )
         throws IOException
     {
-        throw new UnsupportedOperationException( "Read-only store" );
+        if ( !canWrite )
+        {
+            throw new UnsupportedOperationException( "Read-only store" );
+        }
+        
+        File targetFile = getFile( artifact );
+        
+        if( !targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs() )
+        {
+            throw new IOException( "Failed to create " + targetFile.getParentFile().getPath() );
+        }
+
+        OutputStream output = null;
+        try {
+            output = new FileOutputStream( targetFile );
+            IOUtils.copy( content, output );
+        }
+        finally {
+            IOUtils.closeQuietly( content );
+            IOUtils.closeQuietly( output );
+        }
     }
 
     /**
@@ -325,6 +347,36 @@ public class DiskArtifactStore
         finally
         {
             IOUtils.closeQuietly( inputStream );
+        }
+    }
+    
+    @Override
+    public void setMetadata( String path, Metadata metadata )
+        throws IOException
+    {
+        if ( !canWrite )
+        {
+            throw new UnsupportedOperationException( "Read-only store" );
+        }
+        
+        File file = root;
+        String[] parts = StringUtils.strip( path, "/" ).split( "/" );
+        for ( int i = 0; i < parts.length; i++ )
+        {
+            file = new File( file, parts[i] );
+        }
+        
+        file = new File( file, "maven-metadata.xml" );
+
+        MetadataXpp3Writer writer = new MetadataXpp3Writer();
+        OutputStream outputStream = null;
+        try
+        {
+            outputStream = new FileOutputStream( file );
+            writer.write( outputStream, metadata );
+        }
+        finally {
+            IOUtils.closeQuietly( outputStream );
         }
     }
 
@@ -400,5 +452,14 @@ public class DiskArtifactStore
             throw new ArchetypeCatalogNotFoundException();
         }
         return file.lastModified();
+    }
+    
+    private File getFile( Artifact artifact )
+    {
+        File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
+        File artifactDir = new File( groupDir, artifact.getArtifactId() );
+        File versionDir = new File( artifactDir, artifact.getVersion() );
+        File targetFile = new File( versionDir, artifact.getName() );
+        return targetFile;
     }
 }

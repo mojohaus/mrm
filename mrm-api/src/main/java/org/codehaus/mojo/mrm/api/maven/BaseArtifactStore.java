@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 
 /**
  * Base implementation of {@link ArtifactStore}.
@@ -30,7 +31,14 @@ public abstract class BaseArtifactStore
     {
         throw new UnsupportedOperationException( "Read-only artifact store" );
     }
-    
+
+    @Override
+    public void setMetadata( String path, Metadata metadata )
+        throws IOException
+    {
+        throw new UnsupportedOperationException( "Read-only artifact store" );
+    }
+
     /**
      * {@inheritDoc}
      */
