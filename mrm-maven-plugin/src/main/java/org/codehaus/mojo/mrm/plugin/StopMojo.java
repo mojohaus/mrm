@@ -43,7 +43,8 @@ public class StopMojo
         throws MojoExecutionException, MojoFailureException
     {
         Map pluginContext = session.getPluginContext( pluginDescriptor, project );
-        FileSystemServer mrm = (FileSystemServer) pluginContext.get( FileSystemServer.class.getName() );
+        FileSystemServer mrm = (FileSystemServer) pluginContext.get( StartMojo.getFileSystemServerKey( getMojoExecution() ) );
+        
         if ( mrm == null )
         {
             getLog().info( "Mock Repository Manager was not started" );

@@ -137,6 +137,11 @@ public abstract class AbstractMRMMojo
         doExecute();
     }
 
+    protected MojoExecution getMojoExecution()
+    {
+        return mojoExecution;
+    }
+    
     /**
      * Performs this plugin's action.
      *

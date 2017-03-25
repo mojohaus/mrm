@@ -17,6 +17,7 @@ package org.codehaus.mojo.mrm.plugin;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -60,7 +61,12 @@ public class StartMojo
             project.getProperties().setProperty( propertyName, url );
         }
         Map pluginContext = session.getPluginContext( pluginDescriptor, project );
-        pluginContext.put( FileSystemServer.class.getName(), mrm );
+        pluginContext.put( getFileSystemServerKey( getMojoExecution() ), mrm );
+    }
+    
+    protected static String getFileSystemServerKey( MojoExecution mojoExecution )
+    {
+        return FileSystemServer.class.getName() + "@" + mojoExecution.getExecutionId(); 
     }
 
 }
