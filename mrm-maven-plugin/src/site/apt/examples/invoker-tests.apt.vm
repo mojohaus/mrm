@@ -22,7 +22,7 @@
  2013-02-23
  ------
 
-Using with Maven Invoker
+Using with Maven Invoker and Repositories
 
   The aim here is to combine the usage of the <<<mrm-maven-plugin>>> with the <<<maven-invoker-plugin>>> to
   allow the integration tests of a Maven Plugin to be run against a test local repository thereby ensuring that

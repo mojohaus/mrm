@@ -1,6 +1,4 @@
  ~~
- ~~ Copyright 2011 Stephen Connolly
- ~~
  ~~ Licensed under the Apache License, Version 2.0 (the "License");
  ~~ you may not use this file except in compliance with the License.
  ~~ You may obtain a copy of the License at
@@ -22,8 +20,11 @@
  2017-03-20
  ------
 
- When you want to test the distribution of artifacts as well, we'll have to add a second execution block. 
- The first execution block is used for the repositories (read), the second is used for distribution management (write)
+Using with Maven Invoker and Distribution Management
+
+ When we want to test the distribution of artifacts, we'll have to add a separate execution block: 
+ one which is used for the repositories (read, see {{{./invoker-tests.html}Using with Maven Invoker and repositories}})
+ and a second one which is used for distribution management (write).
  
 ---
 <project>
@@ -47,7 +48,7 @@
         </executions>
         <configuration>
           <filterProperties>
-            <mrm.distribution.url>\${mrm.distribution.url}</mrm.distribution.url>
+            <mrm.distribution.url>${mrm.distribution.url}</mrm.distribution.url>
           </filterProperties>
         </configuration>
       </plugin>
@@ -56,6 +57,7 @@
         <artifactId>mrm-maven-plugin</artifactId>
         <version>${project.version}</version>
         <executions>
+          ...
           <execution>
             <id>distribution</id>
             <goals>
@@ -90,11 +92,11 @@
   <distributionManagement>
     <repository>
       <id>mrm</id>
-      <url>\${mrm.distribution.url}</url>
+      <url>${mrm.distribution.url}</url>
     </repository>
     <snapshotRepository>
       <id>mrm</id>
-      <url>\${mrm.distribution.url}</url>
+      <url>${mrm.distribution.url}</url>
     </snapshotRepository>
   </distributionManagement>
   ...
