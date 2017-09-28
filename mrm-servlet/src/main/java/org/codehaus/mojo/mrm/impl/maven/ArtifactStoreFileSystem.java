@@ -332,6 +332,7 @@ public class ArtifactStoreFileSystem
                     cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
                     cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
                     cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
+                    cal.set( Calendar.MILLISECOND, 0);
                     long timestamp = cal.getTimeInMillis();
                     int buildNumber = Integer.parseInt( matcher.group( 8 ) );
                     
@@ -499,6 +500,7 @@ public class ArtifactStoreFileSystem
                 cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
                 cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
                 cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
+                cal.set( Calendar.MILLISECOND, 0);
                 long timestamp = cal.getTimeInMillis();
                 int buildNumber = Integer.parseInt( matcher.group( 8 ) );
                 
