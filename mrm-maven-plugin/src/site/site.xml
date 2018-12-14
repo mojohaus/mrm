@@ -28,7 +28,8 @@
       <item name="Usage" href="usage.html"/>
     </menu>
     <menu name="Examples">
-      <item name="Using with Maven Invoker" href="examples/invoker-tests.html"/>
+      <item name="Using with Maven Invoker (download)" href="examples/invoker-tests.html"/>
+      <item name="Using with Maven Invoker (upload)" href="examples/invoker-tests-dist.html"/>
     </menu>
     <menu ref="reports"/>
   </body>
