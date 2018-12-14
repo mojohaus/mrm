@@ -27,7 +27,7 @@
 
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>mrm</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager: Project</name>
@@ -92,7 +92,7 @@
   <properties>
     <scmpublish.content>target/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
-    <mojo.java.target>1.6</mojo.java.target>
+    <mojo.java.target>1.7</mojo.java.target>
   </properties>
 
   <dependencyManagement>
