@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -86,15 +87,12 @@ public class MockArtifactStore
      */
     public static final String[] POM_EXTENSIONS = { "pom" };
     
-    private static final String[] CLASSIFIER_EXTENSIONS = { "xml" };
-
     /**
      * The contents of this artifact store.
      *
      * @since 1.0
      */
-    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
-        new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
+    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<>();
 
     
     private Content archetypeCatalog;
@@ -176,18 +174,32 @@ public class MockArtifactStore
                                                                       version ) ) );
                     }
                     
+                    Collection<File> classifiedFiles = Arrays.asList( file.getParentFile().listFiles( new FilenameFilter()
+                    {
+                        @Override
+                        public boolean accept( File dir, String name )
+                        {
+                            return FilenameUtils.getBaseName( name ).startsWith( basename + '-' );
+                        }
+                    }  ) );
                     
-                    Collection<File> classifiedFiles = FileUtils.listFiles( root, CLASSIFIER_EXTENSIONS, false );
                     for ( File classifiedFile : classifiedFiles )
                     {
-                        if ( FilenameUtils.getBaseName( classifiedFile.getName() ).startsWith( basename + '-' ) )
+                        String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
+                        String classifier =
+                            FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
+                        
+                        Content content;
+                        if( classifiedFile.isDirectory() )
                         {
-                            String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
-                            String classifier =
-                                FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
-                            set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ),
-                                 new FileContent( classifiedFile ) );
+                            content = new DirectoryContent( classifiedFile, lazyArchiver );
                         }
+                        else
+                        {
+                            content = new FileContent( classifiedFile );
+                        }
+                        
+                        set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ), content );
                     }
                 }
                 catch ( IOException e )

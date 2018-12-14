@@ -89,4 +89,17 @@ public class MockArtifactStoreTest
         
         assertTrue( names.contains( "README.txt" ) );
     }
+    
+    @Test
+    public void testDirectoryWithClassifierContent() throws Exception
+    {
+        MockArtifactStore artifactStore = new MockArtifactStore( new File( "target/test-classes/mrm-xx" ) );
+       
+        Artifact pomArtifact = new Artifact( "localhost", "mrm-xx", "1.0", "pom" );
+        assertNotNull( artifactStore.get( pomArtifact ) );
+        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-xx/mrm-xx-1.0.pom" ), artifactStore.get( pomArtifact ) ) );
+
+        Artifact classifiedArtifact = new Artifact( "localhost", "mrm-xx", "1.0", "javadoc-resources", "jar" );
+        assertNotNull( artifactStore.get( classifiedArtifact ) );
+    }
 }
