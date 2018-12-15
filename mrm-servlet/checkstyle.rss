@@ -23,10 +23,10 @@ under the License.
     <link>http://www.mojohaus.org/mrm-servlet/mrm/mrm-servlet</link>
     <description>Mock Repository Manager: Servlet - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2009 - 2017 MojoHaus</copyright>
+    <copyright>&#169;2009 - 2018 MojoHaus</copyright>
     <item>
       <title>File: 27,
-             Errors: 72,
+             Errors: 75,
              Warnings: 15,
              Infos: 0
       </title>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  4
+                  6
                 </td>
               </tr>
                           <tr>
@@ -349,7 +349,7 @@ under the License.
                   3
                 </td>
                 <td>
-                  16
+                  17
                 </td>
               </tr>
                           <tr>
