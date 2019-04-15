@@ -48,7 +48,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileSystem} that delegates to a {@link ArtifactStore}.
  *
- * @see FileSystemArtifactStore for the oposite.
+ * @see FileSystemArtifactStore for the opposite.
  * @since 1.0
  */
 public class ArtifactStoreFileSystem
@@ -335,9 +335,12 @@ public class ArtifactStoreFileSystem
                     cal.set( Calendar.MILLISECOND, 0);
                     long timestamp = cal.getTimeInMillis();
                     int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                    
-                    Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                      matcher.group( 10 ), timestamp, buildNumber );
+
+                    String type = matcher.group(10);
+                    String classifier = matcher.group(9);
+                    Artifact artifact = Artifact.createSimpleArtifact( groupId, artifactId, version, type )
+                            .withClassifier( classifier )
+                            .withTimestampAndBuildNumber( timestamp, buildNumber );
                     try
                     {
                         store.get( artifact );
@@ -483,12 +486,15 @@ public class ArtifactStoreFileSystem
                 {
                     classifier = null;
                 }
-                return new Artifact( groupId, artifactId, version, classifier, type );
+                return Artifact.createSimpleArtifact( groupId, artifactId, version, type )
+                        .withClassifier( classifier );
             }
             if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
             {
-                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                  matcher.group( 10 ) );
+                String classifier = matcher.group(9);
+                String type = matcher.group(10);
+                return Artifact.createSimpleArtifact( groupId, artifactId, version, type )
+                        .withClassifier( classifier );
             }
             try
             {
@@ -503,9 +509,12 @@ public class ArtifactStoreFileSystem
                 cal.set( Calendar.MILLISECOND, 0);
                 long timestamp = cal.getTimeInMillis();
                 int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                
-                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                  matcher.group( 10 ), timestamp, buildNumber );
+
+                String classifier = matcher.group(9);
+                String type = matcher.group(10);
+                return Artifact.createSimpleArtifact( groupId, artifactId, version, type )
+                        .withClassifier( classifier )
+                        .withTimestampAndBuildNumber( timestamp, buildNumber );
             }
             catch ( NullPointerException e )
             {
@@ -522,16 +531,17 @@ public class ArtifactStoreFileSystem
                 String version = matcher.group( 3 );
                 String classifier = matcher.group( 5 );
                 String type = matcher.group( 6 );
+                Artifact artifact = Artifact.createSimpleArtifact(groupId, artifactId, version, type);
                 if ( classifier != null )
                 {
                     classifier = classifier.substring( 1 );
                 }
-                if ( StringUtils.isEmpty( classifier ) )
+                if ( StringUtils.isNotEmpty( classifier ) )
                 {
-                    classifier = null;
+                    artifact = artifact.withClassifier(classifier);
                 }
                 
-                return new Artifact( groupId, artifactId, version, classifier, type );
+                return artifact;
             }
             else
             {

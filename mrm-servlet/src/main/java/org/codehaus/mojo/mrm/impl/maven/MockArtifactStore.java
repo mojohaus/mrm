@@ -75,7 +75,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 public class MockArtifactStore
     extends BaseArtifactStore
 {
-    
     private final Log log;
     
     private final boolean lazyArchiver;
@@ -135,8 +134,8 @@ public class MockArtifactStore
         if ( root.isDirectory() )
         {
             MavenXpp3Reader pomReader = new MavenXpp3Reader();
-            Collection<File> poms = FileUtils.listFiles( root, POM_EXTENSIONS, true );
-            for ( File file : poms )
+            Collection<File> pomFiles = FileUtils.listFiles( root, POM_EXTENSIONS, true );
+            for ( File file : pomFiles )
             {
                 FileReader fileReader;
                 try
@@ -144,62 +143,74 @@ public class MockArtifactStore
                     fileReader = new FileReader( file );
                     Model model = pomReader.read( fileReader );
                     String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
-                    String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
-                    set( new Artifact( groupId, model.getArtifactId(), version, "pom" ),
-                         new FileContent( file ) );
-
-                    final String basename = FilenameUtils.getBaseName( file.getName() );
-
-                    if ( StringUtils.isEmpty( model.getPackaging() ) || "jar".equals( model.getPackaging() ) )
+                    String baseVersion = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
+                    // register a version (like 1.2.3 or 1.0-SNAPSHOT) and a timestamp (if any)
+                    Artifact baseArtifact = Artifact.createSimpleArtifact( groupId, model.getArtifactId(), baseVersion, "pom" );
+                    List<Artifact> poms = new ArrayList<>();
+                    Artifact maybeTimestampedPom = baseArtifact.withParsedVersion( baseVersion );
+                    poms.add( maybeTimestampedPom );
+                    if ( maybeTimestampedPom.getTimestamp() != null )
                     {
-                        File mainFile = new File( file.getParentFile(), basename + ".jar" );
-                        
-                        Content content;
-                        if( mainFile.isDirectory() )
-                        {
-                            content = new DirectoryContent( mainFile, lazyArchiver );
-                        }
-                        else
-                        {
-                            content = new BytesContent( Utils.newEmptyJarContent() );
-                        }
-                        
-                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ), content );
+                        // also register a version without a timestamp and build number
+                        Artifact snapshotPom = Artifact.createSimpleArtifact(
+                                maybeTimestampedPom.getGroupId(),
+                                maybeTimestampedPom.getArtifactId(),
+                                maybeTimestampedPom.getVersion(),
+                                maybeTimestampedPom.getType());
+                        poms.add(snapshotPom);
                     }
-                    else if ( "maven-plugin".equals( model.getPackaging() ) )
+                    for ( Artifact pom : poms )
                     {
-                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
-                             new BytesContent(
-                                 Utils.newEmptyMavenPluginJarContent( groupId, model.getArtifactId(),
-                                                                      version ) ) );
-                    }
-                    
-                    Collection<File> classifiedFiles = Arrays.asList( file.getParentFile().listFiles( new FilenameFilter()
-                    {
-                        @Override
-                        public boolean accept( File dir, String name )
+                        String version = pom.getVersion();
+                        set( pom, new FileContent( file ) );
+
+                        final String basename = FilenameUtils.getBaseName( file.getName() );
+
+                        if (StringUtils.isEmpty( model.getPackaging()) || "jar".equals( model.getPackaging() ) )
                         {
-                            return FilenameUtils.getBaseName( name ).startsWith( basename + '-' );
+                            File mainFile = new File( file.getParentFile(), basename + ".jar" );
+
+                            Content content;
+                            if ( mainFile.isDirectory() )
+                            {
+                                content = new DirectoryContent( mainFile, lazyArchiver );
+                            }
+                            else
+                            {
+                                content = new BytesContent( Utils.newEmptyJarContent() );
+                            }
+
+                            set( pom.withType("jar"), content );
                         }
-                    }  ) );
-                    
-                    for ( File classifiedFile : classifiedFiles )
-                    {
-                        String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
-                        String classifier =
-                            FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
-                        
-                        Content content;
-                        if( classifiedFile.isDirectory() )
+                        else if ("maven-plugin".equals(model.getPackaging()))
                         {
-                            content = new DirectoryContent( classifiedFile, lazyArchiver );
+                            set( pom.withType("jar"),
+                                    new BytesContent(
+                                            Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(),
+                                                    version ) ) );
                         }
-                        else
-                        {
-                            content = new FileContent( classifiedFile );
+
+                        Collection<File> classifiedFiles = Arrays.asList(file.getParentFile().listFiles(new FilenameFilter() {
+                            @Override
+                            public boolean accept(File dir, String name) {
+                                return FilenameUtils.getBaseName(name).startsWith(basename + '-');
+                            }
+                        }));
+
+                        for (File classifiedFile : classifiedFiles) {
+                            String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
+                            String classifier =
+                                    FilenameUtils.getBaseName(classifiedFile.getName()).substring(basename.length() + 1);
+
+                            Content content;
+                            if (classifiedFile.isDirectory()) {
+                                content = new DirectoryContent(classifiedFile, lazyArchiver);
+                            } else {
+                                content = new FileContent(classifiedFile);
+                            }
+
+                            set(pom.withType(type).withClassifier(classifier), content);
                         }
-                        
-                        set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ), content );
                     }
                 }
                 catch ( IOException e )

@@ -19,8 +19,12 @@ package org.codehaus.mojo.mrm.api.maven;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a specific artifact in a Maven repository. Implements {@link Comparable} to sort based on
@@ -32,6 +36,9 @@ import java.util.TimeZone;
 public final class Artifact
     implements Serializable, Comparable<Artifact>
 {
+    static final String SNAPSHOT_TIMESTAMP_VERSION_REGEX =
+            "([^/]+)-(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)";
+    static final Pattern SNAPSHOT_TIMESTAMP_VERSION = Pattern.compile( SNAPSHOT_TIMESTAMP_VERSION_REGEX );
 
     /**
      * Ensure consistent serialization.
@@ -202,6 +209,55 @@ public final class Artifact
         this( groupId, artifactId, version, null, type );
     }
 
+    public static Artifact createSimpleArtifact( String groupId, String artifactId, String version, String type )
+    {
+        return new Artifact( groupId, artifactId, version, type );
+    }
+
+    public Artifact withType( String type )
+    {
+        return new Artifact( this.groupId, this.artifactId, this.version, this.classifier, type, this.timestamp,
+                this.buildNumber );
+    }
+
+    public Artifact withTimestampAndBuildNumber( long timestamp, int buildNumber )
+    {
+        return new Artifact( this.groupId, this.artifactId, this.version, this.classifier, this.type, timestamp,
+                buildNumber );
+    }
+
+    public Artifact withClassifier( String classifier )
+    {
+        return new Artifact( this.groupId, this.artifactId, this.version, classifier, this.type, this.timestamp,
+                this.buildNumber );
+    }
+
+    public Artifact withParsedVersion(String versionString )
+    {
+        Matcher matcher = SNAPSHOT_TIMESTAMP_VERSION.matcher( versionString );
+        if (matcher.matches())
+        {
+            String version = matcher.group(1) + "-SNAPSHOT";
+            Calendar cal = new GregorianCalendar();
+            cal.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+            cal.set( Calendar.YEAR, Integer.parseInt( matcher.group( 2 ) ) );
+            cal.set( Calendar.MONTH, Integer.parseInt( matcher.group( 3 ) ) - 1 );
+            cal.set( Calendar.DAY_OF_MONTH, Integer.parseInt( matcher.group( 4 ) ) );
+            cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
+            cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
+            cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
+            cal.set( Calendar.MILLISECOND, 0);
+
+            long timestamp = cal.getTimeInMillis();
+            int buildNumber = Integer.parseInt( matcher.group( 8 ) );
+
+            return new Artifact( this.groupId, this.artifactId, version, this.classifier, this.type, timestamp,
+                    buildNumber);
+        }
+        return new Artifact( this.groupId, this.artifactId, versionString, this.classifier, this.type, this.timestamp,
+                this.buildNumber );
+    }
+
     /**
      * Returns the name of the artifact.
      *
@@ -336,11 +392,10 @@ public final class Artifact
             if ( timestamp != null )
             {
                 assert isSnapshot();
-                SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-                fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+                String timestampString = getTimestampString();
                 timestampVersion = MessageFormat.format( "{0}-{1}-{2}", new Object[]{
                     this.version.substring( 0, this.version.length() - "-SNAPSHOT".length() ),
-                    fmt.format( new Date( timestamp.longValue() ) ), buildNumber } );
+                    timestampString, String.valueOf( buildNumber ) } );
             }
             else
             {
