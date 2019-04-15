@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -78,6 +80,8 @@ public class MockArtifactStore
     private final Log log;
     
     private final boolean lazyArchiver;
+
+    private String SNAPSHOT_VERSION_REGEX = "([^/]+-(SNAPSHOT|\\d{8}\\.\\d{6}-\\d+))";
 
     /**
      * The extensions to search for when looking for POMs to mock.
@@ -140,24 +144,27 @@ public class MockArtifactStore
                 FileReader fileReader;
                 try
                 {
+                    String filename = file.getName();
                     fileReader = new FileReader( file );
                     Model model = pomReader.read( fileReader );
                     String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
+                    String artifactId = model.getArtifactId();
                     String baseVersion = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
-                    // register a version (like 1.2.3 or 1.0-SNAPSHOT) and a timestamp (if any)
-                    Artifact baseArtifact = Artifact.createSimpleArtifact( groupId, model.getArtifactId(), baseVersion, "pom" );
+                    // register a version (like 1.2.3 or 1.0-SNAPSHOT)
+                    Artifact baseArtifact = Artifact.createSimpleArtifact( groupId, artifactId, baseVersion, "pom" );
                     List<Artifact> poms = new ArrayList<>();
-                    Artifact maybeTimestampedPom = baseArtifact.withParsedVersion( baseVersion );
-                    poms.add( maybeTimestampedPom );
-                    if ( maybeTimestampedPom.getTimestamp() != null )
+                    poms.add( baseArtifact );
+                    if (baseVersion.endsWith("-SNAPSHOT"))
                     {
-                        // also register a version without a timestamp and build number
-                        Artifact snapshotPom = Artifact.createSimpleArtifact(
-                                maybeTimestampedPom.getGroupId(),
-                                maybeTimestampedPom.getArtifactId(),
-                                maybeTimestampedPom.getVersion(),
-                                maybeTimestampedPom.getType());
-                        poms.add(snapshotPom);
+                        // load the timestamp from the filename, if any
+                        Pattern fileVersionPattern = Pattern.compile(artifactId + "-" + SNAPSHOT_VERSION_REGEX + "\\.pom");
+                        Matcher fileVersionMatcher = fileVersionPattern.matcher(filename);
+                        if (fileVersionMatcher.matches() && !fileVersionMatcher.group(2).equals("SNAPSHOT"))
+                        {
+                            String timestampVersion = fileVersionMatcher.group(1);
+                            Artifact snapshotPom = baseArtifact.withParsedVersion(timestampVersion);
+                            poms.add(snapshotPom);
+                        }
                     }
                     for ( Artifact pom : poms )
                     {
@@ -186,7 +193,7 @@ public class MockArtifactStore
                         {
                             set( pom.withType("jar"),
                                     new BytesContent(
-                                            Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(),
+                                            Utils.newEmptyMavenPluginJarContent(groupId, artifactId,
                                                     version ) ) );
                         }
 
