@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 /**
  * An artifact store based off a {@link FileSystem}.
  *
- * @see ArtifactStoreFileSystem for the oposite.
+ * @see ArtifactStoreFileSystem for the opposite.
  * @since 1.0
  */
 public class FileSystemArtifactStore
