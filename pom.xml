@@ -84,10 +84,6 @@
     <system>GitHub</system>
     <url>https://github.com/mojohaus/mrm/issues</url>
   </issueManagement>
-  <ciManagement>
-    <system>Travis</system>
-    <url>https://travis-ci.org/mojohaus/mrm</url>
-  </ciManagement>
 
   <properties>
     <scmpublish.content>target/staging/mrm</scmpublish.content>
