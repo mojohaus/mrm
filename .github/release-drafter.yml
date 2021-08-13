@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: mrm-$NEXT_MINOR_VERSION
