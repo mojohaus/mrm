@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -70,7 +71,7 @@ public final class Utils
         }
         else
         {
-            return new ByteArrayInputStream( content.toString().getBytes( "UTF-8" ) );
+            return new ByteArrayInputStream( content.toString().getBytes(StandardCharsets.UTF_8) );
         }
     }
 
@@ -85,16 +86,16 @@ public final class Utils
         throws IOException
     {
         byte[] emptyJar;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final Manifest manifest = new Manifest();
-        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
-        JarOutputStream jos = new JarOutputStream( bos, manifest );
-        jos.close();
-        bos.close();
-        emptyJar = bos.toByteArray();
-        return emptyJar;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            final Manifest manifest = new Manifest();
+            manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+            manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
+            manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
+            try (JarOutputStream jos = new JarOutputStream(bos, manifest)) {
+                emptyJar = bos.toByteArray();
+                return emptyJar;
+            }
+        }
     }
 
     /**
@@ -111,22 +112,22 @@ public final class Utils
         throws IOException
     {
         byte[] emptyJar;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final Manifest manifest = new Manifest();
-        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
-        JarOutputStream jos = new JarOutputStream( bos, manifest );
-        JarEntry entry = new JarEntry( "META-INF/maven/plugin.xml" );
-        jos.putNextEntry( entry );
-        jos.write(
-            ( "<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version
-                + "</version></plugin>" ).getBytes() );
-        jos.closeEntry();
-        jos.close();
-        bos.close();
-        emptyJar = bos.toByteArray();
-        return emptyJar;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            final Manifest manifest = new Manifest();
+            manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+            manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
+            manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
+            try (JarOutputStream jos = new JarOutputStream(bos, manifest)) {
+                JarEntry entry = new JarEntry("META-INF/maven/plugin.xml");
+                jos.putNextEntry(entry);
+                jos.write(
+                        ("<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version
+                                + "</version></plugin>").getBytes());
+                jos.closeEntry();
+                emptyJar = bos.toByteArray();
+                return emptyJar;
+            }
+        }
     }
 
     /**
@@ -220,12 +221,12 @@ public final class Utils
     public static String urlEncodePath( String path )
         throws UnsupportedEncodingException
     {
-        StringBuffer buf = new StringBuffer( path.length() + 64 );
+        StringBuilder buf = new StringBuilder( path.length() + 64 );
         int last = 0;
         for ( int i = path.indexOf( '/' ); i != -1; i = path.indexOf( '/', last ) )
         {
             buf.append( urlEncodePathSegment( path.substring( last, i ) ) );
-            buf.append( path.substring( i, Math.min( path.length(), i + 1 ) ) );
+            buf.append(path, i, Math.min( path.length(), i + 1 ));
             last = i + 1;
         }
         buf.append( path.substring( last ) );
@@ -243,12 +244,10 @@ public final class Utils
     public static String urlEncodePathSegment( String pathSegment )
         throws UnsupportedEncodingException
     {
-        StringBuffer buf = new StringBuffer( pathSegment.length() + 64 );
-        byte[] chars = pathSegment.getBytes( "UTF-8" );
-        for ( int i = 0; i < chars.length; i++ )
-        {
-            switch ( chars[i] )
-            {
+        StringBuilder buf = new StringBuilder( pathSegment.length() + 64 );
+        byte[] chars = pathSegment.getBytes(StandardCharsets.UTF_8);
+        for (byte aChar : chars) {
+            switch (aChar) {
                 case '$':
                 case '-':
                 case '_':
@@ -321,18 +320,17 @@ public final class Utils
                 case 'x':
                 case 'y':
                 case 'z':
-                    buf.append( (char) chars[i] );
+                    buf.append((char) aChar);
                     break;
                 case ' ':
-                    buf.append( '+' );
+                    buf.append('+');
                     break;
                 default:
-                    buf.append( '%' );
-                    if ( ( chars[i] & 0xf0 ) == 0 )
-                    {
-                        buf.append( '0' );
+                    buf.append('%');
+                    if ((aChar & 0xf0) == 0) {
+                        buf.append('0');
                     }
-                    buf.append( Integer.toHexString( chars[i] & 0xff ) );
+                    buf.append(Integer.toHexString(aChar & 0xff));
                     break;
             }
         }

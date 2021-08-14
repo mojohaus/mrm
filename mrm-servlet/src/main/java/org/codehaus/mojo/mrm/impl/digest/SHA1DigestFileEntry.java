@@ -105,40 +105,22 @@ public class SHA1DigestFileEntry
     private byte[] getContent()
         throws IOException
     {
-        InputStream is = null;
-        try
+        try (InputStream is = entry.getInputStream())
         {
             MessageDigest digest = MessageDigest.getInstance( "SHA1" );
             digest.reset();
             byte[] buffer = new byte[8192];
             int read;
-            try
+            while ( ( read = is.read( buffer ) ) > 0 )
             {
-                is = entry.getInputStream();
-                while ( ( read = is.read( buffer ) ) > 0 )
-                {
-                    digest.update( buffer, 0, read );
-                }
+                digest.update( buffer, 0, read );
             }
-            catch ( IOException e )
-            {
-                if ( is != null )
-                {
-                    throw e;
-                }
-            }
-            final String md5 = StringUtils.leftPad( new BigInteger( 1, digest.digest() ).toString( 16 ), 40, "0" );
+            String md5 = StringUtils.leftPad( new BigInteger( 1, digest.digest() ).toString( 16 ), 40, "0" );
             return md5.getBytes();
         }
         catch ( NoSuchAlgorithmException e )
         {
-            IOException ioe = new IOException( "Unable to calculate hash" );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( is );
+            throw new IOException( "Unable to calculate hash", e);
         }
     }
 

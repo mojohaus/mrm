@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -138,10 +137,8 @@ public class MockArtifactStore
             Collection<File> poms = FileUtils.listFiles( root, POM_EXTENSIONS, true );
             for ( File file : poms )
             {
-                FileReader fileReader;
-                try
+                try (FileReader fileReader = new FileReader( file ))
                 {
-                    fileReader = new FileReader( file );
                     Model model = pomReader.read( fileReader );
                     String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
                     String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
@@ -174,14 +171,8 @@ public class MockArtifactStore
                                                                       version ) ) );
                     }
                     
-                    Collection<File> classifiedFiles = Arrays.asList( file.getParentFile().listFiles( new FilenameFilter()
-                    {
-                        @Override
-                        public boolean accept( File dir, String name )
-                        {
-                            return FilenameUtils.getBaseName( name ).startsWith( basename + '-' );
-                        }
-                    }  ) );
+                    File[] classifiedFiles = file.getParentFile()
+                            .listFiles((dir, name) -> FilenameUtils.getBaseName( name ).startsWith( basename + '-' ));
                     
                     for ( File classifiedFile : classifiedFiles )
                     {
@@ -231,7 +222,7 @@ public class MockArtifactStore
      */
     public synchronized Set<String> getGroupIds( String parentGroupId )
     {
-        TreeSet<String> result = new TreeSet<String>();
+        TreeSet<String> result = new TreeSet<>();
         if ( StringUtils.isEmpty( parentGroupId ) )
         {
             for ( String groupId : contents.keySet() )
@@ -262,7 +253,7 @@ public class MockArtifactStore
     public synchronized Set<String> getArtifactIds( String groupId )
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        return new TreeSet<String>( artifactMap == null ? Collections.<String>emptySet() : artifactMap.keySet() );
+        return artifactMap == null ? Collections.emptySet() : new TreeSet<>( artifactMap.keySet() );
     }
 
     /**
@@ -272,7 +263,7 @@ public class MockArtifactStore
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
         Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        return new TreeSet<String>( versionMap == null ? Collections.<String>emptySet() : versionMap.keySet() );
+        return versionMap == null ? Collections.emptySet() : new TreeSet<>( versionMap.keySet() );
     }
 
     /**
@@ -284,7 +275,7 @@ public class MockArtifactStore
         Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
 
-        return new HashSet<Artifact>( filesMap == null ? Collections.<Artifact>emptySet() : filesMap.keySet() );
+        return filesMap == null ? Collections.emptySet() : new HashSet<>( filesMap.keySet() );
     }
 
     /**
@@ -423,24 +414,11 @@ public class MockArtifactStore
      */
     private synchronized void set( Artifact artifact, Content content )
     {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        if ( artifactMap == null )
-        {
-            artifactMap = new HashMap<String, Map<String, Map<Artifact, Content>>>();
-            contents.put( artifact.getGroupId(), artifactMap );
-        }
-        Map<String, Map<Artifact, Content>> versionMap = artifactMap.get( artifact.getArtifactId() );
-        if ( versionMap == null )
-        {
-            versionMap = new HashMap<String, Map<Artifact, Content>>();
-            artifactMap.put( artifact.getArtifactId(), versionMap );
-        }
-        Map<Artifact, Content> filesMap = versionMap.get( artifact.getVersion() );
-        if ( filesMap == null )
-        {
-            filesMap = new HashMap<Artifact, Content>();
-            versionMap.put( artifact.getVersion(), filesMap );
-        }
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap =
+                contents.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, Map<Artifact, Content>> versionMap =
+                artifactMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent(artifact.getVersion(), k -> new HashMap<>());
         filesMap.put( artifact, content );
     }
 
@@ -457,7 +435,7 @@ public class MockArtifactStore
         Set<String> pluginArtifactIds = getArtifactIds( groupId );
         if ( pluginArtifactIds != null )
         {
-            List<Plugin> plugins = new ArrayList<Plugin>();
+            List<Plugin> plugins = new ArrayList<>();
             for ( String artifactId : pluginArtifactIds )
             {
                 Set<String> pluginVersions = getVersions( groupId, artifactId );
@@ -465,16 +443,13 @@ public class MockArtifactStore
                 {
                     continue;
                 }
-                String[] versions = pluginVersions.toArray( new String[pluginVersions.size()] );
-                Arrays.sort( versions, new VersionComparator() );
-                MavenXpp3Reader reader = new MavenXpp3Reader();
+                String[] versions = pluginVersions.toArray(new String[0]);
+                Arrays.sort( versions, INSTANCE);
                 for ( int j = versions.length - 1; j >= 0; j-- )
                 {
-                    InputStream inputStream = null;
-                    try
+                    try (InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) ))
                     {
-                        inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) );
-                        Model model = reader.read( new XmlStreamReader( inputStream ) );
+                        Model model = new MavenXpp3Reader().read( new XmlStreamReader( inputStream ) );
                         if ( model == null || !"maven-plugin".equals( model.getPackaging() ) )
                         {
                             continue;
@@ -516,17 +491,9 @@ public class MockArtifactStore
                         foundMetadata = true;
                         break;
                     }
-                    catch ( ArtifactNotFoundException e )
+                    catch ( ArtifactNotFoundException | XmlPullParserException e )
                     {
                         // ignore
-                    }
-                    catch ( XmlPullParserException e )
-                    {
-                        // ignore
-                    }
-                    finally
-                    {
-                        IOUtils.closeQuietly( inputStream );
                     }
                 }
             }
@@ -546,8 +513,8 @@ public class MockArtifactStore
                 metadata.setGroupId( groupId );
                 metadata.setArtifactId( artifactId );
                 Versioning versioning = new Versioning();
-                List<String> versions = new ArrayList<String>( artifactVersions );
-                Collections.sort( versions, new VersionComparator() ); // sort the Maven way
+                List<String> versions = new ArrayList<>( artifactVersions );
+                versions.sort(INSTANCE); // sort the Maven way
                 long lastUpdated = 0;
                 for ( String version : versions )
                 {
@@ -587,7 +554,7 @@ public class MockArtifactStore
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
-                List<SnapshotVersion> snapshotVersions = new ArrayList<SnapshotVersion>();
+                List<SnapshotVersion> snapshotVersions = new ArrayList<>();
                 int maxBuildNumber = 0;
                 long lastUpdated = 0;
                 String timestamp = null;
@@ -610,9 +577,9 @@ public class MockArtifactStore
                     if ( "pom".equals( artifact.getType() ) )
                     {
                         if ( artifact.getBuildNumber() != null
-                            && maxBuildNumber < artifact.getBuildNumber().intValue() )
+                            && maxBuildNumber < artifact.getBuildNumber())
                         {
-                            maxBuildNumber = artifact.getBuildNumber().intValue();
+                            maxBuildNumber = artifact.getBuildNumber();
                             timestamp = artifact.getTimestampString();
                         }
                         else
@@ -797,6 +764,8 @@ public class MockArtifactStore
         }
         return false;
     }
+
+    private static final Comparator<String> INSTANCE = new VersionComparator();
 
     /**
      * Compares two versions using Maven's version comparison rules.
@@ -997,11 +966,7 @@ public class MockArtifactStore
             {
                 archiver.createArchive();
             }
-            catch ( ArchiverException e )
-            {
-                throw new RuntimeException( e.getMessage(), e );
-            }
-            catch ( IOException e )
+            catch ( ArchiverException| IOException e )
             {
                 throw new RuntimeException( e.getMessage(), e );
             }

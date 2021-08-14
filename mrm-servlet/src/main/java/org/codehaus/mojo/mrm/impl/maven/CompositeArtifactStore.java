@@ -60,7 +60,6 @@ public class CompositeArtifactStore
      */
     public CompositeArtifactStore( ArtifactStore[] stores )
     {
-        stores.getClass();
         this.stores = stores;
     }
 
@@ -69,15 +68,16 @@ public class CompositeArtifactStore
      */
     public Set<String> getGroupIds( String parentGroupId )
     {
-        Set<String> result = new TreeSet<String>();
-        for ( int i = 0; i < stores.length; i++ )
+        Set<String> result = new TreeSet<>();
+        for (ArtifactStore store : stores)
         {
-            Set<String> groupIds = stores[i].getGroupIds( parentGroupId );
-            if ( groupIds != null )
+            Set<String> groupIds = store.getGroupIds(parentGroupId);
+            if (groupIds != null)
             {
-                result.addAll( groupIds );
+                result.addAll(groupIds);
             }
         }
+
         return result;
     }
 
@@ -86,13 +86,13 @@ public class CompositeArtifactStore
      */
     public Set<String> getArtifactIds( String groupId )
     {
-        Set<String> result = new TreeSet<String>();
-        for ( int i = 0; i < stores.length; i++ )
+        Set<String> result = new TreeSet<>();
+        for (ArtifactStore store : stores)
         {
-            Set<String> artifactIds = stores[i].getArtifactIds( groupId );
-            if ( artifactIds != null )
+            Set<String> artifactIds = store.getArtifactIds(groupId);
+            if (artifactIds != null)
             {
-                result.addAll( artifactIds );
+                result.addAll(artifactIds);
             }
         }
         return result;
@@ -103,13 +103,13 @@ public class CompositeArtifactStore
      */
     public Set<String> getVersions( String groupId, String artifactId )
     {
-        Set<String> result = new TreeSet<String>();
-        for ( int i = 0; i < stores.length; i++ )
+        Set<String> result = new TreeSet<>();
+        for (ArtifactStore store : stores)
         {
-            Set<String> versions = stores[i].getVersions( groupId, artifactId );
-            if ( versions != null )
+            Set<String> versions = store.getVersions(groupId, artifactId);
+            if (versions != null)
             {
-                result.addAll( versions );
+                result.addAll(versions);
             }
         }
         return result;
@@ -120,13 +120,13 @@ public class CompositeArtifactStore
      */
     public Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
     {
-        Set<Artifact> result = new TreeSet<Artifact>();
-        for ( int i = 0; i < stores.length; i++ )
+        Set<Artifact> result = new TreeSet<>();
+        for (ArtifactStore store : stores)
         {
-            Set<Artifact> artifacts = stores[i].getArtifacts( groupId, artifactId, version );
-            if ( artifacts != null )
+            Set<Artifact> artifacts = store.getArtifacts(groupId, artifactId, version);
+            if (artifacts != null)
             {
-                result.addAll( artifacts );
+                result.addAll(artifacts);
             }
         }
         return result;
@@ -138,13 +138,13 @@ public class CompositeArtifactStore
     public long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        for ( int i = 0; i < stores.length; i++ )
+        for (ArtifactStore store : stores)
         {
             try
             {
-                return stores[i].getLastModified( artifact );
+                return store.getLastModified(artifact);
             }
-            catch ( ArtifactNotFoundException e )
+            catch (ArtifactNotFoundException e)
             {
                 // ignore
             }
@@ -158,13 +158,12 @@ public class CompositeArtifactStore
     public long getSize( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        for ( int i = 0; i < stores.length; i++ )
+        for (ArtifactStore store : stores)
         {
             try
             {
-                return stores[i].getSize( artifact );
-            }
-            catch ( ArtifactNotFoundException e )
+                return store.getSize(artifact);
+            } catch (ArtifactNotFoundException e)
             {
                 // ignore
             }
@@ -178,14 +177,12 @@ public class CompositeArtifactStore
     public InputStream get( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
-        for ( int i = 0; i < stores.length; i++ )
+        for (ArtifactStore store : stores)
         {
             try
             {
-                return stores[i].get( artifact );
-            }
-            catch ( ArtifactNotFoundException e )
-            {
+                return store.get(artifact);
+            } catch (ArtifactNotFoundException e) {
                 // ignore
             }
         }
@@ -209,109 +206,92 @@ public class CompositeArtifactStore
     {
         boolean found = false;
         Metadata result = new Metadata();
-        Set<String> pluginArtifactIds = new HashSet<String>();
-        Set<String> snapshotVersions = new HashSet<String>();
-        for ( int i = 0; i < stores.length; i++ )
+        Set<String> pluginArtifactIds = new HashSet<>();
+        Set<String> snapshotVersions = new HashSet<>();
+        for (ArtifactStore store : stores)
         {
-            try
-            {
-                Metadata partial = stores[i].getMetadata( path );
-                if ( StringUtils.isEmpty( result.getArtifactId() ) && !StringUtils.isEmpty( partial.getArtifactId() ) )
+            try {
+                Metadata partial = store.getMetadata(path);
+                if (StringUtils.isEmpty(result.getArtifactId()) && !StringUtils.isEmpty(partial.getArtifactId()))
                 {
-                    result.setArtifactId( partial.getArtifactId() );
+                    result.setArtifactId(partial.getArtifactId());
                     found = true;
                 }
-                if ( StringUtils.isEmpty( result.getGroupId() ) && !StringUtils.isEmpty( partial.getGroupId() ) )
+                if (StringUtils.isEmpty(result.getGroupId()) && !StringUtils.isEmpty(partial.getGroupId()))
                 {
-                    result.setGroupId( partial.getGroupId() );
+                    result.setGroupId(partial.getGroupId());
                     found = true;
                 }
-                if ( StringUtils.isEmpty( result.getVersion() ) && !StringUtils.isEmpty( partial.getVersion() ) )
+                if (StringUtils.isEmpty(result.getVersion()) && !StringUtils.isEmpty(partial.getVersion()))
                 {
-                    result.setVersion( partial.getVersion() );
+                    result.setVersion(partial.getVersion());
                     found = true;
                 }
-                if ( partial.getPlugins() != null && !partial.getPlugins().isEmpty() )
+                if (partial.getPlugins() != null && !partial.getPlugins().isEmpty())
                 {
-                    for ( Plugin plugin : partial.getPlugins() )
+                    for (Plugin plugin : partial.getPlugins())
                     {
-                        if ( !pluginArtifactIds.contains( plugin.getArtifactId() ) )
+                        if (!pluginArtifactIds.contains(plugin.getArtifactId()))
                         {
-                            result.addPlugin( plugin );
-                            pluginArtifactIds.add( plugin.getArtifactId() );
+                            result.addPlugin(plugin);
+                            pluginArtifactIds.add(plugin.getArtifactId());
                         }
                     }
                     found = true;
                 }
-                if ( partial.getVersioning() != null )
+                if (partial.getVersioning() != null)
                 {
                     Versioning rVers = result.getVersioning();
-                    if ( rVers == null )
-                    {
+                    if (rVers == null) {
                         rVers = new Versioning();
                     }
                     Versioning pVers = partial.getVersioning();
                     String rLU = found ? rVers.getLastUpdated() : null;
                     String pLU = pVers.getLastUpdated();
-                    if ( pLU != null && ( rLU == null || rLU.compareTo( pLU ) < 0 ) )
-                    {
+                    if (pLU != null && (rLU == null || rLU.compareTo(pLU) < 0)) {
                         // partial is newer or only
-                        if ( !StringUtils.isEmpty( pVers.getLatest() ) )
-                        {
-                            rVers.setLatest( pVers.getLatest() );
+                        if (!StringUtils.isEmpty(pVers.getLatest())) {
+                            rVers.setLatest(pVers.getLatest());
                         }
 
-                        if ( !StringUtils.isEmpty( pVers.getRelease() ) )
-                        {
-                            rVers.setLatest( pVers.getRelease() );
+                        if (!StringUtils.isEmpty(pVers.getRelease())) {
+                            rVers.setLatest(pVers.getRelease());
                         }
-                        rVers.setLastUpdated( pVers.getLastUpdated() );
+                        rVers.setLastUpdated(pVers.getLastUpdated());
                     }
-                    for ( String version : pVers.getVersions() )
-                    {
-                        if ( !rVers.getVersions().contains( version ) )
-                        {
-                            rVers.addVersion( version );
+                    for (String version : pVers.getVersions()) {
+                        if (!rVers.getVersions().contains(version)) {
+                            rVers.addVersion(version);
                         }
                     }
-                    if ( pVers.getSnapshot() != null )
-                    {
-                        if ( rVers.getSnapshot() == null
-                            || pVers.getSnapshot().getBuildNumber() > rVers.getSnapshot().getBuildNumber() )
-                        {
+                    if (pVers.getSnapshot() != null) {
+                        if (rVers.getSnapshot() == null
+                                || pVers.getSnapshot().getBuildNumber() > rVers.getSnapshot().getBuildNumber()) {
                             Snapshot snapshot = new Snapshot();
-                            snapshot.setBuildNumber( pVers.getSnapshot().getBuildNumber() );
-                            snapshot.setTimestamp( pVers.getSnapshot().getTimestamp() );
-                            rVers.setSnapshot( snapshot );
+                            snapshot.setBuildNumber(pVers.getSnapshot().getBuildNumber());
+                            snapshot.setTimestamp(pVers.getSnapshot().getTimestamp());
+                            rVers.setSnapshot(snapshot);
                         }
                     }
-                    try
-                    {
-                        if ( pVers.getSnapshotVersions() != null && !pVers.getSnapshotVersions().isEmpty() )
-                        {
-                            for ( SnapshotVersion snapshotVersion : pVers.getSnapshotVersions() )
-                            {
+                    try {
+                        if (pVers.getSnapshotVersions() != null && !pVers.getSnapshotVersions().isEmpty()) {
+                            for (SnapshotVersion snapshotVersion : pVers.getSnapshotVersions()) {
                                 String key = snapshotVersion.getVersion() + "-" + snapshotVersion.getClassifier() + "."
-                                    + snapshotVersion.getExtension();
-                                if ( !snapshotVersions.contains( key ) )
-                                {
-                                    rVers.addSnapshotVersion( snapshotVersion );
-                                    snapshotVersions.add( key );
+                                        + snapshotVersion.getExtension();
+                                if (!snapshotVersions.contains(key)) {
+                                    rVers.addSnapshotVersion(snapshotVersion);
+                                    snapshotVersions.add(key);
                                 }
                             }
                         }
-                    }
-                    catch ( NoSuchMethodError e )
-                    {
+                    } catch (NoSuchMethodError e) {
                         // Maven 2
                     }
 
-                    result.setVersioning( rVers );
+                    result.setVersioning(rVers);
                     found = true;
                 }
-            }
-            catch ( MetadataNotFoundException e )
-            {
+            } catch (MetadataNotFoundException e) {
                 // ignore
             }
         }
@@ -330,22 +310,15 @@ public class CompositeArtifactStore
     {
         boolean found = false;
         long lastModified = 0;
-        for ( int i = 0; i < stores.length; i++ )
-        {
-            try
-            {
-                if ( !found )
-                {
-                    lastModified = stores[i].getMetadataLastModified( path );
+        for (ArtifactStore store : stores) {
+            try {
+                if (!found) {
+                    lastModified = store.getMetadataLastModified(path);
                     found = true;
+                } else {
+                    lastModified = Math.max(lastModified, store.getMetadataLastModified(path));
                 }
-                else
-                {
-                    lastModified = Math.max( lastModified, stores[i].getMetadataLastModified( path ) );
-                }
-            }
-            catch ( MetadataNotFoundException e )
-            {
+            } catch (MetadataNotFoundException e) {
                 // ignore
             }
         }

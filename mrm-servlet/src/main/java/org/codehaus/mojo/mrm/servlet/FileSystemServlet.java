@@ -19,7 +19,6 @@ package org.codehaus.mojo.mrm.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.HttpURLConnection;
@@ -30,7 +29,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,7 +73,7 @@ public class FileSystemServlet
      *
      * @since 1.0
      */
-    private FileSystem fileSystem;
+    private final FileSystem fileSystem;
 
     
     /**
@@ -128,28 +126,24 @@ public class FileSystemServlet
         {
             resp.setContentType( "text/xml" );
             PrintWriter w = resp.getWriter();
-            
-            Reader settingsReader = null;
-            try 
-            {
-                String hostAddress;
-                try
-                {
-                    hostAddress = InetAddress.getLocalHost().getHostAddress();
-                }
-                catch ( UnknownHostException e )
-                {
-                    hostAddress = req.getServerName();
-                }
 
-                String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort(); 
-                Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
-                settingsReader = new InterpolationFilterReader( in, Collections.<String, Object>singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" );
-                IOUtil.copy( settingsReader, w );
-            }
-            finally
+            String hostAddress;
+            try
             {
-                IOUtil.close( settingsReader );
+                hostAddress = InetAddress.getLocalHost().getHostAddress();
+            }
+            catch ( UnknownHostException e )
+            {
+                hostAddress = req.getServerName();
+            }
+
+            String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort();
+
+            try (Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
+                    Reader settingsReader =
+                            new InterpolationFilterReader( in, Collections.singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" ))
+            {
+                IOUtil.copy( settingsReader, w );
             }
             return;
         }
@@ -164,18 +158,10 @@ public class FileSystemServlet
                 resp.setContentLength( (int) size );
             }
             resp.setContentType( getServletContext().getMimeType( fileEntry.getName() ) );
-            InputStream source = null;
-            OutputStream destination = null;
-            try
+
+            try (InputStream source = fileEntry.getInputStream())
             {
-                source = fileEntry.getInputStream();
-                destination = resp.getOutputStream();
-                IOUtils.copy( source, destination );
-            }
-            finally
-            {
-                IOUtils.closeQuietly( source );
-                IOUtils.closeQuietly( destination );
+                IOUtils.copy( source, resp.getOutputStream() );
             }
             return;
         }
@@ -322,21 +308,14 @@ public class FileSystemServlet
         {
             parent = new DefaultDirectoryEntry( fileSystem, parent, parts[i] );
         }
-        ServletInputStream inputStream = null;
-        try
+
+        FileEntry put = fileSystem.put( parent, name, req.getInputStream() );
+        if ( put != null )
         {
-            inputStream = req.getInputStream();
-            FileEntry put = fileSystem.put( parent, name, inputStream );
-            if ( put != null )
-            {
-                resp.setStatus( HttpURLConnection.HTTP_OK );
-                return;
-            }
+            resp.setStatus( HttpURLConnection.HTTP_OK );
+            return;
         }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
-        }
+
         resp.sendError( HttpURLConnection.HTTP_BAD_METHOD );
     }
 

@@ -27,10 +27,10 @@
 
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>mrm</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Mock Repository Manager: Project</name>
+  <name>Mock Repository Manager :: Project</name>
   <description>
     Mock Repository Manager for Maven. The Mock Repository Manager provides a mock Maven
     repository manager.
@@ -88,7 +88,7 @@
   <properties>
     <scmpublish.content>target/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
-    <mojo.java.target>1.7</mojo.java.target>
+    <mojo.java.target>1.8</mojo.java.target>
   </properties>
 
   <dependencyManagement>
@@ -239,7 +239,7 @@
             <configuration>
               <signature>
                 <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java17</artifactId>
+                <artifactId>java18</artifactId>
                 <version>1.0</version>
               </signature>
             </configuration>

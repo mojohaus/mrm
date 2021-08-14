@@ -16,7 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl.digest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
@@ -103,26 +102,17 @@ public class MD5DigestFileEntry
     private byte[] getContent()
         throws IOException
     {
-        InputStream is = null;
         try
         {
             MessageDigest digest = MessageDigest.getInstance( "MD5" );
             digest.reset();
             byte[] buffer = new byte[8192];
             int read;
-            try
+            try (InputStream is = entry.getInputStream())
             {
-                is = entry.getInputStream();
                 while ( ( read = is.read( buffer ) ) > 0 )
                 {
                     digest.update( buffer, 0, read );
-                }
-            }
-            catch ( IOException e )
-            {
-                if ( is != null )
-                {
-                    throw e;
                 }
             }
             final String md5 = StringUtils.leftPad( new BigInteger( 1, digest.digest() ).toString( 16 ), 32, "0" );
@@ -130,13 +120,7 @@ public class MD5DigestFileEntry
         }
         catch ( NoSuchAlgorithmException e )
         {
-            IOException ioe = new IOException( "Unable to calculate hash" );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( is );
+            throw new IOException( "Unable to calculate hash", e);
         }
     }
 

@@ -89,11 +89,11 @@ public abstract class BaseFileSystem
         Entry[] entries = listEntries( parent );
         if ( entries != null )
         {
-            for ( int i = 0; i < entries.length; i++ )
+            for (Entry entry : entries)
             {
-                if ( name.equals( entries[i].getName() ) )
+                if (name.equals(entry.getName()))
                 {
-                    return entries[i];
+                    return entry;
                 }
             }
         }

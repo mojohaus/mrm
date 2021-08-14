@@ -86,6 +86,7 @@ public class DiskFileSystem
             return null;
         }
         File[] files = file.listFiles();
+
         Entry[] result = new Entry[files.length];
         for ( int i = 0; i < files.length; i++ )
         {
@@ -119,7 +120,7 @@ public class DiskFileSystem
      */
     private File toFile( Entry entry )
     {
-        Stack<String> stack = new Stack<String>();
+        Stack<String> stack = new Stack<>();
         Entry entryRoot = entry.getFileSystem().getRoot();
         while ( entry != null && !entryRoot.equals( entry ) )
         {
@@ -140,7 +141,7 @@ public class DiskFileSystem
         File file = this.root;
         while ( !stack.empty() )
         {
-            file = new File( file, (String) stack.pop() );
+            file = new File( file, stack.pop() );
         }
         return file;
     }

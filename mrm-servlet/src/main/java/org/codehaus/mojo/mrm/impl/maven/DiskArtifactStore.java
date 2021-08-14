@@ -18,10 +18,11 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -31,6 +32,7 @@ import java.util.Stack;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -92,15 +94,14 @@ public class DiskArtifactStore
             return Collections.emptySet();
         }
         File[] groupDirs = parentDir.listFiles();
-        Set<String> result = new HashSet<String>();
-        for ( int i = 0; i < groupDirs.length; i++ )
+        if(groupDirs==null)
         {
-            if ( groupDirs[i].isDirectory() )
-            {
-                result.add( groupDirs[i].getName() );
-            }
+            return Collections.emptySet();
         }
-        return result;
+        return Arrays.stream(groupDirs).filter(File::isDirectory)
+                .map(File::getName)
+                .collect(Collectors.toSet());
+
     }
 
     /**
@@ -113,18 +114,17 @@ public class DiskArtifactStore
         {
             return Collections.emptySet();
         }
-        Set<String> result = new HashSet<String>();
+
         File[] artifactDirs = groupDir.listFiles();
-        for ( int i = 0; i < artifactDirs.length; i++ )
+        if (artifactDirs==null)
         {
-            if ( !artifactDirs[i].isDirectory() )
-            {
-                continue;
-            }
-            final String artifactId = artifactDirs[i].getName();
-            result.add( artifactId );
+            return Collections.emptySet();
         }
-        return result;
+
+        return Arrays.stream(artifactDirs).filter(File::isDirectory)
+                .map(File::getName)
+                .collect(Collectors.toSet());
+
     }
 
     /**
@@ -139,16 +139,14 @@ public class DiskArtifactStore
             return Collections.emptySet();
         }
         File[] dirs = artifactDir.listFiles();
-        Set<String> result = new HashSet<String>();
-        for ( int i = 0; i < dirs.length; i++ )
+        if(dirs==null)
         {
-            if ( !dirs[i].isDirectory() )
-            {
-                continue;
-            }
-            result.add( dirs[i].getName() );
+            return Collections.emptySet();
         }
-        return result;
+
+        return Arrays.stream(dirs).filter(File::isDirectory)
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -227,17 +225,14 @@ public class DiskArtifactStore
             };
         }
         File[] files = versionDir.listFiles();
-        Set<Artifact> result = new HashSet<Artifact>( files.length );
-        for ( int i = 0; i < files.length; i++ )
-        {
-            if ( !files[i].isFile() || !rule.matcher( files[i].getName() ).matches() )
-            {
+        Set<Artifact> result = new HashSet<>( files.length );
+        for (File file : files) {
+            if (!file.isFile() || !rule.matcher(file.getName()).matches()) {
                 continue;
             }
-            Artifact artifact = factory.get( files[i] );
-            if ( artifact != null )
-            {
-                result.add( artifact );
+            Artifact artifact = factory.get(file);
+            if (artifact != null) {
+                result.add(artifact);
             }
         }
         return result;
@@ -303,14 +298,12 @@ public class DiskArtifactStore
             throw new IOException( "Failed to create " + targetFile.getParentFile().getPath() );
         }
 
-        OutputStream output = null;
-        try {
-            output = new FileOutputStream( targetFile );
+        try (OutputStream output = Files.newOutputStream(targetFile.toPath()))
+        {
             IOUtils.copy( content, output );
         }
         finally {
             IOUtils.closeQuietly( content );
-            IOUtils.closeQuietly( output );
         }
     }
 
@@ -322,31 +315,22 @@ public class DiskArtifactStore
     {
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for ( int i = 0; i < parts.length; i++ )
-        {
-            file = new File( file, parts[i] );
+        for (String part : parts) {
+            file = new File(file, part);
         }
         file = new File( file, "maven-metadata.xml" );
         if ( !file.isFile() )
         {
             throw new MetadataNotFoundException( path );
         }
-        MetadataXpp3Reader reader = new MetadataXpp3Reader();
-        InputStream inputStream = null;
-        try
+
+        try (InputStream inputStream = Files.newInputStream( file.toPath() ))
         {
-            inputStream = new FileInputStream( file );
-            return reader.read( inputStream );
+            return new MetadataXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
+            throw new IOException( e.getMessage(), e);
         }
     }
     
@@ -361,22 +345,15 @@ public class DiskArtifactStore
         
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for ( int i = 0; i < parts.length; i++ )
-        {
-            file = new File( file, parts[i] );
+        for (String part : parts) {
+            file = new File(file, part);
         }
         
         file = new File( file, "maven-metadata.xml" );
 
-        MetadataXpp3Writer writer = new MetadataXpp3Writer();
-        OutputStream outputStream = null;
-        try
+        try (OutputStream outputStream = Files.newOutputStream(file.toPath()))
         {
-            outputStream = new FileOutputStream( file );
-            writer.write( outputStream, metadata );
-        }
-        finally {
-            IOUtils.closeQuietly( outputStream );
+            new MetadataXpp3Writer().write( outputStream, metadata );
         }
     }
 
@@ -388,14 +365,14 @@ public class DiskArtifactStore
     {
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        Stack<File> stack = new Stack<File>();
+        Stack<File> stack = new Stack<>();
         for ( int i = 0; i < parts.length; i++ )
         {
             if ( "..".equals( parts[i] ) )
             {
                 if ( !stack.isEmpty() )
                 {
-                    file = (File) stack.pop();
+                    file = stack.pop();
                 }
                 else
                 {
@@ -424,22 +401,14 @@ public class DiskArtifactStore
         {
             throw new ArchetypeCatalogNotFoundException();
         }
-        ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
-        InputStream inputStream = null;
-        try
+
+        try (InputStream inputStream = Files.newInputStream(file.toPath()))
         {
-            inputStream = new FileInputStream( file );
-            return reader.read( inputStream );
+            return new ArchetypeCatalogXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
+            throw new IOException( e.getMessage(), e);
         }
     }
 
@@ -459,7 +428,6 @@ public class DiskArtifactStore
         File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
         File artifactDir = new File( groupDir, artifact.getArtifactId() );
         File versionDir = new File( artifactDir, artifact.getVersion() );
-        File targetFile = new File( versionDir, artifact.getName() );
-        return targetFile;
+        return new File( versionDir, artifact.getName() );
     }
 }
