@@ -78,8 +78,7 @@ public class MemoryArtifactStore
      *
      * @since 1.0
      */
-    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents =
-        new HashMap<String, Map<String, Map<String, Map<Artifact, Content>>>>();
+    private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<>();
     
     private Content archetypeCatalog;
 
@@ -88,7 +87,7 @@ public class MemoryArtifactStore
      */
     public synchronized Set<String> getGroupIds( String parentGroupId )
     {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         if ( StringUtils.isEmpty( parentGroupId ) )
         {
             for ( String groupId : contents.keySet() )
@@ -119,7 +118,7 @@ public class MemoryArtifactStore
     public synchronized Set<String> getArtifactIds( String groupId )
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        return new TreeSet<String>( artifactMap == null ? Collections.<String> emptySet() : artifactMap.keySet() );
+        return artifactMap == null ? Collections.emptySet() : new TreeSet<>(artifactMap.keySet() );
     }
 
     /**
@@ -129,7 +128,7 @@ public class MemoryArtifactStore
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
         Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        return new TreeSet<String>( versionMap == null ? Collections.<String> emptySet() : versionMap.keySet() );
+        return versionMap == null ? Collections.emptySet() : new TreeSet<>( versionMap.keySet() );
     }
 
     /**
@@ -141,7 +140,7 @@ public class MemoryArtifactStore
         Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
 
-        return new HashSet<Artifact>( filesMap == null ? Collections.<Artifact> emptySet() : filesMap.keySet() );
+        return filesMap == null ? Collections.emptySet() : new HashSet<>( filesMap.keySet() );
     }
 
     /**
@@ -264,24 +263,9 @@ public class MemoryArtifactStore
     public synchronized void set( Artifact artifact, InputStream content )
         throws IOException
     {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        if ( artifactMap == null )
-        {
-            artifactMap = new HashMap<String, Map<String, Map<Artifact, Content>>>();
-            contents.put( artifact.getGroupId(), artifactMap );
-        }
-        Map<String, Map<Artifact, Content>> versionMap = artifactMap.get( artifact.getArtifactId() );
-        if ( versionMap == null )
-        {
-            versionMap = new HashMap<String, Map<Artifact, Content>>();
-            artifactMap.put( artifact.getArtifactId(), versionMap );
-        }
-        Map<Artifact, Content> filesMap = versionMap.get( artifact.getVersion() );
-        if ( filesMap == null )
-        {
-            filesMap = new HashMap<Artifact, Content>();
-            versionMap.put( artifact.getVersion(), filesMap );
-        }
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, Map<Artifact, Content>> versionMap = artifactMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent(artifact.getVersion(), k -> new HashMap<>());
         try
         {
             filesMap.put( artifact, new Content( IOUtils.toByteArray( content ) ) );
@@ -305,7 +289,7 @@ public class MemoryArtifactStore
         Set<String> pluginArtifactIds = getArtifactIds( groupId );
         if ( pluginArtifactIds != null )
         {
-            List<Plugin> plugins = new ArrayList<Plugin>();
+            List<Plugin> plugins = new ArrayList<>();
             for ( String artifactId : pluginArtifactIds )
             {
                 Set<String> pluginVersions = getVersions( groupId, artifactId );
@@ -313,16 +297,15 @@ public class MemoryArtifactStore
                 {
                     continue;
                 }
-                String[] versions = (String[]) pluginVersions.toArray( new String[pluginVersions.size()] );
-                Arrays.sort( versions, new VersionComparator() );
+                String[] versions = pluginVersions.toArray(new String[0]);
+                Arrays.sort( versions, INSTANCE );
                 MavenXpp3Reader reader = new MavenXpp3Reader();
                 for ( int j = versions.length - 1; j >= 0; j-- )
                 {
-                    InputStream inputStream = null;
-                    try
+                    try (InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) );
+                    XmlStreamReader xmlStreamReader = new XmlStreamReader( inputStream ))
                     {
-                        inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) );
-                        Model model = reader.read( new XmlStreamReader( inputStream ) );
+                        Model model = reader.read(xmlStreamReader);
                         if ( model == null || !"maven-plugin".equals( model.getPackaging() ) )
                         {
                             continue;
@@ -364,17 +347,9 @@ public class MemoryArtifactStore
                         foundMetadata = true;
                         break;
                     }
-                    catch ( ArtifactNotFoundException e )
+                    catch ( ArtifactNotFoundException | XmlPullParserException e )
                     {
                         // ignore
-                    }
-                    catch ( XmlPullParserException e )
-                    {
-                        // ignore
-                    }
-                    finally
-                    {
-                        IOUtils.closeQuietly( inputStream );
                     }
                 }
             }
@@ -394,8 +369,8 @@ public class MemoryArtifactStore
                 metadata.setGroupId( groupId );
                 metadata.setArtifactId( artifactId );
                 Versioning versioning = new Versioning();
-                List<String> versions = new ArrayList<String>( artifactVersions );
-                Collections.sort( versions, new VersionComparator() ); // sort the Maven way
+                List<String> versions = new ArrayList<>( artifactVersions );
+                versions.sort(INSTANCE); // sort the Maven way
                 long lastUpdated = 0;
                 for ( String version : versions )
                 {
@@ -435,15 +410,15 @@ public class MemoryArtifactStore
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
-                List<SnapshotVersion> snapshotVersions = new ArrayList<SnapshotVersion>();
+                List<SnapshotVersion> snapshotVersions = new ArrayList<>();
                 int maxBuildNumber = 0;
                 long lastUpdated = 0;
                 String timestamp = null;
                 boolean found = false;
-                for ( final Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
+                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
                 {
-                    final Artifact artifact = entry.getKey();
-                    final Content content = entry.getValue();
+                    Artifact artifact = entry.getKey();
+                    Content content = entry.getValue();
                     SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss" );
                     fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
                     String lastUpdatedTime = fmt.format( new Date( content.getLastModified() ) );
@@ -458,9 +433,9 @@ public class MemoryArtifactStore
                     if ( "pom".equals( artifact.getType() ) )
                     {
                         if ( artifact.getBuildNumber() != null
-                            && maxBuildNumber < artifact.getBuildNumber().intValue() )
+                            && maxBuildNumber < artifact.getBuildNumber())
                         {
-                            maxBuildNumber = artifact.getBuildNumber().intValue();
+                            maxBuildNumber = artifact.getBuildNumber();
                             timestamp = artifact.getTimestampString();
                         }
                         else
@@ -592,20 +567,13 @@ public class MemoryArtifactStore
     {
         if ( archetypeCatalog != null )
         {
-            ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
-            InputStream inputStream = null;
-            try
+            try (InputStream inputStream = new ByteArrayInputStream( archetypeCatalog.getBytes() ))
             {
-                inputStream = new ByteArrayInputStream( archetypeCatalog.getBytes() );
-                return reader.read( inputStream );
+                return new ArchetypeCatalogXpp3Reader().read( inputStream );
             }
             catch ( XmlPullParserException e )
             {
                 throw new ArchetypeCatalogNotFoundException( e.getMessage(), e );
-            }
-            finally
-            {
-                IOUtils.closeQuietly( inputStream );
             }
         }
         else
@@ -659,6 +627,8 @@ public class MemoryArtifactStore
         }
         return false;
     }
+
+    private static final Comparator<String> INSTANCE = new VersionComparator();
 
     /**
      * Compares two versions using Maven's version comparison rules.

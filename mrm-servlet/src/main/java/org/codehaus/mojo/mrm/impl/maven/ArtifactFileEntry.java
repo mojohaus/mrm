@@ -86,9 +86,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            IOException ioe = new IOException( "Artifact does not exist" );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( "Artifact does not exist", e);
         }
     }
 
@@ -104,9 +102,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            IOException ioe = new IOException( "Artifact does not exist" );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( "Artifact does not exist", e);
         }
     }
 
@@ -122,9 +118,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            IOException ioe = new IOException( "Artifact does not exist" );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( "Artifact does not exist", e);
         }
     }
 

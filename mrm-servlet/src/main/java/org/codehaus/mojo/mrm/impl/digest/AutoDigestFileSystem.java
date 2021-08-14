@@ -18,12 +18,14 @@ package org.codehaus.mojo.mrm.impl.digest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
@@ -82,12 +84,9 @@ public class AutoDigestFileSystem
     public AutoDigestFileSystem( FileSystem backing, DigestFileEntryFactory[] digestFactories )
     {
         this.backing = backing;
-        Map<String, DigestFileEntryFactory> map = new HashMap<String, DigestFileEntryFactory>( digestFactories.length );
-        for ( DigestFileEntryFactory factory : digestFactories )
-        {
-            map.put( factory.getType(), factory );
-        }
-        this.digestFactories = Collections.unmodifiableMap( map );
+        this.digestFactories =
+                Collections.unmodifiableMap(Arrays.stream(digestFactories)
+                        .collect(Collectors.toMap(DigestFileEntryFactory::getType, factory -> factory)));
     }
 
     /**
@@ -95,9 +94,9 @@ public class AutoDigestFileSystem
      */
     public Entry[] listEntries( DirectoryEntry directory )
     {
-        Map<String, Entry> result = new TreeMap<String, Entry>();
-        Map<String, FileEntry> missing = new HashMap<String, FileEntry>();
-        Set<String> present = new HashSet<String>();
+        Map<String, Entry> result = new TreeMap<>();
+        Map<String, FileEntry> missing = new HashMap<>();
+        Set<String> present = new HashSet<>();
         Entry[] entries = backing.listEntries( DefaultDirectoryEntry.equivalent( backing, directory ) );
         for ( Entry entry : entries )
         {
@@ -135,7 +134,7 @@ public class AutoDigestFileSystem
                 }
             }
         }
-        return result.values().toArray( new Entry[result.size()] );
+        return result.values().toArray(new Entry[0]);
     }
 
     /**

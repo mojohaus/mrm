@@ -31,9 +31,6 @@ public class HostedRepo implements ArtifactStoreFactory
     @Override
     public String toString()
     {
-        final StringBuffer sb = new StringBuffer();
-        sb.append( "Remote hosted (target: " ).append( target );
-        sb.append( ')' );
-        return sb.toString();
+        return "Remote hosted (target: " + target + ')';
     }
 }

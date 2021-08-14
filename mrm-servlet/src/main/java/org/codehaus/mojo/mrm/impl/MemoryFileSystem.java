@@ -45,7 +45,7 @@ public class MemoryFileSystem
      *
      * @since 1.0
      */
-    private final Map<DirectoryEntry, List<Entry>> contents = new HashMap<DirectoryEntry, List<Entry>>();
+    private final Map<DirectoryEntry, List<Entry>> contents = new HashMap<>();
 
     /**
      * Create a new empty file system.
@@ -54,7 +54,7 @@ public class MemoryFileSystem
      */
     public MemoryFileSystem()
     {
-        contents.put( getRoot(), new ArrayList<Entry>() );
+        contents.put( getRoot(), new ArrayList<>() );
     }
 
     /**
@@ -67,7 +67,7 @@ public class MemoryFileSystem
         {
             return null;
         }
-        return entries.toArray( new Entry[entries.size()] );
+        return entries.toArray(new Entry[0]);
     }
 
     /**
@@ -85,6 +85,7 @@ public class MemoryFileSystem
                 lastModified = Math.max( lastModified, entry.getLastModified() );
             }
         }
+
         return lastModified;
     }
 
@@ -93,20 +94,10 @@ public class MemoryFileSystem
      */
     protected synchronized Entry get( DirectoryEntry parent, String name )
     {
-        parent.getClass();
         List<Entry> parentEntries = contents.get( parent );
-        if ( parentEntries == null )
-        {
-            return null;
-        }
-        for ( Entry entry : parentEntries )
-        {
-            if ( name.equals( entry.getName() ) )
-            {
-                return entry;
-            }
-        }
-        return null;
+        return parentEntries == null ? null :
+                parentEntries.stream().filter(entry -> name.equals(entry.getName())).findFirst().orElse(null);
+
     }
 
     /**
@@ -114,7 +105,6 @@ public class MemoryFileSystem
      */
     public synchronized DirectoryEntry mkdir( DirectoryEntry parent, String name )
     {
-        parent.getClass();
         parent = getNormalizedParent( parent );
         List<Entry> entries = getEntriesList( parent );
         for ( Entry entry : entries )
@@ -139,12 +129,11 @@ public class MemoryFileSystem
     public synchronized FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
-        parent.getClass();
         parent = getNormalizedParent( parent );
         List<Entry> entries = getEntriesList( parent );
         for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
         {
-            Entry entry = (Entry) i.next();
+            Entry entry = i.next();
             if ( name.equals( entry.getName() ) )
             {
                 if ( entry instanceof FileEntry )
@@ -190,13 +179,7 @@ public class MemoryFileSystem
      */
     private synchronized List<Entry> getEntriesList( DirectoryEntry directory )
     {
-        List<Entry> entries = contents.get( directory );
-        if ( entries == null )
-        {
-            entries = new ArrayList<Entry>();
-            contents.put( directory, entries );
-        }
-        return entries;
+        return contents.computeIfAbsent(directory, k -> new ArrayList<>());
     }
 
     /**
@@ -224,7 +207,7 @@ public class MemoryFileSystem
         }
         for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
         {
-            Entry e = (Entry) i.next();
+            Entry e = i.next();
             if ( entry.equals( e ) )
             {
                 if ( e instanceof DirectoryEntry )

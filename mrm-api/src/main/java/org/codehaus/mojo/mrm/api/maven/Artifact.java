@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -122,14 +123,6 @@ public final class Artifact
     private Artifact( String groupId, String artifactId, String version, String classifier, String type, Long timestamp,
                       Integer buildNumber )
     {
-        groupId.getClass();
-        artifactId.getClass();
-        version.getClass();
-        type.getClass();
-        if ( timestamp != null )
-        {
-            buildNumber.getClass();
-        }
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -154,7 +147,7 @@ public final class Artifact
     public Artifact( String groupId, String artifactId, String version, String classifier, String type, long timestamp,
                      int buildNumber )
     {
-        this( groupId, artifactId, version, classifier, type, new Long( timestamp ), new Integer( buildNumber ) );
+        this( groupId, artifactId, version, classifier, type, Long.valueOf( timestamp ), Integer.valueOf( buildNumber ) );
     }
 
     /**
@@ -393,15 +386,15 @@ public final class Artifact
         {
             return false;
         }
-        if ( classifier != null ? !classifier.equals( artifact.classifier ) : artifact.classifier != null )
+        if (!Objects.equals(classifier, artifact.classifier))
         {
             return false;
         }
-        if ( buildNumber != null ? !buildNumber.equals( artifact.buildNumber ) : artifact.buildNumber != null )
+        if (!Objects.equals(buildNumber, artifact.buildNumber))
         {
             return false;
         }
-        if ( timestamp != null ? !timestamp.equals( artifact.timestamp ) : artifact.timestamp != null )
+        if (!Objects.equals(timestamp, artifact.timestamp))
         {
             return false;
         }
@@ -440,7 +433,7 @@ public final class Artifact
         {
             return false;
         }
-        if ( classifier != null ? !classifier.equals( artifact.classifier ) : artifact.classifier != null )
+        if (!Objects.equals(classifier, artifact.classifier))
         {
             return false;
         }

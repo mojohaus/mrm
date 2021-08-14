@@ -90,9 +90,9 @@ public interface FactoryHelper
     Log getLog();
 
     /**
-     * Returns the {@ ArchetypeManager}
+     * Returns the {@link ArchetypeManager}
      * 
-     * @return The {@ ArchetypeManager}
+     * @return The {@link ArchetypeManager}
      * @since 1.0
      */
     ArchetypeManager getArchetypeManager();

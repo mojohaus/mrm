@@ -16,7 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
@@ -35,6 +34,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * An artifact store based off a {@link FileSystem}.
@@ -84,15 +85,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set<String> result = new HashSet<String>();
-        for ( int i = 0; i < entries.length; i++ )
-        {
-            if ( entries[i] instanceof DirectoryEntry )
-            {
-                result.add( entries[i].getName() );
-            }
-        }
-        return result;
+        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
+                .map(Entry::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -107,15 +102,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set<String> result = new HashSet<String>();
-        for ( int i = 0; i < entries.length; i++ )
-        {
-            if ( entries[i] instanceof DirectoryEntry )
-            {
-                result.add( entries[i].getName() );
-            }
-        }
-        return result;
+        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
+                .map(Entry::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -130,15 +119,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        Set<String> result = new HashSet<String>();
-        for ( int i = 0; i < entries.length; i++ )
-        {
-            if ( entries[i] instanceof DirectoryEntry )
-            {
-                result.add( entries[i].getName() );
-            }
-        }
-        return result;
+        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
+                .map(Entry::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -216,17 +199,14 @@ public class FileSystemArtifactStore
                 }
             };
         }
-        Set<Artifact> result = new HashSet<Artifact>( entries.length );
-        for ( int i = 0; i < entries.length; i++ )
-        {
-            if ( !( entries[i] instanceof FileEntry ) || !rule.matcher( entries[i].getName() ).matches() )
-            {
+        Set<Artifact> result = new HashSet<>( entries.length );
+        for (Entry entry : entries) {
+            if (!(entry instanceof FileEntry) || !rule.matcher(entry.getName()).matches()) {
                 continue;
             }
-            Artifact artifact = factory.get( entries[i] );
-            if ( artifact != null )
-            {
-                result.add( artifact );
+            Artifact artifact = factory.get(entry);
+            if (artifact != null) {
+                result.add(artifact);
             }
         }
         return result;
@@ -301,22 +281,14 @@ public class FileSystemArtifactStore
         {
             throw new MetadataNotFoundException( path );
         }
-        MetadataXpp3Reader reader = new MetadataXpp3Reader();
-        InputStream inputStream = null;
-        try
+
+        try (InputStream inputStream = ( (FileEntry) entry ).getInputStream())
         {
-            inputStream = ( (FileEntry) entry ).getInputStream();
-            return reader.read( inputStream );
+            return new MetadataXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
+            throw new IOException( e.getMessage(), e);
         }
     }
 
@@ -343,22 +315,14 @@ public class FileSystemArtifactStore
         {
             throw new ArchetypeCatalogNotFoundException();
         }
-        ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
-        InputStream inputStream = null;
-        try
+        try (InputStream inputStream = ( (FileEntry) entry ).getInputStream())
         {
-            inputStream =  ( (FileEntry) entry ).getInputStream();
-            return reader.read( inputStream );
+
+            return new ArchetypeCatalogXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
+            throw new IOException( e.getMessage(), e);
         }
     }
     

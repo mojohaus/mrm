@@ -47,10 +47,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that serves content from a running Maven instance.
@@ -104,7 +105,7 @@ public class ProxyArtifactStore
     /**
      * A cache of what artifacts are present.
      */
-    private final Map<String, Map<String, Artifact>> children = new HashMap<String, Map<String, Artifact>>();
+    private final Map<String, Map<String, Artifact>> children = new HashMap<>();
 
     /**
      * Creates a new instance.
@@ -129,7 +130,7 @@ public class ProxyArtifactStore
         this.artifactResolver = artifactResolver;
         this.archetypeManager = archetypeManager;
         this.log = log;
-        remoteRepositories = new ArrayList<ArtifactRepository>();
+        remoteRepositories = new ArrayList<>();
         remoteRepositories.addAll( remoteArtifactRepositories );
         remoteRepositories.addAll( remotePluginRepositories );
         try
@@ -139,10 +140,7 @@ public class ProxyArtifactStore
         catch ( InvalidVersionSpecificationException e )
         {
             // must never happen... so if it does make sure we stop
-            IllegalStateException ise =
-                new IllegalStateException( "[0,] should always be a valid version specification" );
-            ise.initCause( e );
-            throw ise;
+            throw new IllegalStateException( "[0,] should always be a valid version specification", e );
         }
     }
 
@@ -155,12 +153,7 @@ public class ProxyArtifactStore
     {
         String path =
             artifact.getGroupId().replace( '.', '/' ) + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
-        Map<String, Artifact> artifactMapper = this.children.get( path );
-        if ( artifactMapper == null )
-        {
-            artifactMapper = new HashMap<String, Artifact>();
-            this.children.put( path, artifactMapper );
-        }
+        Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
         artifactMapper.put( artifact.getName(), artifact );
         addResolved( path );
     }
@@ -176,22 +169,12 @@ public class ProxyArtifactStore
         {
             String name = path.substring( index + 1 );
             path = path.substring( 0, index );
-            Map<String, Artifact> artifactMapper = this.children.get( path );
-            if ( artifactMapper == null )
-            {
-                artifactMapper = new HashMap<String, Artifact>();
-                this.children.put( path, artifactMapper );
-            }
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
             artifactMapper.put( name, null );
         }
         if ( !StringUtils.isEmpty( path ) )
         {
-            Map<String, Artifact> artifactMapper = this.children.get( "" );
-            if ( artifactMapper == null )
-            {
-                artifactMapper = new HashMap<String, Artifact>();
-                this.children.put( "", artifactMapper );
-            }
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent("", k -> new HashMap<>());
             artifactMapper.put( path, null );
         }
     }
@@ -207,15 +190,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
-        {
-            if ( e.getValue() == null )
-            {
-                result.add( e.getKey() );
-            }
-        }
-        return result;
+        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -229,15 +206,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
-        {
-            if ( e.getValue() == null )
-            {
-                result.add( e.getKey() );
-            }
-        }
-        return result;
+        return artifactMapper.entrySet().stream().filter(entry -> entry.getValue()==null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -251,15 +222,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        Set<String> result = new HashSet<String>();
-        for ( Map.Entry<String, Artifact> e : artifactMapper.entrySet() )
-        {
-            if ( e.getValue() == null )
-            {
-                result.add( e.getKey() );
-            }
-        }
-        return result;
+        return artifactMapper.entrySet().stream().filter(entry -> entry.getValue()==null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -273,15 +238,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        Set<Artifact> result = new HashSet<Artifact>();
-        for ( Artifact a : artifactMapper.values() )
-        {
-            if ( a != null )
-            {
-                result.add( a );
-            }
-        }
-        return result;
+        return artifactMapper.values().stream().filter(Objects::nonNull)
+                .collect( Collectors.toSet() );
+
     }
 
     /**
@@ -307,15 +266,11 @@ public class ProxyArtifactStore
         }
         catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
-            ArtifactNotFoundException anfe = new ArtifactNotFoundException( artifact );
-            anfe.initCause( e );
-            throw anfe;
+            throw new ArtifactNotFoundException( artifact , e );
         }
         catch ( ArtifactResolutionException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( e.getMessage(), e );
         }
     }
 
@@ -346,9 +301,7 @@ public class ProxyArtifactStore
         }
         catch ( ArtifactResolutionException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( e.getMessage(), e );
         }
     }
 
@@ -376,15 +329,11 @@ public class ProxyArtifactStore
         catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
             ArtifactNotFoundException anfe = new ArtifactNotFoundException( artifact, e );
-//          Causes a java.lang.IllegalStateException: Can't overwrite cause            
-//            anfe.initCause( e );
             throw anfe;
         }
         catch ( ArtifactResolutionException e )
         {
-            IOException ioe = new IOException( e.getMessage() );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( e.getMessage(), e );
         }
     }
 
@@ -419,17 +368,16 @@ public class ProxyArtifactStore
         if ( version != null && version.endsWith( "-SNAPSHOT" ) && !StringUtils.isEmpty( artifactId )
             && !StringUtils.isEmpty( groupId ) )
         {
-            final org.apache.maven.artifact.Artifact artifact =
+            org.apache.maven.artifact.Artifact artifact =
                 artifactFactory.createDependencyArtifact( groupId, artifactId,
                                                           VersionRange.createFromVersion( version ), "pom", null,
                                                           "compile" );
-            final SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata =
-                new SnapshotArtifactRepositoryMetadata( artifact );
+            SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
             try
             {
                 repositoryMetadataManager.resolve( artifactRepositoryMetadata, remoteRepositories, localRepository );
 
-                final Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
+                Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
                 if ( artifactMetadata.getVersioning() != null
                     && artifactMetadata.getVersioning().getSnapshot() != null )
                 {
@@ -472,9 +420,9 @@ public class ProxyArtifactStore
         groupId = index == -1 ? null : path.substring( 0, index ).replace( '/', '.' );
         if ( !StringUtils.isEmpty( artifactId ) && !StringUtils.isEmpty( groupId ) )
         {
-            final org.apache.maven.artifact.Artifact artifact =
+            org.apache.maven.artifact.Artifact artifact =
                 artifactFactory.createDependencyArtifact( groupId, artifactId, anyVersion, "pom", null, "compile" );
-            final ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata( artifact );
+            ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata( artifact );
             try
             {
                 repositoryMetadataManager.resolve( artifactRepositoryMetadata, remoteRepositories, localRepository );

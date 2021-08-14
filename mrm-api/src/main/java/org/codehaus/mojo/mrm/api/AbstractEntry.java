@@ -16,6 +16,7 @@
 
 package org.codehaus.mojo.mrm.api;
 
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -119,12 +120,7 @@ public abstract class AbstractEntry
         {
             return false;
         }
-        if ( parent != null ? !parent.equals( abstractEntry.parent ) : abstractEntry.parent != null )
-        {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(parent, abstractEntry.parent);
     }
 
     /**
@@ -154,7 +150,7 @@ public abstract class AbstractEntry
      */
     public final String toPath()
     {
-        Stack<String> stack = new Stack<String>();
+        Stack<String> stack = new Stack<>();
         Entry root = getFileSystem().getRoot();
         Entry entry = this;
         do
@@ -163,8 +159,8 @@ public abstract class AbstractEntry
             entry = entry.getParent();
         }
         while ( entry != null && !root.equals( entry ) );
-        
-        StringBuffer buf = new StringBuffer();
+
+        StringBuilder buf = new StringBuilder();
         while ( stack.size() > 1 )
         {
             buf.append( stack.pop() );

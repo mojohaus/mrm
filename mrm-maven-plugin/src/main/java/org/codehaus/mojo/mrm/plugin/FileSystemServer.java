@@ -24,7 +24,6 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -260,22 +259,17 @@ public class FileSystemServer
          */
         public void run()
         {
-            try
-            {
-                Server server = new Server( requestedPort );
-                try
-                {
-                    Context root = new Context( server, "/", Context.SESSIONS );
-                    root.addServlet( new ServletHolder( new FileSystemServlet( fileSystem, settingsServletPath ) ), "/*" );
+            try {
+                Server server = new Server(requestedPort);
+                try {
+                    Context root = new Context(server, "/", Context.SESSIONS);
+                    root.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
                     server.start();
-                    synchronized ( lock )
-                    {
+                    synchronized (lock) {
                         boundPort = 0;
                         Connector[] connectors = server.getConnectors();
-                        for ( int i = 0; i < connectors.length; i++ )
-                        {
-                            if ( connectors[i].getLocalPort() > 0 )
-                            {
+                        for (int i = 0; i < connectors.length; i++) {
+                            if (connectors[i].getLocalPort() > 0) {
                                 boundPort = connectors[i].getLocalPort();
                                 break;
                             }
@@ -284,55 +278,23 @@ public class FileSystemServer
                         started = true;
                         lock.notifyAll();
                     }
-                }
-                catch ( IOException e )
-                {
-                    synchronized ( lock )
-                    {
+                } catch (Exception e) {
+                    synchronized (lock) {
                         problem = e;
                     }
                     throw e;
                 }
-                catch ( InterruptedException e )
-                {
-                    synchronized ( lock )
-                    {
-                        problem = e;
-                    }
-                    throw e;
-                }
-                catch ( Exception e )
-                {
-                    synchronized ( lock )
-                    {
-                        problem = e;
-                    }
-                    throw e;
-                }
-                synchronized ( lock )
-                {
-                    while ( !finishing )
-                    {
-                        try
-                        {
-                            lock.wait( 500 );
-                        }
-                        catch ( InterruptedException e )
-                        {
+                synchronized (lock) {
+                    while (!finishing) {
+                        try {
+                            lock.wait(500);
+                        } catch (InterruptedException e) {
                             // ignore
                         }
                     }
                 }
                 server.stop();
                 server.join();
-            }
-            catch ( IOException e )
-            {
-                // ignore
-            }
-            catch ( InterruptedException e )
-            {
-                // ignore
             }
             catch ( Exception e )
             {

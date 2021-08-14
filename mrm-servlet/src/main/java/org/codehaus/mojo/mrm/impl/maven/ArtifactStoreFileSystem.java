@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -134,7 +133,7 @@ public class ArtifactStoreFileSystem
     {
         if ( getRoot().equals( directory ) )
         {
-            Set<String> rootGroupIds = new TreeSet<String>( store.getGroupIds( "" ) );
+            Set<String> rootGroupIds = new TreeSet<>( store.getGroupIds( "" ) );
             Entry[] result = new Entry[rootGroupIds.size()];
             int index = 0;
             for ( String name : rootGroupIds )
@@ -143,8 +142,8 @@ public class ArtifactStoreFileSystem
             }
             return result;
         }
-        List<Entry> result = new ArrayList<Entry>();
-        Set<String> names = new HashSet<String>();
+        List<Entry> result = new ArrayList<>();
+        Set<String> names = new HashSet<>();
         String path = directory.toPath();
 
         try
@@ -157,11 +156,7 @@ public class ArtifactStoreFileSystem
                 names.add( entry.getName() );
             }
         }
-        catch ( MetadataNotFoundException e )
-        {
-            // ignore
-        }
-        catch ( IOException e )
+        catch ( MetadataNotFoundException | IOException e )
         {
             // ignore
         }
@@ -170,7 +165,7 @@ public class ArtifactStoreFileSystem
 
         // get all the groupId's that start with this groupId
         String groupIdPrefix = groupId + ".";
-        Set<String> groupIds = new TreeSet<String>( store.getGroupIds( groupId ) );
+        Set<String> groupIds = new TreeSet<>( store.getGroupIds( groupId ) );
         for ( String name : groupIds )
         {
             if ( !names.contains( name ) )
@@ -224,14 +219,8 @@ public class ArtifactStoreFileSystem
         }
 
         // sort
-        Collections.sort( result, new Comparator<Entry>()
-        {
-            public int compare( Entry o1, Entry o2 )
-            {
-                return ( o1 ).getName().compareTo( ( o2 ).getName() );
-            }
-        } );
-        return result.toArray( new Entry[result.size()] );
+        result.sort(Comparator.comparing(Entry::getName));
+        return result.toArray(new Entry[0]);
     }
 
     /**
@@ -313,11 +302,7 @@ public class ArtifactStoreFileSystem
                         store.get( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
-                    catch ( IOException e )
-                    {
-                        return null;
-                    }
-                    catch ( ArtifactNotFoundException e )
+                    catch ( IOException | ArtifactNotFoundException e )
                     {
                         return null;
                     }
@@ -343,11 +328,7 @@ public class ArtifactStoreFileSystem
                         store.get( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
-                    catch ( IOException e )
-                    {
-                        return null;
-                    }
-                    catch ( ArtifactNotFoundException e )
+                    catch ( IOException | ArtifactNotFoundException e )
                     {
                         return null;
                     }
@@ -382,11 +363,7 @@ public class ArtifactStoreFileSystem
                         store.get( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
-                    catch ( ArtifactNotFoundException e )
-                    {
-                        return null;
-                    }
-                    catch ( IOException e )
+                    catch ( ArtifactNotFoundException | IOException e )
                     {
                         return null;
                     }

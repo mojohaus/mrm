@@ -38,9 +38,6 @@ public class LocalRepo
      */
     public String toString()
     {
-        final StringBuffer sb = new StringBuffer();
-        sb.append( "Locally hosted (source: " ).append( source );
-        sb.append( ')' );
-        return sb.toString();
+        return "Locally hosted (source: " + source + ')';
     }
 }

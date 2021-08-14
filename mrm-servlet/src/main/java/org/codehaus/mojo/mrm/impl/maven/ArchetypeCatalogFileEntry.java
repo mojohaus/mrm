@@ -59,7 +59,6 @@ public class ArchetypeCatalogFileEntry
      *
      * @param fileSystem the file system.
      * @param parent     the parent directory.
-     * @param path       the path of the metadata.
      * @param store      the artifact store.
      * @since 1.0
      */
@@ -85,9 +84,7 @@ public class ArchetypeCatalogFileEntry
         }
         catch ( ArchetypeCatalogNotFoundException e )
         {
-            IOException ioe = new IOException( "File not found" );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( "File not found", e);
         }
     }
 
@@ -123,9 +120,7 @@ public class ArchetypeCatalogFileEntry
         }
         catch ( ArchetypeCatalogNotFoundException e )
         {
-            IOException ioe = new IOException( "File not found" );
-            ioe.initCause( e );
-            throw ioe;
+            throw new IOException( "File not found", e);
         }
     }
 

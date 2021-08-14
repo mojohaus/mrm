@@ -24,7 +24,9 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -65,7 +67,6 @@ public class CompositeFileSystem
      */
     public CompositeFileSystem( FileSystem[] delegates )
     {
-        delegates.getClass();
         this.delegates = delegates;
     }
 
@@ -74,7 +75,7 @@ public class CompositeFileSystem
      */
     public Entry[] listEntries( DirectoryEntry directory )
     {
-        Map<String, Entry> result = new TreeMap<String, Entry>();
+        Map<String, Entry> result = new TreeMap<>();
         for ( FileSystem delegate : delegates )
         {
             Entry[] entries = delegate.listEntries( DefaultDirectoryEntry.equivalent( delegate, directory ) );
@@ -99,7 +100,7 @@ public class CompositeFileSystem
                 }
             }
         }
-        return (Entry[]) result.values().toArray( new Entry[result.size()] );
+        return result.values().toArray(new Entry[0]);
     }
 
     /**
@@ -107,20 +108,13 @@ public class CompositeFileSystem
      */
     public Entry get( String path )
     {
-        for ( FileSystem delegate : delegates )
-        {
-            Entry entry = delegate.get( path );
-            if ( entry == null )
-            {
-                continue;
-            }
-            if ( entry instanceof DirectoryEntry )
-            {
-                return DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry );
-            }
-            return entry;
-        }
-        return null;
+        return Arrays.stream(delegates).map(fileSystem -> fileSystem.get(path))
+                .filter(Objects::nonNull)
+                .filter(entry -> entry instanceof DirectoryEntry)
+                .map(entry -> DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ))
+                .findFirst()
+                .orElse(null);
+
     }
 
     /**

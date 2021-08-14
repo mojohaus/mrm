@@ -108,9 +108,6 @@ public class MockRepo
      */
     public String toString()
     {
-        final StringBuffer sb = new StringBuffer();
-        sb.append( "Mock content (source: " ).append( source );
-        sb.append( ')' );
-        return sb.toString();
+        return "Mock content (source: " + source + ')';
     }
 }
