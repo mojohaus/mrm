@@ -19,10 +19,10 @@ package org.codehaus.mojo.mrm.plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -32,6 +32,7 @@ import java.net.UnknownHostException;
  */
 public class FileSystemServer
 {
+
     /**
      * Guard for {@link #starting}, {@link #started}, {@link #finishing}, {@link #finished}, {@link #boundPort}
      * and {@link #problem}.
@@ -262,18 +263,13 @@ public class FileSystemServer
             try {
                 Server server = new Server(requestedPort);
                 try {
-                    Context root = new Context(server, "/", Context.SESSIONS);
-                    root.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
+                    ServletContextHandler context = new ServletContextHandler();
+                    context.setContextPath("/");
+                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
+                    server.setHandler(context);
                     server.start();
                     synchronized (lock) {
-                        boundPort = 0;
-                        Connector[] connectors = server.getConnectors();
-                        for (int i = 0; i < connectors.length; i++) {
-                            if (connectors[i].getLocalPort() > 0) {
-                                boundPort = connectors[i].getLocalPort();
-                                break;
-                            }
-                        }
+                        boundPort = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
                         starting = false;
                         started = true;
                         lock.notifyAll();
@@ -282,6 +278,7 @@ public class FileSystemServer
                     synchronized (lock) {
                         problem = e;
                     }
+                    e.printStackTrace();
                     throw e;
                 }
                 synchronized (lock) {
