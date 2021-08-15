@@ -89,6 +89,7 @@
     <scmpublish.content>target/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
+    <jetty.version>9.4.43.v20210629</jetty.version>
   </properties>
 
   <dependencyManagement>
@@ -139,11 +140,6 @@
         <version>3.4</version>
       </dependency>
       <dependency>
-        <groupId>backport-util-concurrent</groupId>
-        <artifactId>backport-util-concurrent</artifactId>
-        <version>3.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-project</artifactId>
         <version>${mavenVersion}</version>
@@ -165,8 +161,8 @@
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -194,9 +190,9 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.mortbay.jetty</groupId>
+          <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
-          <version>8.1.16.v20140903</version>
+          <version>${jetty.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
@@ -273,15 +269,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>disable-doclint-for-jdk8</id>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <properties>
-        <additionalparam>-Xdoclint:none</additionalparam>
-      </properties>
-    </profile>
     <profile>
       <!-- run integration tests
           to use this profile:
