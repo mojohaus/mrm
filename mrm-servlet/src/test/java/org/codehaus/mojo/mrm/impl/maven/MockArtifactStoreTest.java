@@ -72,19 +72,15 @@ public class MockArtifactStoreTest
         Artifact mainArtifact = new Artifact( "localhost", "mrm-15", "1.0", "jar" );
         assertNotNull( artifactStore.get( mainArtifact ) );
 
-        List<String> names = new ArrayList<String>();
-        JarInputStream jis = new JarInputStream( artifactStore.get( mainArtifact ) );
-        try
+        List<String> names = new ArrayList<>();
+
+        try (JarInputStream jis = new JarInputStream( artifactStore.get( mainArtifact ) ) )
         {
             JarEntry jarEntry;
             while ( ( jarEntry = jis.getNextJarEntry() ) != null )
             {
                 names.add( jarEntry.getName() );
             }
-        }
-        finally
-        {
-            jis.close();
         }
         
         assertTrue( names.contains( "README.txt" ) );
