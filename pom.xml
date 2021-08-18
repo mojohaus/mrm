@@ -173,7 +173,7 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>1.9.0</version>
+        <version>3.11.2</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -251,6 +251,7 @@
           <streamLogs>true</streamLogs>
           <settingsFile>src/it/settings.xml</settingsFile>
           <postBuildHookScript>verify</postBuildHookScript>
+          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
         </configuration>
       </plugin>
       <plugin>
@@ -267,42 +268,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <!-- run integration tests
-          to use this profile:
-          or run integration tests: mvn -Prun-its
-          Always run on travis
-      -->
-      <id>run-its</id>
-      <activation>
-        <property>
-          <name>env.CONTINUOUS_INTEGRATION</name>
-        </property>
-      </activation>
-      <build>
-        <defaultGoal>verify</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-invoker-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>integration-test</id>
-                <goals>
-                  <goal>install</goal>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <streamLogs>true</streamLogs>
-                  <debug>false</debug>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>
