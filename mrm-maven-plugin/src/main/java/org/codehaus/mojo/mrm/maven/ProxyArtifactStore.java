@@ -318,7 +318,7 @@ public class ProxyArtifactStore
         try
         {
             artifactResolver.resolve( mavenArtifact, remoteRepositories, localRepository );
-            final File file = mavenArtifact.getFile();
+            File file = mavenArtifact.getFile();
             if ( file != null && file.isFile() )
             {
                 addResolved( artifact );
@@ -328,8 +328,7 @@ public class ProxyArtifactStore
         }
         catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
-            ArtifactNotFoundException anfe = new ArtifactNotFoundException( artifact, e );
-            throw anfe;
+            throw new ArtifactNotFoundException( artifact, e );
         }
         catch ( ArtifactResolutionException e )
         {
