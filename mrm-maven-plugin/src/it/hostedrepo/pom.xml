@@ -23,7 +23,7 @@
           </execution>
         </executions>
         <configuration>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          <localRepositoryPath>${project.build.directory}/local-repo-it</localRepositoryPath>
           <projectsDirectory>src/it</projectsDirectory>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
           <settingsFile>src/it/settings.xml</settingsFile>

@@ -251,6 +251,7 @@
           <streamLogs>true</streamLogs>
           <settingsFile>src/it/settings.xml</settingsFile>
           <postBuildHookScript>verify</postBuildHookScript>
+          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
         </configuration>
       </plugin>
       <plugin>
@@ -276,11 +277,6 @@
           Always run on travis
       -->
       <id>run-its</id>
-      <activation>
-        <property>
-          <name>env.CONTINUOUS_INTEGRATION</name>
-        </property>
-      </activation>
       <build>
         <defaultGoal>verify</defaultGoal>
         <plugins>
@@ -296,6 +292,7 @@
                 <configuration>
                   <streamLogs>true</streamLogs>
                   <debug>false</debug>
+                  <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                 </configuration>
               </execution>
             </executions>
