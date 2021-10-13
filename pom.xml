@@ -89,7 +89,7 @@
     <scmpublish.content>target/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
-    <jetty.version>9.4.43.v20210629</jetty.version>
+    <jetty.version>11.0.7</jetty.version>
   </properties>
 
   <dependencyManagement>
