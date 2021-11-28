@@ -42,9 +42,9 @@ public interface ArtifactStore
      * </p>
      * If there are known to be groupIds: org.codehaus.mojo, org.apache.maven and commons-io then
      * <pre>
-     * assertEquals(new HashSet&lt;String>(Arrays.asList("commons-io","org")), getGroupIds("")); // Query root level
-     * assertEquals(new HashSet&lt;String>(Arrays.asList("org.codehaus", "org.apache")), getGroupIds("org")); // query with a prefix
-     * assertEquals(new HashSet&lt;String>(Arrays.asList("org.codehaus.mojo")), getGroupIds("org.codehaus"));
+     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("commons-io","org")), getGroupIds("")); // Query root level
+     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("org.codehaus", "org.apache")), getGroupIds("org")); // query with a prefix
+     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("org.codehaus.mojo")), getGroupIds("org.codehaus"));
      * </pre>
      * <p>
      * Note that while the existence of groupId <code>org.codehaus.mojo</code> implies that there must be groupIds
