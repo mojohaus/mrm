@@ -31,7 +31,8 @@ import java.util.Map;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @description Starts a mock repository manager as part of a maven build for use by integration tests.
+ *
+ * Starts a mock repository manager as part of a maven build for use by integration tests.
  */
 @Mojo( name = "start", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresProject = false, threadSafe = true )
 public class StartMojo

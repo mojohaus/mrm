@@ -34,7 +34,6 @@ public class ArchetypeCatalogNotFoundException
     /**
      * Creates a new {@link ArchetypeCatalogNotFoundException}.
      *
-     * @param path the path of the metadata that was not found.
      * @since 1.0
      */
     public ArchetypeCatalogNotFoundException()
@@ -46,7 +45,6 @@ public class ArchetypeCatalogNotFoundException
      * Creates a new {@link ArchetypeCatalogNotFoundException}.
      *
      * @param message The message.
-     * @param path    the path of the metadata that was not found.
      * @since 1.0
      */
     public ArchetypeCatalogNotFoundException( String message )
@@ -58,7 +56,6 @@ public class ArchetypeCatalogNotFoundException
      * Creates a new {@link ArchetypeCatalogNotFoundException}.
      *
      * @param message The message.
-     * @param path    the path of the metadata that was not found.
      * @param cause   the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */

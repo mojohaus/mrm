@@ -34,6 +34,7 @@ public interface ArtifactStore
 {
 
     /**
+     * <p>
      * Returns the set of groupIds that begin with the specified prefix. Some implementations may be lazy caching
      * implementations, in which case it is permitted to return either the empty set, or only those entries which
      * have been loaded into the cache, so consumers should not assume that a missing entry implies non-existence.
@@ -45,6 +46,7 @@ public interface ArtifactStore
      * assertEquals(new HashSet&lt;String>(Arrays.asList("org.codehaus", "org.apache")), getGroupIds("org")); // query with a prefix
      * assertEquals(new HashSet&lt;String>(Arrays.asList("org.codehaus.mojo")), getGroupIds("org.codehaus"));
      * </pre>
+     * <p>
      * Note that while the existence of groupId <code>org.codehaus.mojo</code> implies that there must be groupIds
      * <code>org</code> and <code>org.codehaus</code> there is no requirement that an implementation should
      * report these inferred parent groupIds, it is just strongly encouraged.
@@ -61,6 +63,7 @@ public interface ArtifactStore
     Set<String> getGroupIds( String parentGroupId );
 
     /**
+     * <p>
      * Returns the set of artifactIds that belong in the specified groupId. Some implementations may be lazy caching
      * implementations, in which case it is permitted to return either the empty set, or only those entries which
      * have been loaded into the cache, so consumers should not assume that a missing entry implies non-existence.
@@ -77,6 +80,7 @@ public interface ArtifactStore
     Set<String> getArtifactIds( String groupId );
 
     /**
+     * <p>
      * Returns the set of versions of the specified groupId:artifactId. Some implementations may be lazy caching
      * implementations, in which case it is permitted to return either the empty set, or only those entries which
      * have been loaded into the cache, so consumers should not assume that a missing entry implies non-existence.
@@ -200,7 +204,7 @@ public interface ArtifactStore
     
     /**
      * 
-     * @return 
+     * @return ArchetypeCatalog
      * @throws IOException                       if an I/O error occurs.
      * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
      * @since 1.0
@@ -209,7 +213,7 @@ public interface ArtifactStore
     
     /**
      * 
-     * @return
+     * @return long
      * @throws IOException                       if an I/O error occurs.
      * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
      * @since 1.0
@@ -218,7 +222,7 @@ public interface ArtifactStore
 
     /**
      * 
-     * @param content
+     * @param content the content
      * @throws IOException                       if an I/O error occurs.
      * @since 1.0
      */

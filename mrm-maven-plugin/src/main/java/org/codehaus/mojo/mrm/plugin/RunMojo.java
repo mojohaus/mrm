@@ -30,7 +30,8 @@ import org.codehaus.plexus.util.StringUtils;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @description Starts a mock repository manager for manual testing.
+ *
+ * Starts a mock repository manager for manual testing.
  */
 @Mojo( name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true )
 public class RunMojo

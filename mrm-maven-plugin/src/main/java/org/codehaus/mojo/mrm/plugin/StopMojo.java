@@ -28,7 +28,8 @@ import java.util.Map;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- * @description Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
+ *
+ * Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
  * by integration tests.
  */
 @Mojo( name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true )
