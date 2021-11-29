@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.codehaus.mojo.mrm.api","l":"AbstractEntryTest"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.codehaus.mojo.mrm.api.maven","l":"ArtifactTest"}];updateSearchResults();

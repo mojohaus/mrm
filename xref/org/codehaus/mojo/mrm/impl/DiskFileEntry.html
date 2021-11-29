@@ -13,7 +13,7 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * You may obtain a copy of the License at</em>
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *     <a href="http://www.apache.org/licenses/LICENSE-2." target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.</a>0</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *     <a href="http://www.apache.org/licenses/LICENSE-2.0" target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.0</a></em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * Unless required by applicable law or agreed to in writing, software</em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * distributed under the License is distributed on an "AS IS" BASIS,</em>
@@ -38,8 +38,8 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> * @since 1.0</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html">DiskFileEntry</a>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/codehaus/mojo/mrm/api/BaseFileEntry.html">BaseFileEntry</a>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="DiskFileEntry" href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html#DiskFileEntry">DiskFileEntry</a>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">extends</strong> <a name="BaseFileEntry" href="../../../../../org/codehaus/mojo/mrm/api/BaseFileEntry.html#BaseFileEntry">BaseFileEntry</a>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  {
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      <em class="jxr_javadoccomment">/**</em>
@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * @param file       the backing file.</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * @since 1.0</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html">DiskFileEntry</a>( FileSystem fileSystem, DirectoryEntry parent, File file )
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> <a name="DiskFileEntry" href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html#DiskFileEntry">DiskFileEntry</a>( <a name="FileSystem" href="../../../../../org/codehaus/mojo/mrm/api/FileSystem.html#FileSystem">FileSystem</a> fileSystem, <a name="DirectoryEntry" href="../../../../../org/codehaus/mojo/mrm/api/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> parent, File file )
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">this</strong>( fileSystem, parent, file.getName(), file );
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      }
@@ -80,7 +80,7 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * @param file       the backing file.</em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * @since 1.0</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html">DiskFileEntry</a>( FileSystem fileSystem, DirectoryEntry parent, String name, File file )
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">public</strong> <a name="DiskFileEntry" href="../../../../../org/codehaus/mojo/mrm/impl/DiskFileEntry.html#DiskFileEntry">DiskFileEntry</a>( <a name="FileSystem" href="../../../../../org/codehaus/mojo/mrm/api/FileSystem.html#FileSystem">FileSystem</a> fileSystem, <a name="DirectoryEntry" href="../../../../../org/codehaus/mojo/mrm/api/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> parent, String name, File file )
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      {
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">super</strong>( fileSystem, parent, name );
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">this</strong>.file = file;
@@ -113,6 +113,6 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2018 <a href="http://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2021 <a href="https://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
 </body>
 </html>

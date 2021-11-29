@@ -15,7 +15,7 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * You may obtain a copy of the License at</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *     <a href="http://www.apache.org/licenses/LICENSE-2." target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.</a>0</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *     <a href="http://www.apache.org/licenses/LICENSE-2.0" target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.0</a></em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * Unless required by applicable law or agreed to in writing, software</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * distributed under the License is distributed on an "AS IS" BASIS,</em>
@@ -40,8 +40,8 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment"> * @since 1.0</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/codehaus/mojo/mrm/plugin/AbstractStartMojo.html">AbstractStartMojo</a>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">extends</strong> <a href="../../../../../org/codehaus/mojo/mrm/plugin/AbstractMRMMojo.html">AbstractMRMMojo</a>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="AbstractStartMojo" href="../../../../../org/codehaus/mojo/mrm/plugin/AbstractStartMojo.html#AbstractStartMojo">AbstractStartMojo</a>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">extends</strong> <a name="AbstractMRMMojo" href="../../../../../org/codehaus/mojo/mrm/plugin/AbstractMRMMojo.html#AbstractMRMMojo">AbstractMRMMojo</a>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">     * The port to serve the repository on. If not specified a random port will be used.</em>
@@ -63,9 +63,9 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * @param artifactStore the artifact store to serve.</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * @return the file system server.</em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../org/codehaus/mojo/mrm/plugin/FileSystemServer.html">FileSystemServer</a> createFileSystemServer( ArtifactStore artifactStore )
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">protected</strong> <a name="FileSystemServer" href="../../../../../org/codehaus/mojo/mrm/plugin/FileSystemServer.html#FileSystemServer">FileSystemServer</a> createFileSystemServer( ArtifactStore artifactStore )
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      {
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/codehaus/mojo/mrm/plugin/FileSystemServer.html">FileSystemServer</a>( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="FileSystemServer" href="../../../../../org/codehaus/mojo/mrm/plugin/FileSystemServer.html#FileSystemServer">FileSystemServer</a>( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>                                       Math.max( 0, Math.min( port, 65535 ) ),
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>                                       <strong class="jxr_keyword">new</strong> AutoDigestFileSystem( <strong class="jxr_keyword">new</strong> ArtifactStoreFileSystem( artifactStore ) ), 
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>                                       getSettingsServletPath() );
@@ -97,10 +97,10 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">return</strong> createProxyArtifactStore();
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          }
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          getLog().info( <span class="jxr_string">"Configuring Mock Repository Manager..."</span> );
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          List&lt;ArtifactStore&gt; stores = <strong class="jxr_keyword">new</strong> ArrayList&lt;ArtifactStore&gt;();
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          List&lt;ArtifactStore&gt; stores = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">if</strong> ( repositories == <strong class="jxr_keyword">null</strong> || repositories.length == 0 )
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              repositories = <strong class="jxr_keyword">new</strong> ArtifactStoreFactory[]{ <strong class="jxr_keyword">new</strong> ProxyRepo() };
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              repositories = <strong class="jxr_keyword">new</strong> ArtifactStoreFactory[]{ <strong class="jxr_keyword">new</strong> <a name="ProxyRepo" href="../../../../../org/codehaus/mojo/mrm/plugin/ProxyRepo.html#ProxyRepo">ProxyRepo</a>() };
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          FactoryHelper helper = createFactoryHelper();
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">for</strong> ( ArtifactStoreFactory artifactStoreFactory : repositories )
@@ -112,13 +112,13 @@
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             getLog().info( <span class="jxr_string">"  "</span> + artifactStoreFactory.toString() );
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>             stores.add( artifactStoreFactory.newInstance() );
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         }
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         ArtifactStore[] artifactStores = (ArtifactStore[]) stores.toArray( <strong class="jxr_keyword">new</strong> ArtifactStore[stores.size()] );
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         ArtifactStore[] artifactStores = stores.toArray(<strong class="jxr_keyword">new</strong> ArtifactStore[0]);
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">return</strong> artifactStores.length == 1 ? artifactStores[0] : <strong class="jxr_keyword">new</strong> CompositeArtifactStore( artifactStores );
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     }
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> 
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2018 <a href="http://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2021 <a href="https://www.mojohaus.org">MojoHaus</a>. All rights reserved.</div>
 </body>
 </html>
