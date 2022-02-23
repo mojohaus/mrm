@@ -90,6 +90,7 @@
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
     <jetty.version>9.4.43.v20210629</jetty.version>
+    <project.build.outputTimestamp>2022-01-18T09:14:02Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
