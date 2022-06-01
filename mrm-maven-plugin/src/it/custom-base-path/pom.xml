@@ -2,12 +2,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <groupId>org.mojohaus.mrm.its</groupId>
-  <artifactId>hostedrepo</artifactId>
+  <artifactId>custom-base-path</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -28,6 +28,7 @@
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
           <settingsFile>src/it/settings.xml</settingsFile>
           <filterProperties>
+            <maven-compiler-plugin.version>@maven-compiler-plugin.version@</maven-compiler-plugin.version>
             <mrm.distribution.url>${mrm.distribution.url}</mrm.distribution.url>
             <mrm.repository.url>${mrm.repository.url}</mrm.repository.url>
           </filterProperties>
@@ -42,26 +43,14 @@
         <version>@project.version@</version>
         <executions>
           <execution>
-            <id>distribution</id>
-            <goals>
-              <goal>start</goal>
-              <goal>stop</goal>
-            </goals>
-            <configuration>
-              <propertyName>mrm.distribution.url</propertyName>
-              <repositories>
-                <hostedRepo>
-                  <target>${project.build.directory}/hosted-repo</target>
-                </hostedRepo>
-              </repositories>
-            </configuration>
-          </execution>
-          <execution>
             <id>repository</id>
             <goals>
               <goal>start</goal>
               <goal>stop</goal>
             </goals>
+            <configuration>
+              <basePath>/foo/bar</basePath>
+            </configuration>
           </execution>
         </executions>
       </plugin>

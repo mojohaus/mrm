@@ -42,6 +42,18 @@ public abstract class AbstractStartMojo
     private int port;
 
     /**
+     * The base path under which the repository will be served.
+     * <p>
+     * By default, {@code org.acme:my-artifact:pom:1.2.3} will be served under
+     * {@code http://localhost:<port>/org/acme/my-artifact/1.2.3/my-artifact-1.2.3.pom}.
+     * <p>
+     * If {@code basePath} is set to e.g. {@code foo/bar} then {@code org.acme:my-artifact:pom:1.2.3} will be served
+     * under {@code http://localhost:<port>/foo/bar/org/acme/my-artifact/1.2.3/my-artifact-1.2.3.pom}.
+     */
+    @Parameter( property = "mrm.basePath", defaultValue = "/" )
+    private String basePath;
+
+    /**
      * The repositories to serve. When more than one repository is specified, a merged repository view
      * of those will be used. If none specified then a proxy of the invoking Maven's repositories will
      * be served.
@@ -59,13 +71,14 @@ public abstract class AbstractStartMojo
     {
         return new FileSystemServer( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
                                      Math.max( 0, Math.min( port, 65535 ) ),
-                                     new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ), 
+                                     basePath,
+                                     new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ),
                                      getSettingsServletPath() );
     }
 
     /**
-     * When set, this points to the to the location from where the settings file can be downloaded. 
-     * 
+     * When set, this points to the to the location from where the settings file can be downloaded.
+     *
      * @return the servlet path to the settings file of {@code null}
      */
     protected String getSettingsServletPath()

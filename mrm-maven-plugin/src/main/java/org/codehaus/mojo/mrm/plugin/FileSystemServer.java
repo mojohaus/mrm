@@ -95,7 +95,12 @@ public class FileSystemServer
      * The port to try and serve on.
      */
     private final int requestedPort;
-    
+
+    /**
+     * The context path where to bind the {@code fileSystem}.
+     */
+    private final String contextPath;
+
     /**
      * The path to settingsFile containing the configuration to connect to this repository manager.
      */
@@ -108,12 +113,35 @@ public class FileSystemServer
      * @param port       The port to server on or <code>0</code> to pick a random, but available, port.
      * @param fileSystem the file system to serve.
      */
-    public FileSystemServer( String name, int port, FileSystem fileSystem, String settingsServletPath )
+    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem, String settingsServletPath )
     {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
+        this.contextPath = sanitizeContextPath(contextPath);
         this.settingsServletPath = settingsServletPath;
+    }
+
+    /**
+     * Sanitize the given {@code contextPath} by prepending slash if necessary and/or removing the trailing slash if necessary
+     * @param contextPath the contextPath to sanitize
+     * @return sanitized {@code contextPath}
+     */
+    static String sanitizeContextPath(String contextPath)
+    {
+        if ( contextPath == null || contextPath.isEmpty() || contextPath.equals("/") )
+        {
+            return "/";
+        }
+        if ( !contextPath.startsWith("/") )
+        {
+            return "/" + contextPath;
+        }
+        if ( contextPath.endsWith("/") )
+        {
+            return contextPath.substring( 0, contextPath.length() - 1 );
+        }
+        return contextPath;
     }
 
     /**
@@ -235,20 +263,21 @@ public class FileSystemServer
      */
     public String getUrl()
     {
-        return "http://localhost:" + getPort();
+        return "http://localhost:" + getPort() + (contextPath.equals("/") ? "" : contextPath);
     }
 
     /**
      * Same as {@link #getUrl()}, but now for remote users
-     * 
-     * @return the scheme + raw IP address + port 
-     * @throws UnknownHostException if the local host name could not be resolved into an address. 
+     *
+     * @return the scheme + raw IP address + port + contextPath
+     * @throws UnknownHostException if the local host name could not be resolved into an address.
      */
     public String getRemoteUrl() throws UnknownHostException
     {
-        return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort();
+        return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort()
+                + (contextPath.equals("/") ? "" : contextPath);
     }
-    
+
     /**
      * The work to monitor and control the Jetty instance that hosts the file system.
      */
@@ -264,7 +293,7 @@ public class FileSystemServer
                 Server server = new Server(requestedPort);
                 try {
                     ServletContextHandler context = new ServletContextHandler();
-                    context.setContextPath("/");
+                    context.setContextPath(contextPath);
                     context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
                     server.setHandler(context);
                     server.start();
