@@ -16,19 +16,17 @@
   ~ limitations under the License.
   -->
 
-<project name="Mock Repository Manager">
-
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
+         name="Mock Repository Manager">
   <body>
-    <menu ref="parent"/>
+    <menu ref="parent" inherit="top"/>
+
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
     </menu>
-    <menu name="Modules">
-      <item name="API" href="mrm-api/index.html"/>
-      <item name="Servlet" href="mrm-servlet/index.html"/>
-      <item name="Webapp" href="mrm-webapp/index.html"/>
-      <item name="Maven Plugin" href="mrm-maven-plugin/index.html"/>
-    </menu>
-    <menu ref="reports"/>
+
+    <menu ref="modules"/>
+    <menu ref="reports" inherit="bottom"/>
   </body>
 </project>

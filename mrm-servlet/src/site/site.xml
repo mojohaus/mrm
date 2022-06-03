@@ -16,14 +16,12 @@
   ~ limitations under the License.
   -->
 
-<project name="Mock Repository Manager Servlet">
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
+         name="Mock Repository Manager Servlet">
   <body>
-    <menu name="Parent Project">
-      <item name="Mock Repository Manager" href="../index.html"/>
-    </menu>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
     </menu>
-    <menu ref="reports"/>
   </body>
 </project>
