@@ -76,12 +76,21 @@ Using with Maven Invoker and Repositories
         </executions>
         <configuration>
           <repositories>
+
+            <!-- serve content from mock repository -->
             <mockRepo>
               <source>src/it/mrm/repository</source>
               <!-- cloneTo>target/mock-repo</cloneTo -->
               <!-- cloneClean>true</cloneClean -->
               <!-- lazyArchiver>false</lazyArchiver -->
             </mockRepo>
+
+            <!-- serve content installed by maven-invoker-plugin -->
+            <localRepo>
+              <source>\${project.build.directory}/local-repo</source>
+            </localRepo>
+
+            <!-- pass everything else to current Maven instance -->
             <proxyRepo/>
           </repositories>
         </configuration>
@@ -110,7 +119,7 @@ Using with Maven Invoker and Repositories
 
   Additionally, when <<<mrm:start>>> is invoked, it will bind to an available port and set the property
   <<<repository.proxy.url>>> to the URL on which the repository is being hosted, and the repository content
-  will be based on the mock content generated from the following files in <<<src/it/mrm/repository>>>:
+  will be based on the <<<mockRepo>>> content generated from the following files in <<<src/it/mrm/repository>>>:
   
   * <<<**/*.pom>>>
   
@@ -123,8 +132,10 @@ Using with Maven Invoker and Repositories
   * <<<archetype-catalog.xml>>> 
 
   []
-  
-  In addition, all the repositories available to the current Maven instance will be available too.
+
+  In additional content install by <<<maven-invoker-plugin:install>>> will be available by <<localRepo>>
+
+  Finally thanks to <<<proxyRepo>>>, all the repositories available to the current Maven instance will be available too.
 
   We tell <<<maven-invoker-plugin>>> to use the <<<settings.xml>>> file from <<<src/it/mrm/settings.xml>>>
   which will look something like:
