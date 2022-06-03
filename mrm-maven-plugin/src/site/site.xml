@@ -16,12 +16,10 @@
   ~ limitations under the License.
   -->
 
-<project name="Mock Repository Manager Maven Plugin">
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
+         name="Mock Repository Manager Maven Plugin">
   <body>
-    <menu name="Parent Project">
-      <item name="Codehaus Mojo Parent" href="..//index.html"/>
-      <item name="Mock Repository Manager" href="../mrm/index.html"/>
-    </menu>
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
@@ -31,6 +29,5 @@
       <item name="Using with Maven Invoker (download)" href="examples/invoker-tests.html"/>
       <item name="Using with Maven Invoker (upload)" href="examples/invoker-tests-dist.html"/>
     </menu>
-    <menu ref="reports"/>
   </body>
 </project>
