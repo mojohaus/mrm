@@ -40,7 +40,6 @@ public class ArtifactStoreFileSystemTest
 
     @Test
     public void testGroupMetadataRegex()
-        throws Exception
     {
         Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher( "/commons/maven-metadata.xml" );
         assertTrue( matcher.matches() );
@@ -56,7 +55,6 @@ public class ArtifactStoreFileSystemTest
 
     @Test
     public void testArtifactRegex()
-        throws Exception
     {
         Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher( "/commons/maven-metadata.xml" );
         assertFalse( matcher.matches() );
@@ -109,7 +107,6 @@ public class ArtifactStoreFileSystemTest
 
     @Test
     public void testSnapshotArtifactRegex()
-        throws Exception
     {
         Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher( "/commons/maven-metadata.xml" );
         assertFalse( matcher.matches() );
@@ -159,7 +156,7 @@ public class ArtifactStoreFileSystemTest
     public void testSiteXmlReleaseVersion() throws Exception
     {
         ArtifactStore store = mock( ArtifactStore.class );
-        when( store.get( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
+        when( store.getSize( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
         FileEntry entry = (FileEntry) system.get( "/localhost/mmockrm-5/1/mmockrm-5-1-site_en.xml" );
         assertNull( entry );
@@ -169,7 +166,7 @@ public class ArtifactStoreFileSystemTest
     public void testSiteXmlSnapshotVersion() throws Exception
     {
         ArtifactStore store = mock( ArtifactStore.class );
-        when( store.get( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
+        when( store.getSize( isA( Artifact.class ) ) ).thenThrow( ArtifactNotFoundException.class );
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem( store );
         FileEntry entry = (FileEntry) system.get( "/localhost/mmockrm-5/1.0-SNAPSHOT/mmockrm-5-1.0-SNAPSHOT-site_en.xml" );
         assertNull( entry );

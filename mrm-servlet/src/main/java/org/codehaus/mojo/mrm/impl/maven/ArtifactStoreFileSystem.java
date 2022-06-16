@@ -126,9 +126,7 @@ public class ArtifactStoreFileSystem
         this.store = store;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Entry[] listEntries( DirectoryEntry directory )
     {
         if ( getRoot().equals( directory ) )
@@ -164,7 +162,6 @@ public class ArtifactStoreFileSystem
         String groupId = path.replace( '/', '.' );
 
         // get all the groupId's that start with this groupId
-        String groupIdPrefix = groupId + ".";
         Set<String> groupIds = new TreeSet<>( store.getGroupIds( groupId ) );
         for ( String name : groupIds )
         {
@@ -223,9 +220,7 @@ public class ArtifactStoreFileSystem
         return result.toArray(new Entry[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected Entry get( DirectoryEntry parent, String name )
     {
         String path = "/";
@@ -299,7 +294,8 @@ public class ArtifactStoreFileSystem
                                                       matcher.group( 10 ) );
                     try
                     {
-                        store.get( artifact );
+                        // check if artifact exist
+                        store.getSize( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
                     catch ( IOException | ArtifactNotFoundException e )
@@ -325,7 +321,8 @@ public class ArtifactStoreFileSystem
                                                       matcher.group( 10 ), timestamp, buildNumber );
                     try
                     {
-                        store.get( artifact );
+                        // check if artifact exist
+                        store.getSize( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
                     catch ( IOException | ArtifactNotFoundException e )
@@ -360,7 +357,8 @@ public class ArtifactStoreFileSystem
                     Artifact artifact = new Artifact( groupId, artifactId, version, classifier, type );
                     try
                     {
-                        store.get( artifact );
+                        // check if artifact exist
+                        store.getSize( artifact );
                         return new ArtifactFileEntry( this, parent, artifact, store );
                     }
                     catch ( ArtifactNotFoundException | IOException e )
@@ -376,9 +374,7 @@ public class ArtifactStoreFileSystem
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified( DirectoryEntry entry )
         throws IOException
     {
