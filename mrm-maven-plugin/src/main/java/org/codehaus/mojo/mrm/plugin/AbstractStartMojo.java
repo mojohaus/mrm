@@ -49,6 +49,8 @@ public abstract class AbstractStartMojo
      * <p>
      * If {@code basePath} is set to e.g. {@code foo/bar} then {@code org.acme:my-artifact:pom:1.2.3} will be served
      * under {@code http://localhost:<port>/foo/bar/org/acme/my-artifact/1.2.3/my-artifact-1.2.3.pom}.
+     *
+     * @since 1.4.0
      */
     @Parameter( property = "mrm.basePath", defaultValue = "/" )
     private String basePath;

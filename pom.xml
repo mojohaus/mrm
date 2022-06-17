@@ -35,11 +35,13 @@
     Mock Repository Manager for Maven. The Mock Repository Manager provides a mock Maven
     repository manager.
   </description>
+  <url>https://www.mojohaus.org/mrm</url>
   <inceptionYear>2009</inceptionYear>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -73,16 +75,20 @@
   <scm>
     <connection>scm:git:https://github.com/mojohaus/mrm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mojohaus/mrm.git</developerConnection>
-    <url>https://github.com/mojohaus/mrm</url>
+    <url>https://github.com/mojohaus/mrm/tree/master</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/mojohaus/mrm/issues</url>
   </issueManagement>
+  <ciManagement>
+    <system>GitHub</system>
+    <url>https://github.com/mojohaus/mrm/actions</url>
+  </ciManagement>
 
   <properties>
-    <scmpublish.content>target/staging/mrm</scmpublish.content>
+    <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
     <jetty.version>9.4.46.v20220331</jetty.version>
@@ -180,30 +186,17 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-publish-plugin</artifactId>
-          <configuration>
-            <content>${project.build.directory}/staging/mrm</content>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
           <version>${jetty.version}</version>
         </plugin>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.1.0</version>
         <executions>
           <execution>
             <id>enforce-java</id>
@@ -238,18 +231,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-invoker-plugin</artifactId>
-        <configuration>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <showErrors>true</showErrors>
-          <streamLogs>true</streamLogs>
-          <settingsFile>src/it/settings.xml</settingsFile>
-          <postBuildHookScript>verify</postBuildHookScript>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

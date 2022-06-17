@@ -19,6 +19,17 @@
 <project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
          name="Mock Repository Manager">
+
+  <custom>
+    <fluidoSkin>
+      <gitHub>
+        <projectId>mojohaus/mrm</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>gray</ribbonColor>
+      </gitHub>
+    </fluidoSkin>
+  </custom>
+
   <body>
     <menu ref="parent" inherit="top"/>
 
