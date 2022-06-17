@@ -34,37 +34,6 @@
     <maven>${mavenVersion}</maven>
   </prerequisites>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>mojo-descriptor</id>
-            <goals>
-              <goal>descriptor</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-invoker-plugin</artifactId>
-        <configuration>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-          <projectsDirectory>src/it</projectsDirectory>
-          <goals>
-            <goal>verify</goal>
-          </goals>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  
   <dependencies>
     <dependency>
       <groupId>org.codehaus.mojo</groupId>
@@ -152,6 +121,17 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-invoker-plugin</artifactId>
+            <configuration>
+              <projectsDirectory>src/it</projectsDirectory>
+              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+              <showErrors>true</showErrors>
+              <settingsFile>src/it/settings.xml</settingsFile>
+              <postBuildHookScript>verify</postBuildHookScript>
+              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <goals>
+                <goal>verify</goal>
+              </goals>
+            </configuration>
             <executions>
               <execution>
                 <id>integration-test</id>
@@ -160,9 +140,7 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <streamLogs>true</streamLogs>
                   <debug>false</debug>
-                  <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                 </configuration>
               </execution>
             </executions>

@@ -33,8 +33,10 @@
             <mrm.repository.url>${mrm.repository.url}</mrm.repository.url>
           </filterProperties>
           <postBuildHookScript>verify</postBuildHookScript>
-          <streamLogs>true</streamLogs>
-          <goal>verify</goal>
+          <streamLogsOnFailures>true</streamLogsOnFailures>
+          <goals>
+            <goal>verify</goal>
+          </goals>
         </configuration>
       </plugin>
       <plugin>
