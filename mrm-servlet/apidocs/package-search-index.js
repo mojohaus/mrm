@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.codehaus.mojo.mrm.impl"},{"l":"org.codehaus.mojo.mrm.impl.digest"},{"l":"org.codehaus.mojo.mrm.impl.maven"},{"l":"org.codehaus.mojo.mrm.plugin"},{"l":"org.codehaus.mojo.mrm.servlet"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.codehaus.mojo.mrm.impl"},{"l":"org.codehaus.mojo.mrm.impl.digest"},{"l":"org.codehaus.mojo.mrm.impl.maven"},{"l":"org.codehaus.mojo.mrm.plugin"},{"l":"org.codehaus.mojo.mrm.servlet"}]
