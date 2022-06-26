@@ -85,17 +85,14 @@ public final class Utils
     public static byte[] newEmptyJarContent()
         throws IOException
     {
-        byte[] emptyJar;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            final Manifest manifest = new Manifest();
-            manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-            manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
-            manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
-            try (JarOutputStream jos = new JarOutputStream(bos, manifest)) {
-                emptyJar = bos.toByteArray();
-                return emptyJar;
-            }
-        }
+        final Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        new JarOutputStream( bos, manifest ).close();
+        return bos.toByteArray();
     }
 
     /**
@@ -111,23 +108,23 @@ public final class Utils
     public static byte[] newEmptyMavenPluginJarContent( String groupId, String artifactId, String version )
         throws IOException
     {
-        byte[] emptyJar;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            final Manifest manifest = new Manifest();
-            manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-            manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
-            manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
-            try (JarOutputStream jos = new JarOutputStream(bos, manifest)) {
-                JarEntry entry = new JarEntry("META-INF/maven/plugin.xml");
-                jos.putNextEntry(entry);
-                jos.write(
-                        ("<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version
-                                + "</version></plugin>").getBytes());
-                jos.closeEntry();
-                emptyJar = bos.toByteArray();
-                return emptyJar;
-            }
+        final Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
+        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try ( JarOutputStream jos = new JarOutputStream( bos, manifest ) )
+        {
+            JarEntry entry = new JarEntry( "META-INF/maven/plugin.xml" );
+            jos.putNextEntry( entry );
+            jos.write(
+                ( "<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>"
+                    + version
+                    + "</version></plugin>" ).getBytes() );
+            jos.closeEntry();
         }
+        return bos.toByteArray();
     }
 
     /**
