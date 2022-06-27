@@ -130,7 +130,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.Entry.java">org/codehaus/mojo/mrm/api/Entry.java</a>
+                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException.java">org/codehaus/mojo/mrm/api/maven/ArchetypeCatalogNotFoundException.java</a>
                 </td>
                 <td>
                   0
@@ -144,7 +144,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException.java">org/codehaus/mojo/mrm/api/maven/ArchetypeCatalogNotFoundException.java</a>
+                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.Entry.java">org/codehaus/mojo/mrm/api/Entry.java</a>
                 </td>
                 <td>
                   0
@@ -242,20 +242,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.FileEntry.java">org/codehaus/mojo/mrm/api/FileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.BaseFileEntry.java">org/codehaus/mojo/mrm/api/BaseFileEntry.java</a>
                 </td>
                 <td>
@@ -270,7 +256,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.DirectoryEntry.java">org/codehaus/mojo/mrm/api/DirectoryEntry.java</a>
+                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.FileEntry.java">org/codehaus/mojo/mrm/api/FileEntry.java</a>
                 </td>
                 <td>
                   0
@@ -285,6 +271,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.plugin.FactoryHelperRequired.java">org/codehaus/mojo/mrm/plugin/FactoryHelperRequired.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://www.mojohaus.org/mrm/mrm-api/checkstyle.html#org.codehaus.mojo.mrm.api.DirectoryEntry.java">org/codehaus/mojo/mrm/api/DirectoryEntry.java</a>
                 </td>
                 <td>
                   0

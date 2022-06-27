@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"org.codehaus.mojo.mrm.api","l":"AbstractEntryTest"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"org.codehaus.mojo.mrm.api.maven","l":"ArtifactTest"}]

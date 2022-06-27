@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.codehaus.mojo.mrm.api"},{"l":"org.codehaus.mojo.mrm.api.maven"},{"l":"org.codehaus.mojo.mrm.plugin"}]

@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2009 - 2022 MojoHaus</copyright>
     <item>
       <title>File: 27,
-             Errors: 553,
+             Errors: 517,
              Warnings: 3,
              Infos: 0
       </title>
@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  68
+                  32
                 </td>
               </tr>
                           <tr>
@@ -326,20 +326,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://www.mojohaus.org/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.SHA1DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/SHA1DigestFileEntry.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  8
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://www.mojohaus.org/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.maven.MockArtifactStore.java">org/codehaus/mojo/mrm/impl/maven/MockArtifactStore.java</a>
                 </td>
                 <td>
@@ -350,6 +336,20 @@ under the License.
                 </td>
                 <td>
                   37
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://www.mojohaus.org/mrm/mrm-servlet/checkstyle.html#org.codehaus.mojo.mrm.impl.digest.SHA1DigestFileEntry.java">org/codehaus/mojo/mrm/impl/digest/SHA1DigestFileEntry.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
                 </td>
               </tr>
                           <tr>
