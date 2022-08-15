@@ -25,6 +25,11 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 
@@ -158,6 +163,10 @@ public class FileSystemServlet
                 resp.setContentLength( (int) size );
             }
             resp.setContentType( getServletContext().getMimeType( fileEntry.getName() ) );
+
+            LocalDateTime lastModifiedDate = LocalDateTime.ofEpochSecond( fileEntry.getLastModified() / 1000, (int)(fileEntry.getLastModified() % 1000), ZoneOffset.UTC );
+            String formattedLastModifiedDate = lastModifiedDate.atZone( ZoneId.of("UTC") ).format( DateTimeFormatter.RFC_1123_DATE_TIME );
+            resp.addHeader( "Last-Modified",  formattedLastModifiedDate);
 
             try (InputStream source = fileEntry.getInputStream())
             {
