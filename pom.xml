@@ -91,7 +91,7 @@
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
-    <jetty.version>9.4.48.v20220622</jetty.version>
+    <jetty.version>9.4.49.v20220914</jetty.version>
     <project.build.outputTimestamp>2022-06-27T16:20:47Z</project.build.outputTimestamp>
   </properties>
 
