@@ -33,6 +33,8 @@
           </filterProperties>
           <postBuildHookScript>verify</postBuildHookScript>
           <streamLogsOnFailures>true</streamLogsOnFailures>
+          <streamLogs>false</streamLogs>
+          <debug>true</debug>
           <goals>
             <goal>verify</goal>
           </goals>
