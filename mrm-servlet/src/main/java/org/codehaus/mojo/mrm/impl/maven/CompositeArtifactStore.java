@@ -255,7 +255,7 @@ public class CompositeArtifactStore
                         }
 
                         if (!StringUtils.isEmpty(pVers.getRelease())) {
-                            rVers.setLatest(pVers.getRelease());
+                            rVers.setRelease(pVers.getRelease());
                         }
                         rVers.setLastUpdated(pVers.getLastUpdated());
                     }
