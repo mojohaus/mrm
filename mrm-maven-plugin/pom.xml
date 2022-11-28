@@ -128,7 +128,10 @@
               <settingsFile>src/it/settings.xml</settingsFile>
               <postBuildHookScript>verify</postBuildHookScript>
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <debug>false</debug>
+              <streamLogs>true</streamLogs>
               <goals>
+                <goal>--no-transfer-progress</goal>
                 <goal>verify</goal>
               </goals>
             </configuration>
@@ -139,9 +142,6 @@
                   <goal>install</goal>
                   <goal>run</goal>
                 </goals>
-                <configuration>
-                  <debug>false</debug>
-                </configuration>
               </execution>
             </executions>
           </plugin>
