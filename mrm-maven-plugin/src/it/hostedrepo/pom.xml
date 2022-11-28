@@ -66,6 +66,14 @@
               <goal>start</goal>
               <goal>stop</goal>
             </goals>
+            <configuration>
+              <repositories>
+                <mockRepo>
+                  <source>${project.build.directory}/mock-repo</source>
+                </mockRepo>
+                <proxyRepo/>
+              </repositories>
+            </configuration>
           </execution>
         </executions>
       </plugin>
