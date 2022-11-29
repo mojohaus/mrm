@@ -64,6 +64,16 @@ public abstract class AbstractStartMojo
     private ArtifactStoreFactory[] repositories;
 
     /**
+     * Indicate if Jetty server should produce logs in debug level.
+     * <p>
+     * <b>Notice:</b> It is taken into account only when Maven is started in verbose mode.
+     *
+     * @since 1.5.0
+     */
+    @Parameter( property = "mrm.debugServer", defaultValue = "false" )
+    private boolean debugServer;
+
+    /**
      * Creates a file system server from an artifact store.
      *
      * @param artifactStore the artifact store to serve.
@@ -75,11 +85,11 @@ public abstract class AbstractStartMojo
                                      Math.max( 0, Math.min( port, 65535 ) ),
                                      basePath,
                                      new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ),
-                                     getSettingsServletPath() );
+                                     getSettingsServletPath(), debugServer );
     }
 
     /**
-     * When set, this points to the to the location from where the settings file can be downloaded.
+     * When set, this points to the location from where the settings file can be downloaded.
      *
      * @return the servlet path to the settings file of {@code null}
      */

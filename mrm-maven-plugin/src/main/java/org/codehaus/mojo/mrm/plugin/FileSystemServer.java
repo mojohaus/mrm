@@ -23,6 +23,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -107,19 +109,27 @@ public class FileSystemServer
     private final String settingsServletPath;
 
     /**
+     * Indicate debug level by Jetty server
+     */
+    private final boolean debugServer;
+
+    /**
      * Creates a new file system server that will serve a {@link FileSystem} over HTTP on the specified port.
      *
-     * @param name       The name of the file system server thread.
-     * @param port       The port to server on or <code>0</code> to pick a random, but available, port.
-     * @param fileSystem the file system to serve.
+     * @param name        The name of the file system server thread.
+     * @param port        The port to server on or <code>0</code> to pick a random, but available, port.
+     * @param fileSystem  the file system to serve.
+     * @param debugServer the server debug mode
      */
-    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem, String settingsServletPath )
+    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem, String settingsServletPath,
+                             boolean debugServer )
     {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
         this.contextPath = sanitizeContextPath(contextPath);
         this.settingsServletPath = settingsServletPath;
+        this.debugServer = debugServer;
     }
 
     /**
@@ -290,7 +300,12 @@ public class FileSystemServer
         public void run()
         {
             try {
+                Logger serverLogger = new ServerLogger( debugServer );
+                Log.setLog( serverLogger );
+                Log.initialized();
+
                 Server server = new Server(requestedPort);
+
                 try {
                     ServletContextHandler context = new ServletContextHandler();
                     context.setContextPath(contextPath);
@@ -307,7 +322,7 @@ public class FileSystemServer
                     synchronized (lock) {
                         problem = e;
                     }
-                    e.printStackTrace();
+                    serverLogger.warn( e );
                     throw e;
                 }
                 synchronized (lock) {
