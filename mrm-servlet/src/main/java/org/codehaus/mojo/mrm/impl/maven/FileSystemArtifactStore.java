@@ -85,9 +85,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
-                .map(Entry::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( entries ).filter( entry -> entry instanceof DirectoryEntry )
+            .map( Entry::getName )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -102,9 +102,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
-                .map(Entry::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( entries ).filter( entry -> entry instanceof DirectoryEntry )
+            .map( Entry::getName )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -119,9 +119,9 @@ public class FileSystemArtifactStore
         }
         DirectoryEntry parentDir = (DirectoryEntry) parentEntry;
         Entry[] entries = backing.listEntries( parentDir );
-        return Arrays.stream(entries).filter(entry -> entry instanceof DirectoryEntry)
-                .map(Entry::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( entries ).filter( entry -> entry instanceof DirectoryEntry )
+            .map( Entry::getName )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -146,8 +146,11 @@ public class FileSystemArtifactStore
         final ArtifactFactory factory;
         if ( version.endsWith( "-SNAPSHOT" ) )
         {
-            rule = Pattern.compile( "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                                        + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
+            rule = Pattern.compile(
+                "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
+                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                    + "\\.([^/]*)" );
+
             factory = new ArtifactFactory()
             {
                 public Artifact get( Entry entry )
@@ -200,13 +203,16 @@ public class FileSystemArtifactStore
             };
         }
         Set<Artifact> result = new HashSet<>( entries.length );
-        for (Entry entry : entries) {
-            if (!(entry instanceof FileEntry) || !rule.matcher(entry.getName()).matches()) {
+        for ( Entry entry : entries )
+        {
+            if ( !( entry instanceof FileEntry ) || !rule.matcher( entry.getName() ).matches() )
+            {
                 continue;
             }
-            Artifact artifact = factory.get(entry);
-            if (artifact != null) {
-                result.add(artifact);
+            Artifact artifact = factory.get( entry );
+            if ( artifact != null )
+            {
+                result.add( artifact );
             }
         }
         return result;
@@ -282,13 +288,13 @@ public class FileSystemArtifactStore
             throw new MetadataNotFoundException( path );
         }
 
-        try (InputStream inputStream = ( (FileEntry) entry ).getInputStream())
+        try ( InputStream inputStream = ( (FileEntry) entry ).getInputStream() )
         {
             return new MetadataXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            throw new IOException( e.getMessage(), e);
+            throw new IOException( e.getMessage(), e );
         }
     }
 
@@ -315,17 +321,17 @@ public class FileSystemArtifactStore
         {
             throw new ArchetypeCatalogNotFoundException();
         }
-        try (InputStream inputStream = ( (FileEntry) entry ).getInputStream())
+        try ( InputStream inputStream = ( (FileEntry) entry ).getInputStream() )
         {
 
             return new ArchetypeCatalogXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            throw new IOException( e.getMessage(), e);
+            throw new IOException( e.getMessage(), e );
         }
     }
-    
+
     public long getArchetypeCatalogLastModified()
         throws IOException, ArchetypeCatalogNotFoundException
     {

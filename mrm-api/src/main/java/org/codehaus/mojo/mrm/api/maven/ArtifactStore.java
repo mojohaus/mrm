@@ -42,8 +42,12 @@ public interface ArtifactStore
      * </p>
      * If there are known to be groupIds: org.codehaus.mojo, org.apache.maven and commons-io then
      * <pre>
-     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("commons-io","org")), getGroupIds("")); // Query root level
-     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("org.codehaus", "org.apache")), getGroupIds("org")); // query with a prefix
+     * // Query root level
+     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("commons-io","org")), getGroupIds(""));
+     *
+     * // query with a prefix
+     * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("org.codehaus", "org.apache")), getGroupIds("org"));
+     *
      * assertEquals(new HashSet&lt;String&gt;(Arrays.asList("org.codehaus.mojo")), getGroupIds("org.codehaus"));
      * </pre>
      * <p>
@@ -56,8 +60,8 @@ public interface ArtifactStore
      *
      * @param parentGroupId The prefix to query or the empty string to query the root, cannot be <code>null</code>.
      * @return A set (with all elements of type {@link String}) of groupIds that are known to have
-     *         {@code parentGroupId} as their prefix. All returned elements must start with {@code parentGroupId} and must have
-     *         one and only one additional segment.
+     * {@code parentGroupId} as their prefix. All returned elements must start with {@code parentGroupId} and must have
+     * one and only one additional segment.
      * @since 1.0
      */
     Set<String> getGroupIds( String parentGroupId );
@@ -74,7 +78,7 @@ public interface ArtifactStore
      *
      * @param groupId The groupId to query cannot be empty or <code>null</code>.
      * @return A set (with all elements of type {@link String}) of artifactIds that are known to belong to
-     *         {@code groupId}.
+     * {@code groupId}.
      * @since 1.0
      */
     Set<String> getArtifactIds( String groupId );
@@ -92,13 +96,14 @@ public interface ArtifactStore
      * @param groupId    The groupId to query cannot be empty or <code>null</code>.
      * @param artifactId The artifactId to query cannot be empty or <code>null</code>.
      * @return A set (with all elements of type {@link String}) of versions that are known to exist for
-     *         {@code groupId:artifactId}.
+     * {@code groupId:artifactId}.
      * @since 1.0
      */
     Set<String> getVersions( String groupId, String artifactId );
 
     /**
-     * Returns the set of artifacts at the specified groupId:artifactId:version. Some implementations may be lazy caching
+     * Returns the set of artifacts at the specified groupId:artifactId:version. Some implementations may be lazy
+     * caching
      * implementations, in which case it is permitted to return either the empty set, or only those entries which
      * have been loaded into the cache, so consumers should not assume that a missing entry implies non-existence.
      * The only way to be sure that an artifact does not exist is to call the {@link #get(Artifact)} method.
@@ -107,7 +112,7 @@ public interface ArtifactStore
      * @param artifactId The artifactId to query cannot be empty or <code>null</code>.
      * @param version    The version to query cannot be empty or <code>null</code>.
      * @return A set (with all elements of type {@link Artifact} of artifacts that are known to exist of the
-     *         specified {@code groupId:artifactId:version}.
+     * specified {@code groupId:artifactId:version}.
      * @since 1.0
      */
     Set<Artifact> getArtifacts( String groupId, String artifactId, String version );
@@ -117,10 +122,10 @@ public interface ArtifactStore
      *
      * @param artifact the artifact.
      * @return A <code>long</code> value representing the time the file was
-     *         last modified, measured in milliseconds since the epoch
-     *         (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
-     *         artifact might not exist (where the artifact is known to not exist an
-     *         {@link ArtifactNotFoundException} must be thrown.
+     * last modified, measured in milliseconds since the epoch
+     * (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
+     * artifact might not exist (where the artifact is known to not exist an
+     * {@link ArtifactNotFoundException} must be thrown.
      * @throws IOException               if an I/O error occurs.
      * @throws ArtifactNotFoundException if the artifact definitely does not exist.
      * @since 1.0
@@ -178,8 +183,8 @@ public interface ArtifactStore
 
     /**
      * Create/update the specified metadata.
-     * 
-     * @param path of the metadata (should not include the <code>maven-metadata.xml</code>.
+     *
+     * @param path    of the metadata (should not include the <code>maven-metadata.xml</code>.
      * @param content the metadata, never <code>null</code>.
      * @throws IOException if an I/O error occurs.
      * @since 1.1.0
@@ -191,28 +196,26 @@ public interface ArtifactStore
      *
      * @param path of the metadata (should not include the <code>maven-metadata.xml</code>.
      * @return A <code>long</code> value representing the time the file was
-     *         last modified, measured in milliseconds since the epoch
-     *         (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
-     *         metadata might not exist (where the metadtat is known to not exist a
-     *         {@link MetadataNotFoundException} must be thrown.
+     * last modified, measured in milliseconds since the epoch
+     * (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
+     * metadata might not exist (where the metadtat is known to not exist a
+     * {@link MetadataNotFoundException} must be thrown.
      * @throws IOException               if an I/O error occurs.
      * @throws MetadataNotFoundException if the metadata definitely does not exist.
      * @since 1.0
      */
     long getMetadataLastModified( String path )
         throws IOException, MetadataNotFoundException;
-    
+
     /**
-     * 
      * @return ArchetypeCatalog
      * @throws IOException                       if an I/O error occurs.
      * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
      * @since 1.0
      */
     ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException;
-    
+
     /**
-     * 
      * @return long
      * @throws IOException                       if an I/O error occurs.
      * @throws ArchetypeCatalogNotFoundException if the archetypeCatalog does not exist.
@@ -221,9 +224,8 @@ public interface ArtifactStore
     long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException;
 
     /**
-     * 
      * @param content the content
-     * @throws IOException                       if an I/O error occurs.
+     * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
     void setArchetypeCatalog( InputStream content ) throws IOException;

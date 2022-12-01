@@ -29,25 +29,25 @@ public class MockRepo
      * @since 1.0
      */
     private File source;
-    
+
     /**
      * Clone the {@link #source} to a specific directory.
-     * Set this when using directory based archives.  
-     * 
+     * Set this when using directory based archives.
+     *
      * @since 1.1.0
      */
     private File cloneTo;
-    
+
     /**
-     * Ensure that the {@link #cloneTo} folder is clean before every run. 
-     * 
+     * Ensure that the {@link #cloneTo} folder is clean before every run.
+     *
      * @since 1.1.0
      */
     private boolean cloneClean;
-    
+
     /**
      * Set to {@code false} if directories should archived at startup, or to {@code true} just when used.
-     * 
+     *
      * @since 1.1.0
      */
     private boolean lazyArchiver;
@@ -65,11 +65,11 @@ public class MockRepo
         {
             throw new IllegalStateException( "Must provide the 'source' of the mock repository" );
         }
-        
+
         File root = source;
         if ( cloneTo != null )
         {
-            if( !cloneTo.mkdirs() && cloneClean )
+            if ( !cloneTo.mkdirs() && cloneClean )
             {
                 try
                 {
@@ -80,7 +80,7 @@ public class MockRepo
                     throw new IllegalStateException( "Failed to clean directory: " + e.getMessage() );
                 }
             }
-            
+
             try
             {
                 FileUtils.copyDirectory( source, cloneTo );
@@ -91,7 +91,7 @@ public class MockRepo
                 throw new IllegalStateException( "Failed to copy directory: " + e.getMessage() );
             }
         }
-        
+
         return new MockArtifactStore( factoryHelper.getLog(), root, lazyArchiver );
     }
 

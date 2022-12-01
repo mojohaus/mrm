@@ -67,7 +67,7 @@ public class MemoryFileSystem
         {
             return null;
         }
-        return entries.toArray(new Entry[0]);
+        return entries.toArray( new Entry[0] );
     }
 
     /**
@@ -95,9 +95,10 @@ public class MemoryFileSystem
     protected synchronized Entry get( DirectoryEntry parent, String name )
     {
         List<Entry> parentEntries = contents.get( parent );
-        return parentEntries == null ? null :
-                parentEntries.stream().filter(entry -> name.equals(entry.getName())).findFirst().orElse(null);
-
+        return parentEntries == null ? null : parentEntries.stream()
+            .filter( entry -> name.equals( entry.getName() ) )
+            .findFirst()
+            .orElse( null );
     }
 
     /**
@@ -179,7 +180,7 @@ public class MemoryFileSystem
      */
     private synchronized List<Entry> getEntriesList( DirectoryEntry directory )
     {
-        return contents.computeIfAbsent(directory, k -> new ArrayList<>());
+        return contents.computeIfAbsent( directory, k -> new ArrayList<>() );
     }
 
     /**

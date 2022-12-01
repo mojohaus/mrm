@@ -100,7 +100,7 @@ public class CompositeFileSystem
                 }
             }
         }
-        return result.values().toArray(new Entry[0]);
+        return result.values().toArray( new Entry[0] );
     }
 
     /**
@@ -108,12 +108,12 @@ public class CompositeFileSystem
      */
     public Entry get( String path )
     {
-        return Arrays.stream(delegates).map(fileSystem -> fileSystem.get(path))
-                .filter(Objects::nonNull)
-                .filter(entry -> entry instanceof DirectoryEntry)
-                .map(entry -> DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ))
-                .findFirst()
-                .orElse(null);
+        return Arrays.stream( delegates ).map( fileSystem -> fileSystem.get( path ) )
+            .filter( Objects::nonNull )
+            .filter( entry -> entry instanceof DirectoryEntry )
+            .map( entry -> DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ) )
+            .findFirst()
+            .orElse( null );
 
     }
 

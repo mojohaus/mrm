@@ -92,6 +92,7 @@
     <mavenVersion>2.2.1</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
     <jetty.version>9.4.49.v20220914</jetty.version>
+    <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-06-27T16:20:47Z</project.build.outputTimestamp>
   </properties>
 
@@ -194,6 +195,10 @@
     </pluginManagement>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

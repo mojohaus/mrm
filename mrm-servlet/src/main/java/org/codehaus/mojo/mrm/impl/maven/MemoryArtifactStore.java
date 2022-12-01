@@ -79,7 +79,7 @@ public class MemoryArtifactStore
      * @since 1.0
      */
     private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<>();
-    
+
     private Content archetypeCatalog;
 
     /**
@@ -118,7 +118,7 @@ public class MemoryArtifactStore
     public synchronized Set<String> getArtifactIds( String groupId )
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        return artifactMap == null ? Collections.emptySet() : new TreeSet<>(artifactMap.keySet() );
+        return artifactMap == null ? Collections.emptySet() : new TreeSet<>( artifactMap.keySet() );
     }
 
     /**
@@ -150,7 +150,8 @@ public class MemoryArtifactStore
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -188,7 +189,8 @@ public class MemoryArtifactStore
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -226,7 +228,8 @@ public class MemoryArtifactStore
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -263,9 +266,11 @@ public class MemoryArtifactStore
     public synchronized void set( Artifact artifact, InputStream content )
         throws IOException
     {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
-        Map<String, Map<Artifact, Content>> versionMap = artifactMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
-        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent(artifact.getVersion(), k -> new HashMap<>());
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap =
+            contents.computeIfAbsent( artifact.getGroupId(), k -> new HashMap<>() );
+        Map<String, Map<Artifact, Content>> versionMap =
+            artifactMap.computeIfAbsent( artifact.getArtifactId(), k -> new HashMap<>() );
+        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent( artifact.getVersion(), k -> new HashMap<>() );
         try
         {
             filesMap.put( artifact, new Content( IOUtils.toByteArray( content ) ) );
@@ -276,9 +281,7 @@ public class MemoryArtifactStore
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @SuppressWarnings( "checkstyle:MethodLength" )
     public synchronized Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -297,15 +300,15 @@ public class MemoryArtifactStore
                 {
                     continue;
                 }
-                String[] versions = pluginVersions.toArray(new String[0]);
+                String[] versions = pluginVersions.toArray( new String[0] );
                 Arrays.sort( versions, INSTANCE );
                 MavenXpp3Reader reader = new MavenXpp3Reader();
                 for ( int j = versions.length - 1; j >= 0; j-- )
                 {
-                    try (InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) );
-                    XmlStreamReader xmlStreamReader = new XmlStreamReader( inputStream ))
+                    try ( InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) );
+                          XmlStreamReader xmlStreamReader = new XmlStreamReader( inputStream ) )
                     {
-                        Model model = reader.read(xmlStreamReader);
+                        Model model = reader.read( xmlStreamReader );
                         if ( model == null || !"maven-plugin".equals( model.getPackaging() ) )
                         {
                             continue;
@@ -326,7 +329,8 @@ public class MemoryArtifactStore
                             && build.getPluginManagement().getPlugins() != null )
                         {
                             havePrefix = setPluginGoalPrefixFromConfiguration( plugin,
-                                                                               build.getPluginManagement().getPlugins() );
+                                                                               build.getPluginManagement()
+                                                                                   .getPlugins() );
                         }
                         if ( !havePrefix && artifactId.startsWith( "maven-" ) && artifactId.endsWith( "-plugin" ) )
                         {
@@ -370,7 +374,7 @@ public class MemoryArtifactStore
                 metadata.setArtifactId( artifactId );
                 Versioning versioning = new Versioning();
                 List<String> versions = new ArrayList<>( artifactVersions );
-                versions.sort(INSTANCE); // sort the Maven way
+                versions.sort( INSTANCE ); // sort the Maven way
                 long lastUpdated = 0;
                 for ( String version : versions )
                 {
@@ -406,7 +410,8 @@ public class MemoryArtifactStore
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
             Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
@@ -433,7 +438,7 @@ public class MemoryArtifactStore
                     if ( "pom".equals( artifact.getType() ) )
                     {
                         if ( artifact.getBuildNumber() != null
-                            && maxBuildNumber < artifact.getBuildNumber())
+                            && maxBuildNumber < artifact.getBuildNumber() )
                         {
                             maxBuildNumber = artifact.getBuildNumber();
                             timestamp = artifact.getTimestampString();
@@ -517,7 +522,8 @@ public class MemoryArtifactStore
         if ( artifactId != null )
         {
             artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             if ( versionMap != null )
             {
                 for ( Map<Artifact, Content> filesMap : versionMap.values() )
@@ -537,7 +543,8 @@ public class MemoryArtifactStore
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
             artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
@@ -554,20 +561,20 @@ public class MemoryArtifactStore
         }
         throw new MetadataNotFoundException( path );
     }
-    
+
     @Override
     public synchronized void setArchetypeCatalog( InputStream content )
         throws IOException
     {
         archetypeCatalog = new Content( IOUtils.toByteArray( content ) );
     }
-    
+
     public synchronized ArchetypeCatalog getArchetypeCatalog()
         throws IOException, ArchetypeCatalogNotFoundException
     {
         if ( archetypeCatalog != null )
         {
-            try (InputStream inputStream = new ByteArrayInputStream( archetypeCatalog.getBytes() ))
+            try ( InputStream inputStream = new ByteArrayInputStream( archetypeCatalog.getBytes() ) )
             {
                 return new ArchetypeCatalogXpp3Reader().read( inputStream );
             }
@@ -581,7 +588,7 @@ public class MemoryArtifactStore
             throw new ArchetypeCatalogNotFoundException();
         }
     }
-    
+
     public synchronized long getArchetypeCatalogLastModified()
         throws ArchetypeCatalogNotFoundException
     {
@@ -594,7 +601,7 @@ public class MemoryArtifactStore
             throw new ArchetypeCatalogNotFoundException();
         }
     }
-    
+
 
     /**
      * If the plugin configurations contain a reference to the <code>maven-plugin-plugin</code> and that contains
@@ -605,7 +612,8 @@ public class MemoryArtifactStore
      * @return <code>true</code> if the prefix has been set.
      * @since 1.0
      */
-    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs )
+    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin,
+                                                          List<org.apache.maven.model.Plugin> pluginConfigs )
     {
         for ( org.apache.maven.model.Plugin def : pluginConfigs )
         {
@@ -731,7 +739,8 @@ public class MemoryArtifactStore
          * @param lastUpdatedTime  the time to flag for last updated.
          * @since 1.0
          */
-        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact, String lastUpdatedTime )
+        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact,
+                                                String lastUpdatedTime )
         {
             try
             {

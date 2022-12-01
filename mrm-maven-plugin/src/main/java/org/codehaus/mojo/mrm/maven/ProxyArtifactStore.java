@@ -88,8 +88,8 @@ public class ProxyArtifactStore
      * The {@link ArtifactResolver} provided by Maven.
      */
     private final ArtifactResolver artifactResolver;
-    
-    
+
+
     private final ArchetypeManager archetypeManager;
 
     /**
@@ -118,10 +118,12 @@ public class ProxyArtifactStore
      * @param artifactResolver           the {@link ArtifactResolver} to use.
      * @param log                        the {@link Log} to log to.
      */
+    @SuppressWarnings( "checkstyle:ParameterNumber" )
     public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager,
                                List<ArtifactRepository> remoteArtifactRepositories,
                                List<ArtifactRepository> remotePluginRepositories, ArtifactRepository localRepository,
-                               ArtifactFactory artifactFactory, ArtifactResolver artifactResolver, ArchetypeManager archetypeManager, Log log )
+                               ArtifactFactory artifactFactory, ArtifactResolver artifactResolver,
+                               ArchetypeManager archetypeManager, Log log )
     {
         this.repositoryMetadataManager = repositoryMetadataManager;
         this.remotePluginRepositories = remotePluginRepositories;
@@ -153,7 +155,7 @@ public class ProxyArtifactStore
     {
         String path =
             artifact.getGroupId().replace( '.', '/' ) + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
-        Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
+        Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( path, k -> new HashMap<>() );
         artifactMapper.put( artifact.getName(), artifact );
         addResolved( path );
     }
@@ -169,12 +171,12 @@ public class ProxyArtifactStore
         {
             String name = path.substring( index + 1 );
             path = path.substring( 0, index );
-            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( path, k -> new HashMap<>() );
             artifactMapper.put( name, null );
         }
         if ( !StringUtils.isEmpty( path ) )
         {
-            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent("", k -> new HashMap<>());
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( "", k -> new HashMap<>() );
             artifactMapper.put( path, null );
         }
     }
@@ -190,9 +192,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
+            .map( Map.Entry::getKey )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -206,9 +208,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter(entry -> entry.getValue()==null)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
+            .map( Map.Entry::getKey )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -222,9 +224,9 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter(entry -> entry.getValue()==null)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
+            .map( Map.Entry::getKey )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -238,8 +240,8 @@ public class ProxyArtifactStore
         {
             return Collections.emptySet();
         }
-        return artifactMapper.values().stream().filter(Objects::nonNull)
-                .collect( Collectors.toSet() );
+        return artifactMapper.values().stream().filter( Objects::nonNull )
+            .collect( Collectors.toSet() );
 
     }
 
@@ -266,7 +268,7 @@ public class ProxyArtifactStore
         }
         catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
         {
-            throw new ArtifactNotFoundException( artifact , e );
+            throw new ArtifactNotFoundException( artifact, e );
         }
         catch ( ArtifactResolutionException e )
         {
@@ -371,7 +373,8 @@ public class ProxyArtifactStore
                 artifactFactory.createDependencyArtifact( groupId, artifactId,
                                                           VersionRange.createFromVersion( version ), "pom", null,
                                                           "compile" );
-            SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+            SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata =
+                new SnapshotArtifactRepositoryMetadata( artifact );
             try
             {
                 repositoryMetadataManager.resolve( artifactRepositoryMetadata, remoteRepositories, localRepository );
@@ -508,7 +511,7 @@ public class ProxyArtifactStore
     public long getArchetypeCatalogLastModified()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        if( archetypeManager.getDefaultLocalCatalog() != null )
+        if ( archetypeManager.getDefaultLocalCatalog() != null )
         {
             return System.currentTimeMillis();
         }

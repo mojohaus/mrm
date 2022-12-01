@@ -86,7 +86,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            throw new IOException( "Artifact does not exist", e);
+            throw new IOException( "Artifact does not exist", e );
         }
     }
 
@@ -102,7 +102,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            throw new IOException( "Artifact does not exist", e);
+            throw new IOException( "Artifact does not exist", e );
         }
     }
 
@@ -118,7 +118,7 @@ public class ArtifactFileEntry
         }
         catch ( ArtifactNotFoundException e )
         {
-            throw new IOException( "Artifact does not exist", e);
+            throw new IOException( "Artifact does not exist", e );
         }
     }
 

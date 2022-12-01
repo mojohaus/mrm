@@ -89,8 +89,8 @@ public class ArtifactStoreFileSystem
      */
     /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
 
-    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "/archetype-catalog\\.xml" ); 
-    
+    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "/archetype-catalog\\.xml" );
+
     /**
      * Regex to match a release artifact path.
      *
@@ -216,15 +216,16 @@ public class ArtifactStoreFileSystem
         }
 
         // sort
-        result.sort(Comparator.comparing(Entry::getName));
-        return result.toArray(new Entry[0]);
+        result.sort( Comparator.comparing( Entry::getName ) );
+        return result.toArray( new Entry[0] );
     }
 
     @Override
+    @SuppressWarnings( "checkstyle:MethodLength" )
     protected Entry get( DirectoryEntry parent, String name )
     {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        if ( StringUtils.isNotEmpty( parent.toPath() ) )
         {
             path += parent.toPath() + "/";
         }
@@ -270,7 +271,8 @@ public class ArtifactStoreFileSystem
                 String version = snapshotArtifact.group( 3 ) + "-SNAPSHOT";
                 Pattern rule = Pattern.compile(
                     "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                        + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
+                        + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                        + "\\.([^/]*)" );
                 Matcher matcher = rule.matcher( name );
                 if ( !matcher.matches() )
                 {
@@ -313,10 +315,10 @@ public class ArtifactStoreFileSystem
                     cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
                     cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
                     cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
-                    cal.set( Calendar.MILLISECOND, 0);
+                    cal.set( Calendar.MILLISECOND, 0 );
                     long timestamp = cal.getTimeInMillis();
                     int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                    
+
                     Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
                                                       matcher.group( 10 ), timestamp, buildNumber );
                     try
@@ -353,7 +355,7 @@ public class ArtifactStoreFileSystem
                     {
                         classifier = null;
                     }
-                    
+
                     Artifact artifact = new Artifact( groupId, artifactId, version, classifier, type );
                     try
                     {
@@ -380,13 +382,13 @@ public class ArtifactStoreFileSystem
     {
         return System.currentTimeMillis();
     }
-    
+
     @Override
     public FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException
     {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        if ( StringUtils.isNotEmpty( parent.toPath() ) )
         {
             path += parent.toPath() + "/";
         }
@@ -397,43 +399,43 @@ public class ArtifactStoreFileSystem
             try
             {
                 Metadata metadata = reader.read( content );
-                
+
                 if ( metadata == null )
                 {
                     return null;
                 }
-                
+
                 store.setMetadata( path, metadata );
             }
             catch ( XmlPullParserException e1 )
             {
                 throw new IOException();
             }
-            
+
             return new MetadataFileEntry( this, parent, path, store );
         }
-        
+
         Artifact artifact = getArtifact( parent, name );
-        
+
         if ( artifact == null )
         {
             return null;
         }
-        
-        store.set( artifact , content );
-        
+
+        store.set( artifact, content );
+
         return new ArtifactFileEntry( this, parent, artifact, store );
     }
 
     private Artifact getArtifact( DirectoryEntry parent, String name )
     {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath()  ) )
+        if ( StringUtils.isNotEmpty( parent.toPath() ) )
         {
             path += parent.toPath() + "/";
         }
         path += name;
-        
+
         Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher( path );
         if ( snapshotArtifact.matches() )
         {
@@ -442,7 +444,8 @@ public class ArtifactStoreFileSystem
             String version = snapshotArtifact.group( 3 ) + "-SNAPSHOT";
             Pattern rule = Pattern.compile(
                 "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
+                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                    + "\\.([^/]*)" );
             Matcher matcher = rule.matcher( name );
             if ( !matcher.matches() )
             {
@@ -461,7 +464,7 @@ public class ArtifactStoreFileSystem
             if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
             {
                 return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                  matcher.group( 10 ) );
+                                     matcher.group( 10 ) );
             }
             try
             {
@@ -473,12 +476,12 @@ public class ArtifactStoreFileSystem
                 cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
                 cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
                 cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
-                cal.set( Calendar.MILLISECOND, 0);
+                cal.set( Calendar.MILLISECOND, 0 );
                 long timestamp = cal.getTimeInMillis();
                 int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                
+
                 return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                  matcher.group( 10 ), timestamp, buildNumber );
+                                     matcher.group( 10 ), timestamp, buildNumber );
             }
             catch ( NullPointerException e )
             {
@@ -503,7 +506,7 @@ public class ArtifactStoreFileSystem
                 {
                     classifier = null;
                 }
-                
+
                 return new Artifact( groupId, artifactId, version, classifier, type );
             }
             else

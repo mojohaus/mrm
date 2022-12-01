@@ -84,7 +84,7 @@ public class ArchetypeCatalogFileEntry
         }
         catch ( ArchetypeCatalogNotFoundException e )
         {
-            throw new IOException( "File not found", e);
+            throw new IOException( "File not found", e );
         }
     }
 
@@ -120,7 +120,7 @@ public class ArchetypeCatalogFileEntry
         }
         catch ( ArchetypeCatalogNotFoundException e )
         {
-            throw new IOException( "File not found", e);
+            throw new IOException( "File not found", e );
         }
     }
 

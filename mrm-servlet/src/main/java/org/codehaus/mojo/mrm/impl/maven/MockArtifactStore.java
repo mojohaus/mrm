@@ -74,9 +74,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 public class MockArtifactStore
     extends BaseArtifactStore
 {
-    
+
     private final Log log;
-    
+
     private final boolean lazyArchiver;
 
     /**
@@ -84,8 +84,8 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    public static final String[] POM_EXTENSIONS = { "pom" };
-    
+    public static final String[] POM_EXTENSIONS = {"pom"};
+
     /**
      * The contents of this artifact store.
      *
@@ -93,9 +93,9 @@ public class MockArtifactStore
      */
     private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<>();
 
-    
+
     private Content archetypeCatalog;
-    
+
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
@@ -118,7 +118,7 @@ public class MockArtifactStore
     {
         this( log, root, true );
     }
-    
+
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
@@ -130,14 +130,14 @@ public class MockArtifactStore
     {
         this.log = log;
         this.lazyArchiver = lazyArchiver;
-        
+
         if ( root.isDirectory() )
         {
             MavenXpp3Reader pomReader = new MavenXpp3Reader();
             Collection<File> poms = FileUtils.listFiles( root, POM_EXTENSIONS, true );
             for ( File file : poms )
             {
-                try (FileReader fileReader = new FileReader( file ))
+                try ( FileReader fileReader = new FileReader( file ) )
                 {
                     Model model = pomReader.read( fileReader );
                     String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
@@ -150,9 +150,9 @@ public class MockArtifactStore
                     if ( StringUtils.isEmpty( model.getPackaging() ) || "jar".equals( model.getPackaging() ) )
                     {
                         File mainFile = new File( file.getParentFile(), basename + ".jar" );
-                        
+
                         Content content;
-                        if( mainFile.isDirectory() )
+                        if ( mainFile.isDirectory() )
                         {
                             content = new DirectoryContent( mainFile, lazyArchiver );
                         }
@@ -160,7 +160,7 @@ public class MockArtifactStore
                         {
                             content = new BytesContent( Utils.newEmptyJarContent() );
                         }
-                        
+
                         set( new Artifact( groupId, model.getArtifactId(), version, "jar" ), content );
                     }
                     else if ( "maven-plugin".equals( model.getPackaging() ) )
@@ -170,18 +170,18 @@ public class MockArtifactStore
                                  Utils.newEmptyMavenPluginJarContent( groupId, model.getArtifactId(),
                                                                       version ) ) );
                     }
-                    
+
                     File[] classifiedFiles = file.getParentFile()
-                            .listFiles((dir, name) -> FilenameUtils.getBaseName( name ).startsWith( basename + '-' ));
-                    
+                        .listFiles( ( dir, name ) -> FilenameUtils.getBaseName( name ).startsWith( basename + '-' ) );
+
                     for ( File classifiedFile : classifiedFiles )
                     {
                         String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
                         String classifier =
                             FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
-                        
+
                         Content content;
-                        if( classifiedFile.isDirectory() )
+                        if ( classifiedFile.isDirectory() )
                         {
                             content = new DirectoryContent( classifiedFile, lazyArchiver );
                         }
@@ -189,7 +189,7 @@ public class MockArtifactStore
                         {
                             content = new FileContent( classifiedFile );
                         }
-                        
+
                         set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ), content );
                     }
                 }
@@ -208,7 +208,7 @@ public class MockArtifactStore
                     }
                 }
             }
-            
+
             File archetypeCatalogFile = new File( root, "archetype-catalog.xml" );
             if ( archetypeCatalogFile.isFile() )
             {
@@ -280,12 +280,13 @@ public class MockArtifactStore
 
     /**
      * {@inheritDoc}
-    */
+     */
     public synchronized long getLastModified( Artifact artifact )
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -322,7 +323,8 @@ public class MockArtifactStore
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -359,7 +361,8 @@ public class MockArtifactStore
         throws IOException, ArtifactNotFoundException
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
+        Map<String, Map<Artifact, Content>> versionMap =
+            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
         Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
         Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
         if ( content == null )
@@ -415,16 +418,17 @@ public class MockArtifactStore
     private synchronized void set( Artifact artifact, Content content )
     {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap =
-                contents.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+            contents.computeIfAbsent( artifact.getGroupId(), k -> new HashMap<>() );
         Map<String, Map<Artifact, Content>> versionMap =
-                artifactMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
-        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent(artifact.getVersion(), k -> new HashMap<>());
+            artifactMap.computeIfAbsent( artifact.getArtifactId(), k -> new HashMap<>() );
+        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent( artifact.getVersion(), k -> new HashMap<>() );
         filesMap.put( artifact, content );
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( "checkstyle:MethodLength" )
     public synchronized Metadata getMetadata( String path )
         throws IOException, MetadataNotFoundException
     {
@@ -443,11 +447,11 @@ public class MockArtifactStore
                 {
                     continue;
                 }
-                String[] versions = pluginVersions.toArray(new String[0]);
-                Arrays.sort( versions, INSTANCE);
+                String[] versions = pluginVersions.toArray( new String[0] );
+                Arrays.sort( versions, INSTANCE );
                 for ( int j = versions.length - 1; j >= 0; j-- )
                 {
-                    try (InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) ))
+                    try ( InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) ) )
                     {
                         Model model = new MavenXpp3Reader().read( new XmlStreamReader( inputStream ) );
                         if ( model == null || !"maven-plugin".equals( model.getPackaging() ) )
@@ -470,7 +474,8 @@ public class MockArtifactStore
                             && build.getPluginManagement().getPlugins() != null )
                         {
                             havePrefix = setPluginGoalPrefixFromConfiguration( plugin,
-                                                                               build.getPluginManagement().getPlugins() );
+                                                                               build.getPluginManagement()
+                                                                                   .getPlugins() );
                         }
                         if ( !havePrefix && artifactId.startsWith( "maven-" ) && artifactId.endsWith( "-plugin" ) )
                         {
@@ -514,7 +519,7 @@ public class MockArtifactStore
                 metadata.setArtifactId( artifactId );
                 Versioning versioning = new Versioning();
                 List<String> versions = new ArrayList<>( artifactVersions );
-                versions.sort(INSTANCE); // sort the Maven way
+                versions.sort( INSTANCE ); // sort the Maven way
                 long lastUpdated = 0;
                 for ( String version : versions )
                 {
@@ -550,7 +555,8 @@ public class MockArtifactStore
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
             Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
@@ -577,7 +583,7 @@ public class MockArtifactStore
                     if ( "pom".equals( artifact.getType() ) )
                     {
                         if ( artifact.getBuildNumber() != null
-                            && maxBuildNumber < artifact.getBuildNumber())
+                            && maxBuildNumber < artifact.getBuildNumber() )
                         {
                             maxBuildNumber = artifact.getBuildNumber();
                             timestamp = artifact.getTimestampString();
@@ -661,7 +667,8 @@ public class MockArtifactStore
         if ( artifactId != null )
         {
             artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             if ( versionMap != null )
             {
                 for ( Map<Artifact, Content> filesMap : versionMap.values() )
@@ -681,7 +688,8 @@ public class MockArtifactStore
         if ( version != null && version.endsWith( "-SNAPSHOT" ) )
         {
             artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
+            Map<String, Map<Artifact, Content>> versionMap =
+                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
             Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
             if ( filesMap != null )
             {
@@ -698,13 +706,13 @@ public class MockArtifactStore
         }
         throw new MetadataNotFoundException( path );
     }
-    
+
     public ArchetypeCatalog getArchetypeCatalog()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        if( archetypeCatalog != null )
+        if ( archetypeCatalog != null )
         {
-            ArchetypeCatalogXpp3Reader reader = new  ArchetypeCatalogXpp3Reader();
+            ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
             try
             {
                 return reader.read( archetypeCatalog.getInputStream() );
@@ -718,7 +726,7 @@ public class MockArtifactStore
             }
             catch ( XmlPullParserException e )
             {
-                
+
                 if ( log != null )
                 {
                     log.warn( "Could not parse archetype-catalog.xml", e );
@@ -727,8 +735,8 @@ public class MockArtifactStore
         }
         throw new ArchetypeCatalogNotFoundException();
     }
-    
-    
+
+
     public long getArchetypeCatalogLastModified()
         throws ArchetypeCatalogNotFoundException
     {
@@ -742,7 +750,8 @@ public class MockArtifactStore
         }
     }
 
-    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs )
+    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin,
+                                                          List<org.apache.maven.model.Plugin> pluginConfigs )
     {
         for ( org.apache.maven.model.Plugin def : pluginConfigs )
         {
@@ -933,7 +942,7 @@ public class MockArtifactStore
             return file.length();
         }
     }
-    
+
     private static class DirectoryContent implements Content
     {
         private final File directory;
@@ -941,15 +950,14 @@ public class MockArtifactStore
         private File archivedFile;
 
         /**
-         * 
          * @param directory the directory to archive
-         * @param lazy {@code false} if the archive should be created immediately 
+         * @param lazy      {@code false} if the archive should be created immediately
          */
         private DirectoryContent( File directory, boolean lazy )
         {
             this.directory = directory;
-            
-            if (!lazy)
+
+            if ( !lazy )
             {
                 createArchive();
             }
@@ -958,15 +966,15 @@ public class MockArtifactStore
         private void createArchive()
         {
             JarArchiver archiver = new JarArchiver();
-            archivedFile = new File( directory.getParentFile() , "_" + directory.getName() );
+            archivedFile = new File( directory.getParentFile(), "_" + directory.getName() );
             archiver.setDestFile( archivedFile );
             archiver.addDirectory( directory );
-            
+
             try
             {
                 archiver.createArchive();
             }
-            catch ( ArchiverException| IOException e )
+            catch ( ArchiverException | IOException e )
             {
                 throw new RuntimeException( e.getMessage(), e );
             }
@@ -1018,7 +1026,8 @@ public class MockArtifactStore
          * @param lastUpdatedTime  the time to flag for last updated.
          * @since 1.0
          */
-        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact, String lastUpdatedTime )
+        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact,
+                                                String lastUpdatedTime )
         {
             try
             {
