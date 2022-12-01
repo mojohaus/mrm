@@ -16,6 +16,11 @@
 
 package org.codehaus.mojo.mrm.servlet;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,15 +33,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -80,13 +79,13 @@ public class FileSystemServlet
      */
     private final FileSystem fileSystem;
 
-    
+
     /**
      * @since 1.0
      */
     private String settingsServletPath;
-    
-    
+
+
     /**
      * Default constructor.
      *
@@ -112,6 +111,7 @@ public class FileSystemServlet
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( "checkstyle:MethodLength"  )
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
         throws ServletException, IOException
     {
@@ -126,7 +126,7 @@ public class FileSystemServlet
         {
             context = req.getContextPath() + req.getServletPath();
         }
-        
+
         if ( path.equals( "/" + settingsServletPath ) )
         {
             resp.setContentType( "text/xml" );
@@ -144,15 +144,17 @@ public class FileSystemServlet
 
             String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort();
 
-            try (Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
-                    Reader settingsReader =
-                            new InterpolationFilterReader( in, Collections.singletonMap( "repository.proxy.url", repositoryProxyUrl ), "@", "@" ))
+            try (
+                Reader in = new InputStreamReader( FileSystemServlet.class.getResourceAsStream( "/settings-mrm.xml" ) );
+                Reader settingsReader =
+                    new InterpolationFilterReader( in, Collections.singletonMap( "repository.proxy.url",
+                                                                                 repositoryProxyUrl ), "@", "@" ) )
             {
                 IOUtil.copy( settingsReader, w );
             }
             return;
         }
-        
+
         Entry entry = fileSystem.get( path );
         if ( entry instanceof FileEntry )
         {
@@ -164,11 +166,14 @@ public class FileSystemServlet
             }
             resp.setContentType( getServletContext().getMimeType( fileEntry.getName() ) );
 
-            LocalDateTime lastModifiedDate = LocalDateTime.ofEpochSecond( fileEntry.getLastModified() / 1000, (int)(fileEntry.getLastModified() % 1000), ZoneOffset.UTC );
-            String formattedLastModifiedDate = lastModifiedDate.atZone( ZoneId.of("UTC") ).format( DateTimeFormatter.RFC_1123_DATE_TIME );
-            resp.addHeader( "Last-Modified",  formattedLastModifiedDate);
+            LocalDateTime lastModifiedDate = LocalDateTime.ofEpochSecond( fileEntry.getLastModified() / 1000,
+                                                                          (int) ( fileEntry.getLastModified() % 1000 ),
+                                                                          ZoneOffset.UTC );
+            String formattedLastModifiedDate =
+                lastModifiedDate.atZone( ZoneId.of( "UTC" ) ).format( DateTimeFormatter.RFC_1123_DATE_TIME );
+            resp.addHeader( "Last-Modified", formattedLastModifiedDate );
 
-            try (InputStream source = fileEntry.getInputStream())
+            try ( InputStream source = fileEntry.getInputStream() )
             {
                 IOUtils.copy( source, resp.getOutputStream() );
             }

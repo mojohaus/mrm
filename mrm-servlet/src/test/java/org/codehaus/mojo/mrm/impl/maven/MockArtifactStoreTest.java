@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class MockArtifactStoreTest
 {
     @Rule
-    public TemporaryFolder temporaryFolder= new TemporaryFolder();
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     // MMOCKRM-3
     @Test
@@ -37,7 +37,7 @@ public class MockArtifactStoreTest
         MockArtifactStore mockArtifactStore = new MockArtifactStore( new File( "src/test/resources/mmockrm-3" ) );
         assertEquals( 2, mockArtifactStore.getArtifactIds( "localhost" ).size() );
     }
-    
+
     // MMOCKRM-6
     @Test
     public void testClassifiers() throws Exception
@@ -46,13 +46,17 @@ public class MockArtifactStoreTest
 
         Artifact pomArtifact = new Artifact( "localhost", "mmockrm-7", "1.0", "pom" );
         assertNotNull( artifactStore.get( pomArtifact ) );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "src/test/resources/mmockrm-7/mmockrm-7-1.0.pom" ), artifactStore.get( pomArtifact ) ) );
+        assertTrue( "Content equals",
+                    IOUtils.contentEquals( new FileInputStream( "src/test/resources/mmockrm-7/mmockrm-7-1.0.pom" ),
+                                           artifactStore.get( pomArtifact ) ) );
 
         Artifact siteArtifact = new Artifact( "localhost", "mmockrm-7", "1.0", "site", "xml" );
         assertNotNull( artifactStore.get( siteArtifact ) );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "src/test/resources/mmockrm-7/mmockrm-7-1.0-site.xml" ), artifactStore.get( siteArtifact ) ) );
+        assertTrue( "Content equals",
+                    IOUtils.contentEquals( new FileInputStream( "src/test/resources/mmockrm-7/mmockrm-7-1.0-site.xml" ),
+                                           artifactStore.get( siteArtifact ) ) );
     }
-    
+
     // MMOCKRM-10
     @Test
     public void testArchetypeCatalog() throws Exception
@@ -62,21 +66,23 @@ public class MockArtifactStoreTest
         assertNotNull( catalog );
         assertEquals( 1, catalog.getArchetypes().size() );
         Archetype archetype = catalog.getArchetypes().get( 0 );
-        assertEquals( "archetypes",  archetype.getGroupId() );
-        assertEquals( "fileset",  archetype.getArtifactId() );
-        assertEquals( "1.0",  archetype.getVersion() );
-        assertEquals( "Fileset test archetype",  archetype.getDescription() );
+        assertEquals( "archetypes", archetype.getGroupId() );
+        assertEquals( "fileset", archetype.getArtifactId() );
+        assertEquals( "1.0", archetype.getVersion() );
+        assertEquals( "Fileset test archetype", archetype.getDescription() );
         assertEquals( "file://${basedir}/target/test-classes/repositories/central", archetype.getRepository() );
     }
-    
+
     @Test
     public void testDirectoryContent() throws Exception
     {
         MockArtifactStore artifactStore = new MockArtifactStore( new File( "target/test-classes/mrm-15" ) );
-        
+
         Artifact pomArtifact = new Artifact( "localhost", "mrm-15", "1.0", "pom" );
         assertNotNull( artifactStore.get( pomArtifact ) );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-15/mrm-15-1.0.pom" ), artifactStore.get( pomArtifact ) ) );
+        assertTrue( "Content equals",
+                    IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-15/mrm-15-1.0.pom" ),
+                                           artifactStore.get( pomArtifact ) ) );
 
         Artifact mainArtifact = new Artifact( "localhost", "mrm-15", "1.0", "jar" );
         InputStream inputStreamJar = artifactStore.get( mainArtifact );
@@ -87,7 +93,7 @@ public class MockArtifactStoreTest
         File jarFile = temporaryFolder.newFile();
         Files.copy( inputStreamJar, jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
 
-        try (JarFile jar = new JarFile( jarFile ) )
+        try ( JarFile jar = new JarFile( jarFile ) )
         {
             Enumeration<JarEntry> entries = jar.entries();
             while ( entries.hasMoreElements() )
@@ -97,9 +103,9 @@ public class MockArtifactStoreTest
             }
             Manifest manifest = jar.getManifest();
             assertNotNull( manifest );
-            assertEquals( 2, manifest.getMainAttributes().size());
+            assertEquals( 2, manifest.getMainAttributes().size() );
         }
-        
+
         assertTrue( names.contains( "README.txt" ) );
     }
 
@@ -111,8 +117,9 @@ public class MockArtifactStoreTest
         Artifact pomArtifact = new Artifact( "localhost", "mrm-empty-jar", "1.0", "pom" );
         InputStream inputStreamPom = artifactStore.get( pomArtifact );
         assertNotNull( inputStreamPom );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/empty-jar/mrm-empty-jar-1.0.pom" ),
-                                                              inputStreamPom ) );
+        assertTrue( "Content equals",
+                    IOUtils.contentEquals( new FileInputStream( "target/test-classes/empty-jar/mrm-empty-jar-1.0.pom" ),
+                                           inputStreamPom ) );
 
         Artifact mainArtifact = new Artifact( "localhost", "mrm-empty-jar", "1.0", "jar" );
         InputStream inputStreamJar = artifactStore.get( mainArtifact );
@@ -122,7 +129,7 @@ public class MockArtifactStoreTest
         Files.copy( inputStreamJar, jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
 
         List<String> names = new ArrayList<>();
-        try (JarFile jar = new JarFile( jarFile ) )
+        try ( JarFile jar = new JarFile( jarFile ) )
         {
             Enumeration<JarEntry> entries = jar.entries();
             while ( entries.hasMoreElements() )
@@ -132,7 +139,7 @@ public class MockArtifactStoreTest
             }
             Manifest manifest = jar.getManifest();
             assertNotNull( manifest );
-            assertEquals( 3, manifest.getMainAttributes().size());
+            assertEquals( 3, manifest.getMainAttributes().size() );
         }
         assertTrue( names.contains( "META-INF/MANIFEST.MF" ) );
     }
@@ -145,8 +152,9 @@ public class MockArtifactStoreTest
         Artifact pomArtifact = new Artifact( "localhost", "mrm-empty-plugin-jar", "1.0", "pom" );
         InputStream inputStreamPom = artifactStore.get( pomArtifact );
         assertNotNull( inputStreamPom );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/empty-plugin-jar/mrm-empty-plugin-jar-1.0.pom" ),
-                                                              inputStreamPom ) );
+        assertTrue( "Content equals", IOUtils.contentEquals(
+            new FileInputStream( "target/test-classes/empty-plugin-jar/mrm-empty-plugin-jar-1.0.pom" ),
+            inputStreamPom ) );
 
         Artifact mainArtifact = new Artifact( "localhost", "mrm-empty-plugin-jar", "1.0", "jar" );
         InputStream inputStreamJar = artifactStore.get( mainArtifact );
@@ -156,7 +164,7 @@ public class MockArtifactStoreTest
         Files.copy( inputStreamJar, jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
 
         List<String> names = new ArrayList<>();
-        try (JarFile jar = new JarFile( jarFile ) )
+        try ( JarFile jar = new JarFile( jarFile ) )
         {
             Enumeration<JarEntry> entries = jar.entries();
             while ( entries.hasMoreElements() )
@@ -166,7 +174,7 @@ public class MockArtifactStoreTest
             }
             Manifest manifest = jar.getManifest();
             assertNotNull( manifest );
-            assertEquals( 3, manifest.getMainAttributes().size());
+            assertEquals( 3, manifest.getMainAttributes().size() );
         }
         assertTrue( names.contains( "META-INF/MANIFEST.MF" ) );
         assertTrue( names.contains( "META-INF/maven/plugin.xml" ) );
@@ -176,10 +184,12 @@ public class MockArtifactStoreTest
     public void testDirectoryWithClassifierContent() throws Exception
     {
         MockArtifactStore artifactStore = new MockArtifactStore( new File( "target/test-classes/mrm-xx" ) );
-       
+
         Artifact pomArtifact = new Artifact( "localhost", "mrm-xx", "1.0", "pom" );
         assertNotNull( artifactStore.get( pomArtifact ) );
-        assertTrue( "Content equals",  IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-xx/mrm-xx-1.0.pom" ), artifactStore.get( pomArtifact ) ) );
+        assertTrue( "Content equals",
+                    IOUtils.contentEquals( new FileInputStream( "target/test-classes/mrm-xx/mrm-xx-1.0.pom" ),
+                                           artifactStore.get( pomArtifact ) ) );
 
         Artifact classifiedArtifact = new Artifact( "localhost", "mrm-xx", "1.0", "javadoc-resources", "jar" );
         assertNotNull( artifactStore.get( classifiedArtifact ) );

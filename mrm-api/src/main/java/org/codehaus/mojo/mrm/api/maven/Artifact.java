@@ -147,7 +147,8 @@ public final class Artifact
     public Artifact( String groupId, String artifactId, String version, String classifier, String type, long timestamp,
                      int buildNumber )
     {
-        this( groupId, artifactId, version, classifier, type, Long.valueOf( timestamp ), Integer.valueOf( buildNumber ) );
+        this( groupId, artifactId, version, classifier, type, Long.valueOf( timestamp ),
+              Integer.valueOf( buildNumber ) );
     }
 
     /**
@@ -205,8 +206,8 @@ public final class Artifact
     {
         if ( name == null )
         {
-            name = MessageFormat.format( "{0}-{1}{2}.{3}", new Object[]{ artifactId, getTimestampVersion(),
-                ( classifier == null ? "" : "-" + classifier ), type } );
+            name = MessageFormat.format( "{0}-{1}{2}.{3}", new Object[] {artifactId, getTimestampVersion(),
+                ( classifier == null ? "" : "-" + classifier ), type} );
         }
         return name;
     }
@@ -293,7 +294,7 @@ public final class Artifact
      * (may be <code>null</code>).
      *
      * @return the timestamp (formatted as a <code>yyyyMMdd.HHmmss</code> string) of the artifact
-     *         (may be <code>null</code>).
+     * (may be <code>null</code>).
      * @since 1.0
      */
     public String getTimestampString()
@@ -331,9 +332,9 @@ public final class Artifact
                 assert isSnapshot();
                 SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
                 fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                timestampVersion = MessageFormat.format( "{0}-{1}-{2}", new Object[]{
+                timestampVersion = MessageFormat.format( "{0}-{1}-{2}", new Object[] {
                     this.version.substring( 0, this.version.length() - "-SNAPSHOT".length() ),
-                    fmt.format( new Date( timestamp.longValue() ) ), buildNumber } );
+                    fmt.format( new Date( timestamp.longValue() ) ), buildNumber} );
             }
             else
             {
@@ -386,15 +387,15 @@ public final class Artifact
         {
             return false;
         }
-        if (!Objects.equals(classifier, artifact.classifier))
+        if ( !Objects.equals( classifier, artifact.classifier ) )
         {
             return false;
         }
-        if (!Objects.equals(buildNumber, artifact.buildNumber))
+        if ( !Objects.equals( buildNumber, artifact.buildNumber ) )
         {
             return false;
         }
-        if (!Objects.equals(timestamp, artifact.timestamp))
+        if ( !Objects.equals( timestamp, artifact.timestamp ) )
         {
             return false;
         }
@@ -407,7 +408,7 @@ public final class Artifact
      *
      * @param artifact the artifact to compare with.
      * @return <code>true</code> if this artifact is the same as the specified artifact (where timestamps are ignored
-     *         for SNAPSHOT versions).
+     * for SNAPSHOT versions).
      * @since 1.0
      */
     public boolean equalSnapshots( Artifact artifact )
@@ -433,7 +434,7 @@ public final class Artifact
         {
             return false;
         }
-        if (!Objects.equals(classifier, artifact.classifier))
+        if ( !Objects.equals( classifier, artifact.classifier ) )
         {
             return false;
         }

@@ -62,7 +62,7 @@ public class DiskArtifactStore
      * @since 1.0
      */
     private final File root;
-    
+
     private boolean canWrite;
 
     /**
@@ -81,7 +81,7 @@ public class DiskArtifactStore
         this.canWrite = canWrite;
         return this;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -94,13 +94,13 @@ public class DiskArtifactStore
             return Collections.emptySet();
         }
         File[] groupDirs = parentDir.listFiles();
-        if(groupDirs==null)
+        if ( groupDirs == null )
         {
             return Collections.emptySet();
         }
-        return Arrays.stream(groupDirs).filter(File::isDirectory)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( groupDirs ).filter( File::isDirectory )
+            .map( File::getName )
+            .collect( Collectors.toSet() );
 
     }
 
@@ -116,14 +116,14 @@ public class DiskArtifactStore
         }
 
         File[] artifactDirs = groupDir.listFiles();
-        if (artifactDirs==null)
+        if ( artifactDirs == null )
         {
             return Collections.emptySet();
         }
 
-        return Arrays.stream(artifactDirs).filter(File::isDirectory)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( artifactDirs ).filter( File::isDirectory )
+            .map( File::getName )
+            .collect( Collectors.toSet() );
 
     }
 
@@ -139,14 +139,14 @@ public class DiskArtifactStore
             return Collections.emptySet();
         }
         File[] dirs = artifactDir.listFiles();
-        if(dirs==null)
+        if ( dirs == null )
         {
             return Collections.emptySet();
         }
 
-        return Arrays.stream(dirs).filter(File::isDirectory)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream( dirs ).filter( File::isDirectory )
+            .map( File::getName )
+            .collect( Collectors.toSet() );
     }
 
     /**
@@ -171,8 +171,10 @@ public class DiskArtifactStore
         final ArtifactFactory factory;
         if ( version.endsWith( "-SNAPSHOT" ) )
         {
-            rule = Pattern.compile( "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                                        + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?\\.([^/]*)" );
+            rule = Pattern.compile(
+                "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
+                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                    + "\\.([^/]*)" );
             factory = new ArtifactFactory()
             {
                 public Artifact get( File file )
@@ -226,13 +228,16 @@ public class DiskArtifactStore
         }
         File[] files = versionDir.listFiles();
         Set<Artifact> result = new HashSet<>( files.length );
-        for (File file : files) {
-            if (!file.isFile() || !rule.matcher(file.getName()).matches()) {
+        for ( File file : files )
+        {
+            if ( !file.isFile() || !rule.matcher( file.getName() ).matches() )
+            {
                 continue;
             }
-            Artifact artifact = factory.get(file);
-            if (artifact != null) {
-                result.add(artifact);
+            Artifact artifact = factory.get( file );
+            if ( artifact != null )
+            {
+                result.add( artifact );
             }
         }
         return result;
@@ -290,19 +295,20 @@ public class DiskArtifactStore
         {
             throw new UnsupportedOperationException( "Read-only store" );
         }
-        
+
         File targetFile = getFile( artifact );
-        
-        if( !targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs() )
+
+        if ( !targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs() )
         {
             throw new IOException( "Failed to create " + targetFile.getParentFile().getPath() );
         }
 
-        try (OutputStream output = Files.newOutputStream(targetFile.toPath()))
+        try ( OutputStream output = Files.newOutputStream( targetFile.toPath() ) )
         {
             IOUtils.copy( content, output );
         }
-        finally {
+        finally
+        {
             IOUtils.closeQuietly( content );
         }
     }
@@ -315,8 +321,9 @@ public class DiskArtifactStore
     {
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for (String part : parts) {
-            file = new File(file, part);
+        for ( String part : parts )
+        {
+            file = new File( file, part );
         }
         file = new File( file, "maven-metadata.xml" );
         if ( !file.isFile() )
@@ -324,16 +331,16 @@ public class DiskArtifactStore
             throw new MetadataNotFoundException( path );
         }
 
-        try (InputStream inputStream = Files.newInputStream( file.toPath() ))
+        try ( InputStream inputStream = Files.newInputStream( file.toPath() ) )
         {
             return new MetadataXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            throw new IOException( e.getMessage(), e);
+            throw new IOException( e.getMessage(), e );
         }
     }
-    
+
     @Override
     public void setMetadata( String path, Metadata metadata )
         throws IOException
@@ -342,16 +349,17 @@ public class DiskArtifactStore
         {
             throw new UnsupportedOperationException( "Read-only store" );
         }
-        
+
         File file = root;
         String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for (String part : parts) {
-            file = new File(file, part);
+        for ( String part : parts )
+        {
+            file = new File( file, part );
         }
-        
+
         file = new File( file, "maven-metadata.xml" );
 
-        try (OutputStream outputStream = Files.newOutputStream(file.toPath()))
+        try ( OutputStream outputStream = Files.newOutputStream( file.toPath() ) )
         {
             new MetadataXpp3Writer().write( outputStream, metadata );
         }
@@ -392,7 +400,7 @@ public class DiskArtifactStore
         }
         return file.lastModified();
     }
-    
+
     public ArchetypeCatalog getArchetypeCatalog()
         throws IOException, ArchetypeCatalogNotFoundException
     {
@@ -402,13 +410,13 @@ public class DiskArtifactStore
             throw new ArchetypeCatalogNotFoundException();
         }
 
-        try (InputStream inputStream = Files.newInputStream(file.toPath()))
+        try ( InputStream inputStream = Files.newInputStream( file.toPath() ) )
         {
             return new ArchetypeCatalogXpp3Reader().read( inputStream );
         }
         catch ( XmlPullParserException e )
         {
-            throw new IOException( e.getMessage(), e);
+            throw new IOException( e.getMessage(), e );
         }
     }
 
@@ -422,7 +430,7 @@ public class DiskArtifactStore
         }
         return file.lastModified();
     }
-    
+
     private File getFile( Artifact artifact )
     {
         File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );

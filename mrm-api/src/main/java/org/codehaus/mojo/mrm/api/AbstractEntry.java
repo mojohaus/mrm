@@ -120,7 +120,7 @@ public abstract class AbstractEntry
         {
             return false;
         }
-        return Objects.equals(parent, abstractEntry.parent);
+        return Objects.equals( parent, abstractEntry.parent );
     }
 
     /**

@@ -47,22 +47,24 @@ public abstract class BaseArtifactStore
     {
         throw new UnsupportedOperationException( "Read-only artifact store" );
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public ArchetypeCatalog getArchetypeCatalog()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available", new UnsupportedOperationException() );
+        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available",
+                                                     new UnsupportedOperationException() );
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public long getArchetypeCatalogLastModified()
         throws IOException, ArchetypeCatalogNotFoundException
     {
-        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available", new UnsupportedOperationException() );
+        throw new ArchetypeCatalogNotFoundException( "Archetype Catalog not available",
+                                                     new UnsupportedOperationException() );
     }
 }

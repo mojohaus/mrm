@@ -93,7 +93,7 @@ public class MetadataFileEntry
         }
         catch ( MetadataNotFoundException e )
         {
-            throw new IOException( "File not found", e);
+            throw new IOException( "File not found", e );
         }
     }
 
@@ -129,7 +129,7 @@ public class MetadataFileEntry
         }
         catch ( MetadataNotFoundException e )
         {
-            throw new IOException( "File not found", e);
+            throw new IOException( "File not found", e );
         }
     }
 

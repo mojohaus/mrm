@@ -30,7 +30,7 @@ import org.codehaus.plexus.util.StringUtils;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- *
+ * <p>
  * Starts a mock repository manager for manual testing.
  */
 @Mojo( name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true )
@@ -41,8 +41,8 @@ public class RunMojo
      * ServletPath for the settings.xml, so it can be downloaded.
      */
     @Parameter( property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml" )
-    private String settingsServletPath; 
-    
+    private String settingsServletPath;
+
     /**
      * {@inheritDoc}
      */
@@ -73,11 +73,12 @@ public class RunMojo
                 {
                     downloadUrl = mrm.getUrl();
                 }
-                
+
                 String settings = FileUtils.filename( settingsServletPath );
-                
-                getLog().info( "To share this repository manager, let users download " + downloadUrl + "/" + settingsServletPath );
-                getLog().info( "Maven should be started as 'mvn --settings " + settings +" [phase|goal]'" );
+
+                getLog().info(
+                    "To share this repository manager, let users download " + downloadUrl + "/" + settingsServletPath );
+                getLog().info( "Maven should be started as 'mvn --settings " + settings + " [phase|goal]'" );
             }
             ConsoleScanner consoleScanner = new ConsoleScanner();
             consoleScanner.start();
@@ -103,7 +104,7 @@ public class RunMojo
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */

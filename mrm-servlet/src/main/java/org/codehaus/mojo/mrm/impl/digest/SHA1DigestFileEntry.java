@@ -16,19 +16,18 @@
 
 package org.codehaus.mojo.mrm.impl.digest;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.mojo.mrm.api.BaseFileEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.FileEntry;
-import org.codehaus.mojo.mrm.api.FileSystem;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.mojo.mrm.api.BaseFileEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.FileEntry;
+import org.codehaus.mojo.mrm.api.FileSystem;
 
 /**
  * A {@link FileEntry} that corresponds to the SHA1 digest of another file entry.
@@ -105,7 +104,7 @@ public class SHA1DigestFileEntry
     private byte[] getContent()
         throws IOException
     {
-        try (InputStream is = entry.getInputStream())
+        try ( InputStream is = entry.getInputStream() )
         {
             MessageDigest digest = MessageDigest.getInstance( "SHA1" );
             digest.reset();
@@ -120,7 +119,7 @@ public class SHA1DigestFileEntry
         }
         catch ( NoSuchAlgorithmException e )
         {
-            throw new IOException( "Unable to calculate hash", e);
+            throw new IOException( "Unable to calculate hash", e );
         }
     }
 

@@ -121,33 +121,35 @@ public class FileSystemServer
      * @param fileSystem  the file system to serve.
      * @param debugServer the server debug mode
      */
-    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem, String settingsServletPath,
-                             boolean debugServer )
+    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem,
+                             String settingsServletPath, boolean debugServer )
     {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
-        this.contextPath = sanitizeContextPath(contextPath);
+        this.contextPath = sanitizeContextPath( contextPath );
         this.settingsServletPath = settingsServletPath;
         this.debugServer = debugServer;
     }
 
     /**
-     * Sanitize the given {@code contextPath} by prepending slash if necessary and/or removing the trailing slash if necessary
+     * Sanitize the given {@code contextPath} by prepending slash if necessary and/or removing the trailing slash if
+     * necessary
+     *
      * @param contextPath the contextPath to sanitize
      * @return sanitized {@code contextPath}
      */
-    static String sanitizeContextPath(String contextPath)
+    static String sanitizeContextPath( String contextPath )
     {
-        if ( contextPath == null || contextPath.isEmpty() || contextPath.equals("/") )
+        if ( contextPath == null || contextPath.isEmpty() || contextPath.equals( "/" ) )
         {
             return "/";
         }
-        if ( !contextPath.startsWith("/") )
+        if ( !contextPath.startsWith( "/" ) )
         {
             return "/" + contextPath;
         }
-        if ( contextPath.endsWith("/") )
+        if ( contextPath.endsWith( "/" ) )
         {
             return contextPath.substring( 0, contextPath.length() - 1 );
         }
@@ -239,7 +241,7 @@ public class FileSystemServer
     /**
      * Blocks until the file system server has actually shut down.
      *
-     * @throws InterruptedException  if interrupted.
+     * @throws InterruptedException if interrupted.
      */
     public void waitForFinished()
         throws InterruptedException
@@ -273,7 +275,7 @@ public class FileSystemServer
      */
     public String getUrl()
     {
-        return "http://localhost:" + getPort() + (contextPath.equals("/") ? "" : contextPath);
+        return "http://localhost:" + getPort() + ( contextPath.equals( "/" ) ? "" : contextPath );
     }
 
     /**
@@ -285,7 +287,7 @@ public class FileSystemServer
     public String getRemoteUrl() throws UnknownHostException
     {
         return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort()
-                + (contextPath.equals("/") ? "" : contextPath);
+            + ( contextPath.equals( "/" ) ? "" : contextPath );
     }
 
     /**
@@ -299,37 +301,49 @@ public class FileSystemServer
          */
         public void run()
         {
-            try {
+            try
+            {
                 Logger serverLogger = new ServerLogger( debugServer );
                 Log.setLog( serverLogger );
                 Log.initialized();
 
-                Server server = new Server(requestedPort);
+                Server server = new Server( requestedPort );
 
-                try {
+                try
+                {
                     ServletContextHandler context = new ServletContextHandler();
-                    context.setContextPath(contextPath);
-                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
-                    server.setHandler(context);
+                    context.setContextPath( contextPath );
+                    context.addServlet( new ServletHolder( new FileSystemServlet( fileSystem, settingsServletPath ) ),
+                                        "/*" );
+                    server.setHandler( context );
                     server.start();
-                    synchronized (lock) {
-                        boundPort = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
+                    synchronized ( lock )
+                    {
+                        boundPort = ( (ServerConnector) server.getConnectors()[0] ).getLocalPort();
                         starting = false;
                         started = true;
                         lock.notifyAll();
                     }
-                } catch (Exception e) {
-                    synchronized (lock) {
+                }
+                catch ( Exception e )
+                {
+                    synchronized ( lock )
+                    {
                         problem = e;
                     }
                     serverLogger.warn( e );
                     throw e;
                 }
-                synchronized (lock) {
-                    while (!finishing) {
-                        try {
-                            lock.wait(500);
-                        } catch (InterruptedException e) {
+                synchronized ( lock )
+                {
+                    while ( !finishing )
+                    {
+                        try
+                        {
+                            lock.wait( 500 );
+                        }
+                        catch ( InterruptedException e )
+                        {
                             // ignore
                         }
                     }

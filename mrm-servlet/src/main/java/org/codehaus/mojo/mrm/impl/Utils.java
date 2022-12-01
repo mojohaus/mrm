@@ -71,7 +71,7 @@ public final class Utils
         }
         else
         {
-            return new ByteArrayInputStream( content.toString().getBytes(StandardCharsets.UTF_8) );
+            return new ByteArrayInputStream( content.toString().getBytes( StandardCharsets.UTF_8 ) );
         }
     }
 
@@ -223,7 +223,7 @@ public final class Utils
         for ( int i = path.indexOf( '/' ); i != -1; i = path.indexOf( '/', last ) )
         {
             buf.append( urlEncodePathSegment( path.substring( last, i ) ) );
-            buf.append(path, i, Math.min( path.length(), i + 1 ));
+            buf.append( path, i, Math.min( path.length(), i + 1 ) );
             last = i + 1;
         }
         buf.append( path.substring( last ) );
@@ -235,16 +235,16 @@ public final class Utils
      *
      * @param pathSegment the path segment.
      * @return the path segment encoded for use as an URL parameter.
-     * @throws UnsupportedEncodingException if the path cannot be encoded.
      * @since 1.0
      */
     public static String urlEncodePathSegment( String pathSegment )
-        throws UnsupportedEncodingException
     {
         StringBuilder buf = new StringBuilder( pathSegment.length() + 64 );
-        byte[] chars = pathSegment.getBytes(StandardCharsets.UTF_8);
-        for (byte aChar : chars) {
-            switch (aChar) {
+        byte[] chars = pathSegment.getBytes( StandardCharsets.UTF_8 );
+        for ( byte aChar : chars )
+        {
+            switch ( aChar )
+            {
                 case '$':
                 case '-':
                 case '_':
@@ -317,17 +317,18 @@ public final class Utils
                 case 'x':
                 case 'y':
                 case 'z':
-                    buf.append((char) aChar);
+                    buf.append( (char) aChar );
                     break;
                 case ' ':
-                    buf.append('+');
+                    buf.append( '+' );
                     break;
                 default:
-                    buf.append('%');
-                    if ((aChar & 0xf0) == 0) {
-                        buf.append('0');
+                    buf.append( '%' );
+                    if ( ( aChar & 0xf0 ) == 0 )
+                    {
+                        buf.append( '0' );
                     }
-                    buf.append(Integer.toHexString(aChar & 0xff));
+                    buf.append( Integer.toHexString( aChar & 0xff ) );
                     break;
             }
         }

@@ -99,6 +99,7 @@ public class MD5DigestFileEntry
      * @throws IOException if the backing entry could not be read.
      * @since 1.0
      */
+    @SuppressWarnings( "checkstyle:MagicNumber" )
     private byte[] getContent()
         throws IOException
     {
@@ -108,7 +109,7 @@ public class MD5DigestFileEntry
             digest.reset();
             byte[] buffer = new byte[8192];
             int read;
-            try (InputStream is = entry.getInputStream())
+            try ( InputStream is = entry.getInputStream() )
             {
                 while ( ( read = is.read( buffer ) ) > 0 )
                 {
@@ -120,7 +121,7 @@ public class MD5DigestFileEntry
         }
         catch ( NoSuchAlgorithmException e )
         {
-            throw new IOException( "Unable to calculate hash", e);
+            throw new IOException( "Unable to calculate hash", e );
         }
     }
 

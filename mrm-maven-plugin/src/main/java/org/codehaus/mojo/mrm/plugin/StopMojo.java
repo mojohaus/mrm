@@ -28,7 +28,7 @@ import java.util.Map;
  * <code>settings.xml</code> and still work behind a proxy.
  *
  * @author Stephen Connolly
- *
+ * <p>
  * Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
  * by integration tests.
  */
@@ -44,8 +44,9 @@ public class StopMojo
         throws MojoExecutionException, MojoFailureException
     {
         Map pluginContext = session.getPluginContext( pluginDescriptor, project );
-        FileSystemServer mrm = (FileSystemServer) pluginContext.get( StartMojo.getFileSystemServerKey( getMojoExecution() ) );
-        
+        FileSystemServer mrm =
+            (FileSystemServer) pluginContext.get( StartMojo.getFileSystemServerKey( getMojoExecution() ) );
+
         if ( mrm == null )
         {
             getLog().info( "Mock Repository Manager was not started" );

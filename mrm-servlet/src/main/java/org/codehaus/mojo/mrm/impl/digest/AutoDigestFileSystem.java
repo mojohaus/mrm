@@ -70,7 +70,7 @@ public class AutoDigestFileSystem
     public AutoDigestFileSystem( FileSystem backing )
     {
         this( backing,
-              new DigestFileEntryFactory[]{ new MD5DigestFileEntry.Factory(), new SHA1DigestFileEntry.Factory() } );
+              new DigestFileEntryFactory[] {new MD5DigestFileEntry.Factory(), new SHA1DigestFileEntry.Factory()} );
     }
 
     /**
@@ -85,8 +85,9 @@ public class AutoDigestFileSystem
     {
         this.backing = backing;
         this.digestFactories =
-                Collections.unmodifiableMap(Arrays.stream(digestFactories)
-                        .collect(Collectors.toMap(DigestFileEntryFactory::getType, factory -> factory)));
+            Collections.unmodifiableMap( Arrays.stream( digestFactories )
+                                             .collect( Collectors.toMap( DigestFileEntryFactory::getType,
+                                                                         factory -> factory ) ) );
     }
 
     /**
@@ -134,7 +135,7 @@ public class AutoDigestFileSystem
                 }
             }
         }
-        return result.values().toArray(new Entry[0]);
+        return result.values().toArray( new Entry[0] );
     }
 
     /**
@@ -235,7 +236,7 @@ public class AutoDigestFileSystem
         }
         return null;
     }
-    
+
     @Override
     public FileEntry put( DirectoryEntry parent, String name, InputStream content )
         throws IOException

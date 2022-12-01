@@ -102,8 +102,7 @@ public abstract class AbstractStartMojo
      * Creates an artifact store from the {@link #repositories} configuration.
      *
      * @return an artifact store.
-     * @throws org.apache.maven.plugin.MojoExecutionException
-     *          if the configuration is invalid.
+     * @throws org.apache.maven.plugin.MojoExecutionException if the configuration is invalid.
      */
     protected ArtifactStore createArtifactStore()
         throws MojoExecutionException
@@ -117,7 +116,7 @@ public abstract class AbstractStartMojo
         List<ArtifactStore> stores = new ArrayList<>();
         if ( repositories == null || repositories.length == 0 )
         {
-            repositories = new ArtifactStoreFactory[]{ new ProxyRepo() };
+            repositories = new ArtifactStoreFactory[] {new ProxyRepo()};
         }
         FactoryHelper helper = createFactoryHelper();
         for ( ArtifactStoreFactory artifactStoreFactory : repositories )
@@ -129,7 +128,7 @@ public abstract class AbstractStartMojo
             getLog().info( "  " + artifactStoreFactory.toString() );
             stores.add( artifactStoreFactory.newInstance() );
         }
-        ArtifactStore[] artifactStores = stores.toArray(new ArtifactStore[0]);
+        ArtifactStore[] artifactStores = stores.toArray( new ArtifactStore[0] );
         return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore( artifactStores );
     }
 

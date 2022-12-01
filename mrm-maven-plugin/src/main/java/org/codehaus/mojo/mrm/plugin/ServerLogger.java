@@ -29,12 +29,12 @@ class ServerLogger extends Slf4jLog
 {
     private final boolean debugEnabled;
 
-    public ServerLogger( boolean debugEnabled )
+    ServerLogger( boolean debugEnabled )
     {
         this( ServerLogger.class.getName(), debugEnabled );
     }
 
-    public ServerLogger( String name, boolean debugEnabled )
+    ServerLogger( String name, boolean debugEnabled )
     {
         super( name );
         this.debugEnabled = debugEnabled;
