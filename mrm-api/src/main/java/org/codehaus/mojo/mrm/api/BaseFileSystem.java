@@ -25,9 +25,7 @@ import java.io.InputStream;
  *
  * @since 1.0
  */
-public abstract class BaseFileSystem
-    implements FileSystem
-{
+public abstract class BaseFileSystem implements FileSystem {
     /**
      * Ensure consistent serialization.
      *
@@ -38,40 +36,34 @@ public abstract class BaseFileSystem
     /**
      * The root entry.
      */
-    private final DirectoryEntry root = new DefaultDirectoryEntry( this, null, "" );
+    private final DirectoryEntry root = new DefaultDirectoryEntry(this, null, "");
 
     /**
      * {@inheritDoc}
      */
-    public DirectoryEntry getRoot()
-    {
+    public DirectoryEntry getRoot() {
         return root;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Entry get( String path )
-    {
-        if ( path.startsWith( "/" ) )
-        {
-            path = path.substring( 1 );
+    public Entry get(String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1);
         }
-        if ( path.length() == 0 )
-        {
+        if (path.length() == 0) {
             return root;
         }
-        String[] parts = path.split( "/" );
-        if ( parts.length == 0 )
-        {
+        String[] parts = path.split("/");
+        if (parts.length == 0) {
             return root;
         }
         DirectoryEntry parent = root;
-        for ( int i = 0; i < parts.length - 1; i++ )
-        {
-            parent = new DefaultDirectoryEntry( this, parent, parts[i] );
+        for (int i = 0; i < parts.length - 1; i++) {
+            parent = new DefaultDirectoryEntry(this, parent, parts[i]);
         }
-        return get( parent, parts[parts.length - 1] );
+        return get(parent, parts[parts.length - 1]);
     }
 
     /**
@@ -83,16 +75,12 @@ public abstract class BaseFileSystem
      * @param name   the name of the entry to get.
      * @return the {@link Entry} or <code>null</code> if the entry does not exist.
      */
-    protected Entry get( DirectoryEntry parent, String name )
-    {
+    protected Entry get(DirectoryEntry parent, String name) {
         parent.getClass();
-        Entry[] entries = listEntries( parent );
-        if ( entries != null )
-        {
-            for ( Entry entry : entries )
-            {
-                if ( name.equals( entry.getName() ) )
-                {
+        Entry[] entries = listEntries(parent);
+        if (entries != null) {
+            for (Entry entry : entries) {
+                if (name.equals(entry.getName())) {
                     return entry;
                 }
             }
@@ -103,34 +91,28 @@ public abstract class BaseFileSystem
     /**
      * {@inheritDoc}
      */
-    public DirectoryEntry mkdir( DirectoryEntry parent, String name )
-    {
+    public DirectoryEntry mkdir(DirectoryEntry parent, String name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException
-    {
+    public FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public FileEntry put( DirectoryEntry parent, String name, byte[] content )
-        throws IOException
-    {
-        return put( parent, name, new ByteArrayInputStream( content ) );
+    public FileEntry put(DirectoryEntry parent, String name, byte[] content) throws IOException {
+        return put(parent, name, new ByteArrayInputStream(content));
     }
 
     /**
      * {@inheritDoc}
      */
-    public void remove( Entry entry )
-    {
+    public void remove(Entry entry) {
         throw new UnsupportedOperationException();
     }
 }

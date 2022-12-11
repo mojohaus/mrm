@@ -16,7 +16,6 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
-
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
 
@@ -25,9 +24,7 @@ import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
  *
  * @since 1.0
  */
-public class ProxyRepo
-    implements ArtifactStoreFactory, FactoryHelperRequired
-{
+public class ProxyRepo implements ArtifactStoreFactory, FactoryHelperRequired {
 
     /**
      * Our factory helper.
@@ -37,33 +34,32 @@ public class ProxyRepo
     /**
      * {@inheritDoc}
      */
-    public ArtifactStore newInstance()
-    {
-        if ( factoryHelper == null )
-        {
-            throw new IllegalStateException( "FactoryHelper has not been set" );
+    public ArtifactStore newInstance() {
+        if (factoryHelper == null) {
+            throw new IllegalStateException("FactoryHelper has not been set");
         }
-        return new ProxyArtifactStore( factoryHelper.getRepositoryMetadataManager(),
-                                       factoryHelper.getRemoteArtifactRepositories(),
-                                       factoryHelper.getRemotePluginRepositories(), factoryHelper.getLocalRepository(),
-                                       factoryHelper.getArtifactFactory(), factoryHelper.getArtifactResolver(),
-                                       factoryHelper.getArchetypeManager(),
-                                       factoryHelper.getLog() );
+        return new ProxyArtifactStore(
+                factoryHelper.getRepositoryMetadataManager(),
+                factoryHelper.getRemoteArtifactRepositories(),
+                factoryHelper.getRemotePluginRepositories(),
+                factoryHelper.getLocalRepository(),
+                factoryHelper.getArtifactFactory(),
+                factoryHelper.getArtifactResolver(),
+                factoryHelper.getArchetypeManager(),
+                factoryHelper.getLog());
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFactoryHelper( FactoryHelper factoryHelper )
-    {
+    public void setFactoryHelper(FactoryHelper factoryHelper) {
         this.factoryHelper = factoryHelper;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    public String toString() {
         return "Proxy (source: this Maven session)";
     }
 }

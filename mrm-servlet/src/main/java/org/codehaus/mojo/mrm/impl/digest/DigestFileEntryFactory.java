@@ -25,8 +25,7 @@ import org.codehaus.mojo.mrm.api.FileSystem;
  *
  * @since 1.0
  */
-public interface DigestFileEntryFactory
-{
+public interface DigestFileEntryFactory {
     /**
      * Returns the type of digest (i.e. the file extension).
      *
@@ -44,6 +43,5 @@ public interface DigestFileEntryFactory
      * @return a digest file entry.
      * @since 1.0
      */
-    FileEntry create( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry );
-
+    FileEntry create(FileSystem fileSystem, DirectoryEntry parent, FileEntry entry);
 }

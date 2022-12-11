@@ -21,9 +21,7 @@ package org.codehaus.mojo.mrm.api.maven;
  *
  * @since 1.0
  */
-public class ArtifactNotFoundException
-    extends Exception
-{
+public class ArtifactNotFoundException extends Exception {
     /**
      * Ensure consistent serialization.
      *
@@ -44,9 +42,8 @@ public class ArtifactNotFoundException
      * @param artifact the artifact that was not found.
      * @since 1.0
      */
-    public ArtifactNotFoundException( Artifact artifact )
-    {
-        this( artifact.toString(), artifact, null );
+    public ArtifactNotFoundException(Artifact artifact) {
+        this(artifact.toString(), artifact, null);
     }
 
     /**
@@ -56,9 +53,8 @@ public class ArtifactNotFoundException
      * @param cause    the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */
-    public ArtifactNotFoundException( Artifact artifact, Throwable cause )
-    {
-        this( artifact.toString(), artifact, cause );
+    public ArtifactNotFoundException(Artifact artifact, Throwable cause) {
+        this(artifact.toString(), artifact, cause);
     }
 
     /**
@@ -68,9 +64,8 @@ public class ArtifactNotFoundException
      * @param artifact the artifact that was not found.
      * @since 1.0
      */
-    public ArtifactNotFoundException( String message, Artifact artifact )
-    {
-        this( message, artifact, null );
+    public ArtifactNotFoundException(String message, Artifact artifact) {
+        this(message, artifact, null);
     }
 
     /**
@@ -81,9 +76,8 @@ public class ArtifactNotFoundException
      * @param cause    the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */
-    public ArtifactNotFoundException( String message, Artifact artifact, Throwable cause )
-    {
-        super( message, cause );
+    public ArtifactNotFoundException(String message, Artifact artifact, Throwable cause) {
+        super(message, cause);
         this.artifact = artifact;
     }
 
@@ -93,8 +87,7 @@ public class ArtifactNotFoundException
      * @return the artifact that does not exist.
      * @since 1.0
      */
-    public Artifact getArtifact()
-    {
+    public Artifact getArtifact() {
         return artifact;
     }
 }

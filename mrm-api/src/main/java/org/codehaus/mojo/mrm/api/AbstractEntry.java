@@ -25,9 +25,7 @@ import java.util.Stack;
  * @serial
  * @since 1.0
  */
-public abstract class AbstractEntry
-    implements Entry
-{
+public abstract class AbstractEntry implements Entry {
 
     /**
      * Ensure consistent serialization.
@@ -65,8 +63,7 @@ public abstract class AbstractEntry
      * @param name       The name of the entry.
      * @since 1.0
      */
-    protected AbstractEntry( FileSystem fileSystem, DirectoryEntry parent, String name )
-    {
+    protected AbstractEntry(FileSystem fileSystem, DirectoryEntry parent, String name) {
         this.fileSystem = fileSystem;
         this.parent = parent;
         this.name = name;
@@ -75,100 +72,84 @@ public abstract class AbstractEntry
     /**
      * {@inheritDoc}
      */
-    public FileSystem getFileSystem()
-    {
+    public FileSystem getFileSystem() {
         return fileSystem;
     }
 
     /**
      * {@inheritDoc}
      */
-    public DirectoryEntry getParent()
-    {
+    public DirectoryEntry getParent() {
         return parent;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof AbstractEntry ) )
-        {
+        if (!(o instanceof AbstractEntry)) {
             return false;
         }
 
         AbstractEntry abstractEntry = (AbstractEntry) o;
 
-        if ( !fileSystem.equals( abstractEntry.fileSystem ) )
-        {
+        if (!fileSystem.equals(abstractEntry.fileSystem)) {
             return false;
         }
-        if ( !name.equals( abstractEntry.name ) )
-        {
+        if (!name.equals(abstractEntry.name)) {
             return false;
         }
-        return Objects.equals( parent, abstractEntry.parent );
+        return Objects.equals(parent, abstractEntry.parent);
     }
 
     /**
      * {@inheritDoc}
      */
-    public final int hashCode()
-    {
+    public final int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + ( parent != null ? parent.hashCode() : 0 );
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "Entry[" );
-        sb.append( fileSystem );
-        sb.append( ':' ).append( toPath() ).append( ']' );
+        sb.append("Entry[");
+        sb.append(fileSystem);
+        sb.append(':').append(toPath()).append(']');
         return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
-    public final String toPath()
-    {
+    public final String toPath() {
         Stack<String> stack = new Stack<>();
         Entry root = getFileSystem().getRoot();
         Entry entry = this;
-        do
-        {
-            stack.push( entry.getName() );
+        do {
+            stack.push(entry.getName());
             entry = entry.getParent();
-        }
-        while ( entry != null && !root.equals( entry ) );
+        } while (entry != null && !root.equals(entry));
 
         StringBuilder buf = new StringBuilder();
-        while ( stack.size() > 1 )
-        {
-            buf.append( stack.pop() );
-            buf.append( '/' );
+        while (stack.size() > 1) {
+            buf.append(stack.pop());
+            buf.append('/');
         }
-        buf.append( stack.pop() );
+        buf.append(stack.pop());
         return buf.toString();
     }
-
-
 }

@@ -25,9 +25,7 @@ import java.io.Serializable;
  *
  * @since 1.0
  */
-public interface FileSystem
-    extends Serializable
-{
+public interface FileSystem extends Serializable {
     /**
      * Lists the entries in the specified directory. Some implementations may be lazy caching
      * implementations, in which case it is permitted to return either an empty array, or only those entries which
@@ -41,7 +39,7 @@ public interface FileSystem
      *         modify the returned array.
      * @since 1.0
      */
-    Entry[] listEntries( DirectoryEntry directory );
+    Entry[] listEntries(DirectoryEntry directory);
 
     /**
      * Returns the root directory entry.
@@ -59,7 +57,7 @@ public interface FileSystem
      * @return the {@link Entry} or <code>null</code> if the path definitely does not exist.
      * @since 1.0
      */
-    Entry get( String path );
+    Entry get(String path);
 
     /**
      * Returns the time that the specified directory entry was last modified. Note:
@@ -73,8 +71,7 @@ public interface FileSystem
      * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
-    long getLastModified( DirectoryEntry entry )
-        throws IOException;
+    long getLastModified(DirectoryEntry entry) throws IOException;
 
     /**
      * Makes the specified child directory.
@@ -85,7 +82,7 @@ public interface FileSystem
      * @throws UnsupportedOperationException if the repository is read-only.
      * @since 1.0
      */
-    DirectoryEntry mkdir( DirectoryEntry parent, String name );
+    DirectoryEntry mkdir(DirectoryEntry parent, String name);
 
     /**
      * Puts the specified content into a the specified directory.
@@ -98,8 +95,7 @@ public interface FileSystem
      * @throws java.io.IOException           if the content could not be read/written.
      * @since 1.0
      */
-    FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException;
+    FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException;
 
     /**
      * Puts the specified content into a the specified directory.
@@ -112,8 +108,7 @@ public interface FileSystem
      * @throws java.io.IOException           if the content could not be read/written.
      * @since 1.0
      */
-    FileEntry put( DirectoryEntry parent, String name, byte[] content )
-        throws IOException;
+    FileEntry put(DirectoryEntry parent, String name, byte[] content) throws IOException;
 
     /**
      * Removes the specified entry (and if the entry is a directory, all its children).
@@ -122,5 +117,5 @@ public interface FileSystem
      * @throws UnsupportedOperationException if the repository is read-only.
      * @since 1.0
      */
-    void remove( Entry entry );
+    void remove(Entry entry);
 }

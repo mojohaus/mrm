@@ -23,9 +23,7 @@ import java.io.Serializable;
  *
  * @since 1.0
  */
-public interface Entry
-    extends Serializable
-{
+public interface Entry extends Serializable {
 
     /**
      * Returns the repository that this entry belongs to.
@@ -62,8 +60,7 @@ public interface Entry
      * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
-    long getLastModified()
-        throws IOException;
+    long getLastModified() throws IOException;
 
     /**
      * Returns the path of this entry relative to the root of the filesystem.

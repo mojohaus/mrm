@@ -50,9 +50,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  * @see FileSystemArtifactStore for the oposite.
  * @since 1.0
  */
-public class ArtifactStoreFileSystem
-    extends BaseFileSystem
-{
+public class ArtifactStoreFileSystem extends BaseFileSystem {
 
     /**
      * Regex to match the groupId portion of a path.
@@ -87,9 +85,9 @@ public class ArtifactStoreFileSystem
      *
      * @since 1.0
      */
-    /*package*/ static final Pattern METADATA = Pattern.compile( GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)" );
+    /*package*/ static final Pattern METADATA = Pattern.compile(GROUP_ID_PATH_REGEX + "(maven-metadata\\.xml)");
 
-    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile( "/archetype-catalog\\.xml" );
+    /*package*/ static final Pattern ARCHETYPE_CATALOG = Pattern.compile("/archetype-catalog\\.xml");
 
     /**
      * Regex to match a release artifact path.
@@ -97,16 +95,15 @@ public class ArtifactStoreFileSystem
      * @since 1.0
      */
     /*package*/ static final Pattern ARTIFACT = Pattern.compile(
-        GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + VERSION_REGEX + "(\\2-\\3(-[^.]+)?\\.([^/]*))" );
+            GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + VERSION_REGEX + "(\\2-\\3(-[^.]+)?\\.([^/]*))");
 
     /**
      * Regex to match a snapshot artifact path.
      *
      * @since 1.0
      */
-    /*package*/ static final Pattern SNAPSHOT_ARTIFACT = Pattern.compile(
-        GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX + SNAPSHOT_VERSION_REGEX
-            + "(\\2-(?:\\3-(?:SNAPSHOT|\\d{8}\\.\\d{6}-\\d+))(-[^.]+)?\\.([^/]*))" );
+    /*package*/ static final Pattern SNAPSHOT_ARTIFACT = Pattern.compile(GROUP_ID_PATH_REGEX + ARTIFACT_ID_PATH_REGEX
+            + SNAPSHOT_VERSION_REGEX + "(\\2-(?:\\3-(?:SNAPSHOT|\\d{8}\\.\\d{6}-\\d+))(-[^.]+)?\\.([^/]*))");
 
     /**
      * The backing {@link ArtifactStore}.
@@ -121,22 +118,18 @@ public class ArtifactStoreFileSystem
      * @param store the backing artifact store.
      * @since 1.0
      */
-    public ArtifactStoreFileSystem( ArtifactStore store )
-    {
+    public ArtifactStoreFileSystem(ArtifactStore store) {
         this.store = store;
     }
 
     @Override
-    public Entry[] listEntries( DirectoryEntry directory )
-    {
-        if ( getRoot().equals( directory ) )
-        {
-            Set<String> rootGroupIds = new TreeSet<>( store.getGroupIds( "" ) );
+    public Entry[] listEntries(DirectoryEntry directory) {
+        if (getRoot().equals(directory)) {
+            Set<String> rootGroupIds = new TreeSet<>(store.getGroupIds(""));
             Entry[] result = new Entry[rootGroupIds.size()];
             int index = 0;
-            for ( String name : rootGroupIds )
-            {
-                result[index++] = new DefaultDirectoryEntry( this, getRoot(), name );
+            for (String name : rootGroupIds) {
+                result[index++] = new DefaultDirectoryEntry(this, getRoot(), name);
             }
             return result;
         }
@@ -144,373 +137,292 @@ public class ArtifactStoreFileSystem
         Set<String> names = new HashSet<>();
         String path = directory.toPath();
 
-        try
-        {
-            store.getMetadataLastModified( path );
-            MetadataFileEntry entry = new MetadataFileEntry( this, directory, path, store );
-            if ( !names.contains( entry.getName() ) )
-            {
-                result.add( entry );
-                names.add( entry.getName() );
+        try {
+            store.getMetadataLastModified(path);
+            MetadataFileEntry entry = new MetadataFileEntry(this, directory, path, store);
+            if (!names.contains(entry.getName())) {
+                result.add(entry);
+                names.add(entry.getName());
             }
-        }
-        catch ( MetadataNotFoundException | IOException e )
-        {
+        } catch (MetadataNotFoundException | IOException e) {
             // ignore
         }
 
-        String groupId = path.replace( '/', '.' );
+        String groupId = path.replace('/', '.');
 
         // get all the groupId's that start with this groupId
-        Set<String> groupIds = new TreeSet<>( store.getGroupIds( groupId ) );
-        for ( String name : groupIds )
-        {
-            if ( !names.contains( name ) )
-            {
-                result.add( new DefaultDirectoryEntry( this, directory, name ) );
-                names.add( name );
+        Set<String> groupIds = new TreeSet<>(store.getGroupIds(groupId));
+        for (String name : groupIds) {
+            if (!names.contains(name)) {
+                result.add(new DefaultDirectoryEntry(this, directory, name));
+                names.add(name);
             }
         }
 
         // get all the artifactIds that belong to this groupId
-        for ( String name : store.getArtifactIds( groupId ) )
-        {
-            if ( !names.contains( name ) )
-            {
-                result.add( new DefaultDirectoryEntry( this, directory, name ) );
-                names.add( name );
+        for (String name : store.getArtifactIds(groupId)) {
+            if (!names.contains(name)) {
+                result.add(new DefaultDirectoryEntry(this, directory, name));
+                names.add(name);
             }
         }
 
         DirectoryEntry parent = directory.getParent();
-        if ( parent != null && !getRoot().equals( parent ) )
-        {
+        if (parent != null && !getRoot().equals(parent)) {
             // get all the versions that belong to the groupId/artifactId path
-            groupId = parent.toPath().replace( '/', '.' );
+            groupId = parent.toPath().replace('/', '.');
             String artifactId = directory.getName();
-            for ( String name : store.getVersions( groupId, artifactId ) )
-            {
-                if ( !names.contains( name ) )
-                {
-                    result.add( new DefaultDirectoryEntry( this, directory, name ) );
-                    names.add( name );
+            for (String name : store.getVersions(groupId, artifactId)) {
+                if (!names.contains(name)) {
+                    result.add(new DefaultDirectoryEntry(this, directory, name));
+                    names.add(name);
                 }
             }
             DirectoryEntry grandParent = parent.getParent();
-            if ( grandParent != null && !getRoot().equals( grandParent ) )
-            {
+            if (grandParent != null && !getRoot().equals(grandParent)) {
                 // get all the versions that belong to the groupId/artifactId path
-                groupId = grandParent.toPath().replace( '/', '.' );
+                groupId = grandParent.toPath().replace('/', '.');
                 artifactId = parent.getName();
                 String version = directory.getName();
-                for ( Artifact a : store.getArtifacts( groupId, artifactId, version ) )
-                {
-                    ArtifactFileEntry entry = new ArtifactFileEntry( this, directory, a, store );
-                    if ( !names.contains( entry.getName() ) )
-                    {
-                        result.add( entry );
-                        names.add( entry.getName() );
+                for (Artifact a : store.getArtifacts(groupId, artifactId, version)) {
+                    ArtifactFileEntry entry = new ArtifactFileEntry(this, directory, a, store);
+                    if (!names.contains(entry.getName())) {
+                        result.add(entry);
+                        names.add(entry.getName());
                     }
                 }
             }
         }
 
         // sort
-        result.sort( Comparator.comparing( Entry::getName ) );
-        return result.toArray( new Entry[0] );
+        result.sort(Comparator.comparing(Entry::getName));
+        return result.toArray(new Entry[0]);
     }
 
     @Override
-    @SuppressWarnings( "checkstyle:MethodLength" )
-    protected Entry get( DirectoryEntry parent, String name )
-    {
+    @SuppressWarnings("checkstyle:MethodLength")
+    protected Entry get(DirectoryEntry parent, String name) {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath() ) )
-        {
+        if (StringUtils.isNotEmpty(parent.toPath())) {
             path += parent.toPath() + "/";
         }
         path += name;
 
-        if ( "favicon.ico".equals( name ) )
-        {
+        if ("favicon.ico".equals(name)) {
             return null;
         }
-        if ( METADATA.matcher( path ).matches() )
-        {
-            MetadataFileEntry entry = new MetadataFileEntry( this, parent, parent.toPath(), store );
-            try
-            {
+        if (METADATA.matcher(path).matches()) {
+            MetadataFileEntry entry = new MetadataFileEntry(this, parent, parent.toPath(), store);
+            try {
                 entry.getLastModified();
                 return entry;
-            }
-            catch ( IOException e )
-            {
+            } catch (IOException e) {
                 return null;
             }
-        }
-        else if ( ARCHETYPE_CATALOG.matcher( path ).matches() )
-        {
-            ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry( this, parent, store );
-            try
-            {
+        } else if (ARCHETYPE_CATALOG.matcher(path).matches()) {
+            ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry(this, parent, store);
+            try {
                 entry.getLastModified();
                 return entry;
-            }
-            catch ( IOException e )
-            {
+            } catch (IOException e) {
                 return null;
             }
-        }
-        else
-        {
-            Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher( path );
-            if ( snapshotArtifact.matches() )
-            {
-                String groupId = StringUtils.stripEnd( snapshotArtifact.group( 1 ), "/" ).replace( '/', '.' );
-                String artifactId = snapshotArtifact.group( 2 );
-                String version = snapshotArtifact.group( 3 ) + "-SNAPSHOT";
-                Pattern rule = Pattern.compile(
-                    "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                        + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
-                        + "\\.([^/]*)" );
-                Matcher matcher = rule.matcher( name );
-                if ( !matcher.matches() )
-                {
-                    String classifier = snapshotArtifact.group( 5 );
-                    String type = snapshotArtifact.group( 6 );
-                    if ( classifier != null )
-                    {
-                        classifier = classifier.substring( 1 );
+        } else {
+            Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher(path);
+            if (snapshotArtifact.matches()) {
+                String groupId =
+                        StringUtils.stripEnd(snapshotArtifact.group(1), "/").replace('/', '.');
+                String artifactId = snapshotArtifact.group(2);
+                String version = snapshotArtifact.group(3) + "-SNAPSHOT";
+                Pattern rule =
+                        Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
+                                + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                                + "\\.([^/]*)");
+                Matcher matcher = rule.matcher(name);
+                if (!matcher.matches()) {
+                    String classifier = snapshotArtifact.group(5);
+                    String type = snapshotArtifact.group(6);
+                    if (classifier != null) {
+                        classifier = classifier.substring(1);
                     }
-                    if ( StringUtils.isEmpty( classifier ) )
-                    {
+                    if (StringUtils.isEmpty(classifier)) {
                         classifier = null;
                     }
-                    return new ArtifactFileEntry( this, parent,
-                                                  new Artifact( groupId, artifactId, version, classifier, type ),
-                                                  store );
+                    return new ArtifactFileEntry(
+                            this, parent, new Artifact(groupId, artifactId, version, classifier, type), store);
                 }
-                if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
-                {
-                    Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                      matcher.group( 10 ) );
-                    try
-                    {
+                if (matcher.group(1).equals("SNAPSHOT")) {
+                    Artifact artifact = new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
+                    try {
                         // check if artifact exist
-                        store.getSize( artifact );
-                        return new ArtifactFileEntry( this, parent, artifact, store );
-                    }
-                    catch ( IOException | ArtifactNotFoundException e )
-                    {
+                        store.getSize(artifact);
+                        return new ArtifactFileEntry(this, parent, artifact, store);
+                    } catch (IOException | ArtifactNotFoundException e) {
                         return null;
                     }
                 }
-                try
-                {
+                try {
                     Calendar cal = new GregorianCalendar();
-                    cal.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                    cal.set( Calendar.YEAR, Integer.parseInt( matcher.group( 2 ) ) );
-                    cal.set( Calendar.MONTH, Integer.parseInt( matcher.group( 3 ) ) - 1 );
-                    cal.set( Calendar.DAY_OF_MONTH, Integer.parseInt( matcher.group( 4 ) ) );
-                    cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
-                    cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
-                    cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
-                    cal.set( Calendar.MILLISECOND, 0 );
+                    cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    cal.set(Calendar.YEAR, Integer.parseInt(matcher.group(2)));
+                    cal.set(Calendar.MONTH, Integer.parseInt(matcher.group(3)) - 1);
+                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(matcher.group(4)));
+                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(matcher.group(5)));
+                    cal.set(Calendar.MINUTE, Integer.parseInt(matcher.group(6)));
+                    cal.set(Calendar.SECOND, Integer.parseInt(matcher.group(7)));
+                    cal.set(Calendar.MILLISECOND, 0);
                     long timestamp = cal.getTimeInMillis();
-                    int buildNumber = Integer.parseInt( matcher.group( 8 ) );
+                    int buildNumber = Integer.parseInt(matcher.group(8));
 
-                    Artifact artifact = new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                                      matcher.group( 10 ), timestamp, buildNumber );
-                    try
-                    {
+                    Artifact artifact = new Artifact(
+                            groupId, artifactId, version, matcher.group(9), matcher.group(10), timestamp, buildNumber);
+                    try {
                         // check if artifact exist
-                        store.getSize( artifact );
-                        return new ArtifactFileEntry( this, parent, artifact, store );
-                    }
-                    catch ( IOException | ArtifactNotFoundException e )
-                    {
+                        store.getSize(artifact);
+                        return new ArtifactFileEntry(this, parent, artifact, store);
+                    } catch (IOException | ArtifactNotFoundException e) {
                         return null;
                     }
+                } catch (NullPointerException e) {
+                    return new DefaultDirectoryEntry(this, parent, name);
                 }
-                catch ( NullPointerException e )
-                {
-                    return new DefaultDirectoryEntry( this, parent, name );
-                }
-            }
-            else
-            {
-                Matcher matcher = ARTIFACT.matcher( path );
-                if ( matcher.matches() )
-                {
-                    String groupId = StringUtils.stripEnd( matcher.group( 1 ), "/" ).replace( '/', '.' );
-                    String artifactId = matcher.group( 2 );
-                    String version = matcher.group( 3 );
-                    String classifier = matcher.group( 5 );
-                    String type = matcher.group( 6 );
-                    if ( classifier != null )
-                    {
-                        classifier = classifier.substring( 1 );
+            } else {
+                Matcher matcher = ARTIFACT.matcher(path);
+                if (matcher.matches()) {
+                    String groupId = StringUtils.stripEnd(matcher.group(1), "/").replace('/', '.');
+                    String artifactId = matcher.group(2);
+                    String version = matcher.group(3);
+                    String classifier = matcher.group(5);
+                    String type = matcher.group(6);
+                    if (classifier != null) {
+                        classifier = classifier.substring(1);
                     }
-                    if ( StringUtils.isEmpty( classifier ) )
-                    {
+                    if (StringUtils.isEmpty(classifier)) {
                         classifier = null;
                     }
 
-                    Artifact artifact = new Artifact( groupId, artifactId, version, classifier, type );
-                    try
-                    {
+                    Artifact artifact = new Artifact(groupId, artifactId, version, classifier, type);
+                    try {
                         // check if artifact exist
-                        store.getSize( artifact );
-                        return new ArtifactFileEntry( this, parent, artifact, store );
-                    }
-                    catch ( ArtifactNotFoundException | IOException e )
-                    {
+                        store.getSize(artifact);
+                        return new ArtifactFileEntry(this, parent, artifact, store);
+                    } catch (ArtifactNotFoundException | IOException e) {
                         return null;
                     }
-                }
-                else
-                {
-                    return new DefaultDirectoryEntry( this, parent, name );
+                } else {
+                    return new DefaultDirectoryEntry(this, parent, name);
                 }
             }
         }
     }
 
     @Override
-    public long getLastModified( DirectoryEntry entry )
-        throws IOException
-    {
+    public long getLastModified(DirectoryEntry entry) throws IOException {
         return System.currentTimeMillis();
     }
 
     @Override
-    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException
-    {
+    public FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath() ) )
-        {
+        if (StringUtils.isNotEmpty(parent.toPath())) {
             path += parent.toPath() + "/";
         }
 
-        if ( "maven-metadata.xml".equals( name ) )
-        {
+        if ("maven-metadata.xml".equals(name)) {
             MetadataXpp3Reader reader = new MetadataXpp3Reader();
-            try
-            {
-                Metadata metadata = reader.read( content );
+            try {
+                Metadata metadata = reader.read(content);
 
-                if ( metadata == null )
-                {
+                if (metadata == null) {
                     return null;
                 }
 
-                store.setMetadata( path, metadata );
-            }
-            catch ( XmlPullParserException e1 )
-            {
+                store.setMetadata(path, metadata);
+            } catch (XmlPullParserException e1) {
                 throw new IOException();
             }
 
-            return new MetadataFileEntry( this, parent, path, store );
+            return new MetadataFileEntry(this, parent, path, store);
         }
 
-        Artifact artifact = getArtifact( parent, name );
+        Artifact artifact = getArtifact(parent, name);
 
-        if ( artifact == null )
-        {
+        if (artifact == null) {
             return null;
         }
 
-        store.set( artifact, content );
+        store.set(artifact, content);
 
-        return new ArtifactFileEntry( this, parent, artifact, store );
+        return new ArtifactFileEntry(this, parent, artifact, store);
     }
 
-    private Artifact getArtifact( DirectoryEntry parent, String name )
-    {
+    private Artifact getArtifact(DirectoryEntry parent, String name) {
         String path = "/";
-        if ( StringUtils.isNotEmpty( parent.toPath() ) )
-        {
+        if (StringUtils.isNotEmpty(parent.toPath())) {
             path += parent.toPath() + "/";
         }
         path += name;
 
-        Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher( path );
-        if ( snapshotArtifact.matches() )
-        {
-            String groupId = StringUtils.stripEnd( snapshotArtifact.group( 1 ), "/" ).replace( '/', '.' );
-            String artifactId = snapshotArtifact.group( 2 );
-            String version = snapshotArtifact.group( 3 ) + "-SNAPSHOT";
-            Pattern rule = Pattern.compile(
-                "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
-                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
-                    + "\\.([^/]*)" );
-            Matcher matcher = rule.matcher( name );
-            if ( !matcher.matches() )
-            {
-                String classifier = snapshotArtifact.group( 5 );
-                String type = snapshotArtifact.group( 6 );
-                if ( classifier != null )
-                {
-                    classifier = classifier.substring( 1 );
+        Matcher snapshotArtifact = SNAPSHOT_ARTIFACT.matcher(path);
+        if (snapshotArtifact.matches()) {
+            String groupId =
+                    StringUtils.stripEnd(snapshotArtifact.group(1), "/").replace('/', '.');
+            String artifactId = snapshotArtifact.group(2);
+            String version = snapshotArtifact.group(3) + "-SNAPSHOT";
+            Pattern rule =
+                    Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
+                            + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                            + "\\.([^/]*)");
+            Matcher matcher = rule.matcher(name);
+            if (!matcher.matches()) {
+                String classifier = snapshotArtifact.group(5);
+                String type = snapshotArtifact.group(6);
+                if (classifier != null) {
+                    classifier = classifier.substring(1);
                 }
-                if ( StringUtils.isEmpty( classifier ) )
-                {
+                if (StringUtils.isEmpty(classifier)) {
                     classifier = null;
                 }
-                return new Artifact( groupId, artifactId, version, classifier, type );
+                return new Artifact(groupId, artifactId, version, classifier, type);
             }
-            if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
-            {
-                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                     matcher.group( 10 ) );
+            if (matcher.group(1).equals("SNAPSHOT")) {
+                return new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
             }
-            try
-            {
+            try {
                 Calendar cal = new GregorianCalendar();
-                cal.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                cal.set( Calendar.YEAR, Integer.parseInt( matcher.group( 2 ) ) );
-                cal.set( Calendar.MONTH, Integer.parseInt( matcher.group( 3 ) ) - 1 );
-                cal.set( Calendar.DAY_OF_MONTH, Integer.parseInt( matcher.group( 4 ) ) );
-                cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
-                cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
-                cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
-                cal.set( Calendar.MILLISECOND, 0 );
+                cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+                cal.set(Calendar.YEAR, Integer.parseInt(matcher.group(2)));
+                cal.set(Calendar.MONTH, Integer.parseInt(matcher.group(3)) - 1);
+                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(matcher.group(4)));
+                cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(matcher.group(5)));
+                cal.set(Calendar.MINUTE, Integer.parseInt(matcher.group(6)));
+                cal.set(Calendar.SECOND, Integer.parseInt(matcher.group(7)));
+                cal.set(Calendar.MILLISECOND, 0);
                 long timestamp = cal.getTimeInMillis();
-                int buildNumber = Integer.parseInt( matcher.group( 8 ) );
+                int buildNumber = Integer.parseInt(matcher.group(8));
 
-                return new Artifact( groupId, artifactId, version, matcher.group( 9 ),
-                                     matcher.group( 10 ), timestamp, buildNumber );
-            }
-            catch ( NullPointerException e )
-            {
+                return new Artifact(
+                        groupId, artifactId, version, matcher.group(9), matcher.group(10), timestamp, buildNumber);
+            } catch (NullPointerException e) {
                 return null;
             }
-        }
-        else
-        {
-            Matcher matcher = ARTIFACT.matcher( path );
-            if ( matcher.matches() )
-            {
-                String groupId = StringUtils.stripEnd( matcher.group( 1 ), "/" ).replace( '/', '.' );
-                String artifactId = matcher.group( 2 );
-                String version = matcher.group( 3 );
-                String classifier = matcher.group( 5 );
-                String type = matcher.group( 6 );
-                if ( classifier != null )
-                {
-                    classifier = classifier.substring( 1 );
+        } else {
+            Matcher matcher = ARTIFACT.matcher(path);
+            if (matcher.matches()) {
+                String groupId = StringUtils.stripEnd(matcher.group(1), "/").replace('/', '.');
+                String artifactId = matcher.group(2);
+                String version = matcher.group(3);
+                String classifier = matcher.group(5);
+                String type = matcher.group(6);
+                if (classifier != null) {
+                    classifier = classifier.substring(1);
                 }
-                if ( StringUtils.isEmpty( classifier ) )
-                {
+                if (StringUtils.isEmpty(classifier)) {
                     classifier = null;
                 }
 
-                return new Artifact( groupId, artifactId, version, classifier, type );
-            }
-            else
-            {
+                return new Artifact(groupId, artifactId, version, classifier, type);
+            } else {
                 return null;
             }
         }

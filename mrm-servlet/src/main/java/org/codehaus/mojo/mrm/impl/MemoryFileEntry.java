@@ -16,20 +16,18 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.codehaus.mojo.mrm.api.BaseFileEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.FileSystem;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.codehaus.mojo.mrm.api.BaseFileEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.FileSystem;
+
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileEntry} who's contents are held in memory.
  */
-public class MemoryFileEntry
-    extends BaseFileEntry
-{
+public class MemoryFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -69,9 +67,8 @@ public class MemoryFileEntry
      * @param content    the content.
      * @since 1.0
      */
-    public MemoryFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, byte[] content )
-    {
-        super( fileSystem, parent, name );
+    public MemoryFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name, byte[] content) {
+        super(fileSystem, parent, name);
         this.content = content == null ? EMPTY_BYTE_ARRAY : content;
         this.lastModified = System.currentTimeMillis();
     }
@@ -79,25 +76,21 @@ public class MemoryFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-    {
+    public long getLastModified() {
         return lastModified;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-    {
+    public long getSize() {
         return content.length;
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        return new ByteArrayInputStream( content );
+    public InputStream getInputStream() throws IOException {
+        return new ByteArrayInputStream(content);
     }
 }

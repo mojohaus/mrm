@@ -16,6 +16,19 @@ package org.codehaus.mojo.mrm.maven;
  * limitations under the License.
  */
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
@@ -40,25 +53,10 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * An {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that serves content from a running Maven instance.
  */
-public class ProxyArtifactStore
-    extends BaseArtifactStore
-{
+public class ProxyArtifactStore extends BaseArtifactStore {
     /**
      * The {@link RepositoryMetadataManager} provided by Maven.
      */
@@ -89,7 +87,6 @@ public class ProxyArtifactStore
      */
     private final ArtifactResolver artifactResolver;
 
-
     private final ArchetypeManager archetypeManager;
 
     /**
@@ -118,13 +115,16 @@ public class ProxyArtifactStore
      * @param artifactResolver           the {@link ArtifactResolver} to use.
      * @param log                        the {@link Log} to log to.
      */
-    @SuppressWarnings( "checkstyle:ParameterNumber" )
-    public ProxyArtifactStore( RepositoryMetadataManager repositoryMetadataManager,
-                               List<ArtifactRepository> remoteArtifactRepositories,
-                               List<ArtifactRepository> remotePluginRepositories, ArtifactRepository localRepository,
-                               ArtifactFactory artifactFactory, ArtifactResolver artifactResolver,
-                               ArchetypeManager archetypeManager, Log log )
-    {
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public ProxyArtifactStore(
+            RepositoryMetadataManager repositoryMetadataManager,
+            List<ArtifactRepository> remoteArtifactRepositories,
+            List<ArtifactRepository> remotePluginRepositories,
+            ArtifactRepository localRepository,
+            ArtifactFactory artifactFactory,
+            ArtifactResolver artifactResolver,
+            ArchetypeManager archetypeManager,
+            Log log) {
         this.repositoryMetadataManager = repositoryMetadataManager;
         this.remotePluginRepositories = remotePluginRepositories;
         this.localRepository = localRepository;
@@ -133,16 +133,13 @@ public class ProxyArtifactStore
         this.archetypeManager = archetypeManager;
         this.log = log;
         remoteRepositories = new ArrayList<>();
-        remoteRepositories.addAll( remoteArtifactRepositories );
-        remoteRepositories.addAll( remotePluginRepositories );
-        try
-        {
-            anyVersion = VersionRange.createFromVersionSpec( "[0,]" );
-        }
-        catch ( InvalidVersionSpecificationException e )
-        {
+        remoteRepositories.addAll(remoteArtifactRepositories);
+        remoteRepositories.addAll(remotePluginRepositories);
+        try {
+            anyVersion = VersionRange.createFromVersionSpec("[0,]");
+        } catch (InvalidVersionSpecificationException e) {
             // must never happen... so if it does make sure we stop
-            throw new IllegalStateException( "[0,] should always be a valid version specification", e );
+            throw new IllegalStateException("[0,] should always be a valid version specification", e);
         }
     }
 
@@ -151,13 +148,12 @@ public class ProxyArtifactStore
      *
      * @param artifact the artifact that was resolved.
      */
-    private synchronized void addResolved( Artifact artifact )
-    {
+    private synchronized void addResolved(Artifact artifact) {
         String path =
-            artifact.getGroupId().replace( '.', '/' ) + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
-        Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( path, k -> new HashMap<>() );
-        artifactMapper.put( artifact.getName(), artifact );
-        addResolved( path );
+                artifact.getGroupId().replace('.', '/') + '/' + artifact.getArtifactId() + "/" + artifact.getVersion();
+        Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
+        artifactMapper.put(artifact.getName(), artifact);
+        addResolved(path);
     }
 
     /**
@@ -165,358 +161,302 @@ public class ProxyArtifactStore
      *
      * @param path the path that was resolved.
      */
-    private synchronized void addResolved( String path )
-    {
-        for ( int index = path.lastIndexOf( '/' ); index > 0; index = path.lastIndexOf( '/' ) )
-        {
-            String name = path.substring( index + 1 );
-            path = path.substring( 0, index );
-            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( path, k -> new HashMap<>() );
-            artifactMapper.put( name, null );
+    private synchronized void addResolved(String path) {
+        for (int index = path.lastIndexOf('/'); index > 0; index = path.lastIndexOf('/')) {
+            String name = path.substring(index + 1);
+            path = path.substring(0, index);
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
+            artifactMapper.put(name, null);
         }
-        if ( !StringUtils.isEmpty( path ) )
-        {
-            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent( "", k -> new HashMap<>() );
-            artifactMapper.put( path, null );
+        if (!StringUtils.isEmpty(path)) {
+            Map<String, Artifact> artifactMapper = this.children.computeIfAbsent("", k -> new HashMap<>());
+            artifactMapper.put(path, null);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getGroupIds( String parentGroupId )
-    {
-        String path = parentGroupId.replace( '.', '/' );
-        Map<String, Artifact> artifactMapper = this.children.get( path );
-        if ( artifactMapper == null )
-        {
+    public synchronized Set<String> getGroupIds(String parentGroupId) {
+        String path = parentGroupId.replace('.', '/');
+        Map<String, Artifact> artifactMapper = this.children.get(path);
+        if (artifactMapper == null) {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
-            .map( Map.Entry::getKey )
-            .collect( Collectors.toSet() );
+        return artifactMapper.entrySet().stream()
+                .filter(entry -> entry.getValue() == null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getArtifactIds( String groupId )
-    {
-        String path = groupId.replace( '.', '/' );
-        Map<String, Artifact> artifactMapper = this.children.get( path );
-        if ( artifactMapper == null )
-        {
+    public synchronized Set<String> getArtifactIds(String groupId) {
+        String path = groupId.replace('.', '/');
+        Map<String, Artifact> artifactMapper = this.children.get(path);
+        if (artifactMapper == null) {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
-            .map( Map.Entry::getKey )
-            .collect( Collectors.toSet() );
+        return artifactMapper.entrySet().stream()
+                .filter(entry -> entry.getValue() == null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getVersions( String groupId, String artifactId )
-    {
-        String path = groupId.replace( '.', '/' ) + '/' + artifactId;
-        Map<String, Artifact> artifactMapper = this.children.get( path );
-        if ( artifactMapper == null )
-        {
+    public synchronized Set<String> getVersions(String groupId, String artifactId) {
+        String path = groupId.replace('.', '/') + '/' + artifactId;
+        Map<String, Artifact> artifactMapper = this.children.get(path);
+        if (artifactMapper == null) {
             return Collections.emptySet();
         }
-        return artifactMapper.entrySet().stream().filter( entry -> entry.getValue() == null )
-            .map( Map.Entry::getKey )
-            .collect( Collectors.toSet() );
+        return artifactMapper.entrySet().stream()
+                .filter(entry -> entry.getValue() == null)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
-    {
-        String path = groupId.replace( '.', '/' ) + '/' + artifactId + "/" + version;
-        Map<String, Artifact> artifactMapper = this.children.get( path );
-        if ( artifactMapper == null )
-        {
+    public synchronized Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
+        String path = groupId.replace('.', '/') + '/' + artifactId + "/" + version;
+        Map<String, Artifact> artifactMapper = this.children.get(path);
+        if (artifactMapper == null) {
             return Collections.emptySet();
         }
-        return artifactMapper.values().stream().filter( Objects::nonNull )
-            .collect( Collectors.toSet() );
-
+        return artifactMapper.values().stream().filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        org.apache.maven.artifact.Artifact mavenArtifact =
-            artifactFactory.createArtifactWithClassifier( artifact.getGroupId(), artifact.getArtifactId(),
-                                                          artifact.getTimestampVersion(), artifact.getType(),
-                                                          artifact.getClassifier() );
-        try
-        {
-            artifactResolver.resolve( mavenArtifact, remoteRepositories, localRepository );
+    public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        org.apache.maven.artifact.Artifact mavenArtifact = artifactFactory.createArtifactWithClassifier(
+                artifact.getGroupId(),
+                artifact.getArtifactId(),
+                artifact.getTimestampVersion(),
+                artifact.getType(),
+                artifact.getClassifier());
+        try {
+            artifactResolver.resolve(mavenArtifact, remoteRepositories, localRepository);
             final File file = mavenArtifact.getFile();
-            if ( file != null && file.isFile() )
-            {
-                addResolved( artifact );
+            if (file != null && file.isFile()) {
+                addResolved(artifact);
                 return file.lastModified();
             }
-            throw new ArtifactNotFoundException( artifact );
-        }
-        catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
-        {
-            throw new ArtifactNotFoundException( artifact, e );
-        }
-        catch ( ArtifactResolutionException e )
-        {
-            throw new IOException( e.getMessage(), e );
+            throw new ArtifactNotFoundException(artifact);
+        } catch (org.apache.maven.artifact.resolver.ArtifactNotFoundException e) {
+            throw new ArtifactNotFoundException(artifact, e);
+        } catch (ArtifactResolutionException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        org.apache.maven.artifact.Artifact mavenArtifact =
-            artifactFactory.createArtifactWithClassifier( artifact.getGroupId(), artifact.getArtifactId(),
-                                                          artifact.getTimestampVersion(), artifact.getType(),
-                                                          artifact.getClassifier() );
-        try
-        {
-            artifactResolver.resolve( mavenArtifact, remoteRepositories, localRepository );
+    public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        org.apache.maven.artifact.Artifact mavenArtifact = artifactFactory.createArtifactWithClassifier(
+                artifact.getGroupId(),
+                artifact.getArtifactId(),
+                artifact.getTimestampVersion(),
+                artifact.getType(),
+                artifact.getClassifier());
+        try {
+            artifactResolver.resolve(mavenArtifact, remoteRepositories, localRepository);
             final File file = mavenArtifact.getFile();
-            if ( file != null && file.isFile() )
-            {
-                addResolved( artifact );
+            if (file != null && file.isFile()) {
+                addResolved(artifact);
                 return file.length();
             }
-            throw new ArtifactNotFoundException( artifact );
-        }
-        catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
-        {
-            throw new ArtifactNotFoundException( artifact, e );
-        }
-        catch ( ArtifactResolutionException e )
-        {
-            throw new IOException( e.getMessage(), e );
+            throw new ArtifactNotFoundException(artifact);
+        } catch (org.apache.maven.artifact.resolver.ArtifactNotFoundException e) {
+            throw new ArtifactNotFoundException(artifact, e);
+        } catch (ArtifactResolutionException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream get( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        org.apache.maven.artifact.Artifact mavenArtifact =
-            artifactFactory.createArtifactWithClassifier( artifact.getGroupId(), artifact.getArtifactId(),
-                                                          artifact.getTimestampVersion(), artifact.getType(),
-                                                          artifact.getClassifier() );
-        try
-        {
-            artifactResolver.resolve( mavenArtifact, remoteRepositories, localRepository );
+    public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        org.apache.maven.artifact.Artifact mavenArtifact = artifactFactory.createArtifactWithClassifier(
+                artifact.getGroupId(),
+                artifact.getArtifactId(),
+                artifact.getTimestampVersion(),
+                artifact.getType(),
+                artifact.getClassifier());
+        try {
+            artifactResolver.resolve(mavenArtifact, remoteRepositories, localRepository);
             File file = mavenArtifact.getFile();
-            if ( file != null && file.isFile() )
-            {
-                addResolved( artifact );
-                return new FileInputStream( file );
+            if (file != null && file.isFile()) {
+                addResolved(artifact);
+                return new FileInputStream(file);
             }
-            throw new ArtifactNotFoundException( artifact );
-        }
-        catch ( org.apache.maven.artifact.resolver.ArtifactNotFoundException e )
-        {
-            throw new ArtifactNotFoundException( artifact, e );
-        }
-        catch ( ArtifactResolutionException e )
-        {
-            throw new IOException( e.getMessage(), e );
+            throw new ArtifactNotFoundException(artifact);
+        } catch (org.apache.maven.artifact.resolver.ArtifactNotFoundException e) {
+            throw new ArtifactNotFoundException(artifact, e);
+        } catch (ArtifactResolutionException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public void set( Artifact artifact, InputStream content )
-        throws IOException
-    {
+    public void set(Artifact artifact, InputStream content) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public Metadata getMetadata( String path )
-        throws IOException, MetadataNotFoundException
-    {
-        path = StringUtils.strip( path, "/" );
-        int index = path.lastIndexOf( '/' );
-        int index2 = index == -1 ? -1 : path.lastIndexOf( '/', index - 1 );
+    public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
+        path = StringUtils.strip(path, "/");
+        int index = path.lastIndexOf('/');
+        int index2 = index == -1 ? -1 : path.lastIndexOf('/', index - 1);
 
-        String version = index2 == -1 ? null : path.substring( index + 1 );
-        String artifactId = index2 == -1 ? null : path.substring( index2 + 1, index );
-        String groupId = index2 == -1 ? null : path.substring( 0, index2 ).replace( '/', '.' );
+        String version = index2 == -1 ? null : path.substring(index + 1);
+        String artifactId = index2 == -1 ? null : path.substring(index2 + 1, index);
+        String groupId = index2 == -1 ? null : path.substring(0, index2).replace('/', '.');
 
         Metadata metadata = new Metadata();
 
         boolean foundSomething = false;
 
         // is this path a groupId:artifactId pair?
-        if ( version != null && version.endsWith( "-SNAPSHOT" ) && !StringUtils.isEmpty( artifactId )
-            && !StringUtils.isEmpty( groupId ) )
-        {
-            org.apache.maven.artifact.Artifact artifact =
-                artifactFactory.createDependencyArtifact( groupId, artifactId,
-                                                          VersionRange.createFromVersion( version ), "pom", null,
-                                                          "compile" );
+        if (version != null
+                && version.endsWith("-SNAPSHOT")
+                && !StringUtils.isEmpty(artifactId)
+                && !StringUtils.isEmpty(groupId)) {
+            org.apache.maven.artifact.Artifact artifact = artifactFactory.createDependencyArtifact(
+                    groupId, artifactId, VersionRange.createFromVersion(version), "pom", null, "compile");
             SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata =
-                new SnapshotArtifactRepositoryMetadata( artifact );
-            try
-            {
-                repositoryMetadataManager.resolve( artifactRepositoryMetadata, remoteRepositories, localRepository );
+                    new SnapshotArtifactRepositoryMetadata(artifact);
+            try {
+                repositoryMetadataManager.resolve(artifactRepositoryMetadata, remoteRepositories, localRepository);
 
                 Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
-                if ( artifactMetadata.getVersioning() != null
-                    && artifactMetadata.getVersioning().getSnapshot() != null )
-                {
+                if (artifactMetadata.getVersioning() != null
+                        && artifactMetadata.getVersioning().getSnapshot() != null) {
                     foundSomething = true;
-                    metadata.setGroupId( groupId );
-                    metadata.setArtifactId( artifactId );
-                    metadata.setVersion( version );
-                    metadata.merge( artifactMetadata );
+                    metadata.setGroupId(groupId);
+                    metadata.setArtifactId(artifactId);
+                    metadata.setVersion(version);
+                    metadata.merge(artifactMetadata);
                 }
-                try
-                {
-                    if ( artifactMetadata.getVersioning() != null
-                        && !artifactMetadata.getVersioning().getSnapshotVersions().isEmpty() )
-                    {
+                try {
+                    if (artifactMetadata.getVersioning() != null
+                            && !artifactMetadata
+                                    .getVersioning()
+                                    .getSnapshotVersions()
+                                    .isEmpty()) {
                         // TODO up to and including Maven 3.0.3 we do not get a populated SnapshotVersions
-                        for ( SnapshotVersion v : artifactMetadata.getVersioning().getSnapshotVersions() )
-                        {
-                            metadata.getVersioning().addSnapshotVersion( v );
-                            if ( v.getVersion().endsWith( "-SNAPSHOT" ) )
-                            {
-                                addResolved(
-                                    new Artifact( groupId, artifactId, version, v.getClassifier(), v.getExtension() ) );
+                        for (SnapshotVersion v :
+                                artifactMetadata.getVersioning().getSnapshotVersions()) {
+                            metadata.getVersioning().addSnapshotVersion(v);
+                            if (v.getVersion().endsWith("-SNAPSHOT")) {
+                                addResolved(new Artifact(
+                                        groupId, artifactId, version, v.getClassifier(), v.getExtension()));
                             }
                         }
                     }
-                }
-                catch ( NoSuchMethodError e )
-                {
+                } catch (NoSuchMethodError e) {
                     // ignore Maven 2.x doesn't give us the info
                 }
-            }
-            catch ( RepositoryMetadataResolutionException e )
-            {
-                log.debug( e );
+            } catch (RepositoryMetadataResolutionException e) {
+                log.debug(e);
             }
         }
 
         // is this path a groupId:artifactId pair?
-        artifactId = index == -1 ? null : path.substring( index + 1 );
-        groupId = index == -1 ? null : path.substring( 0, index ).replace( '/', '.' );
-        if ( !StringUtils.isEmpty( artifactId ) && !StringUtils.isEmpty( groupId ) )
-        {
+        artifactId = index == -1 ? null : path.substring(index + 1);
+        groupId = index == -1 ? null : path.substring(0, index).replace('/', '.');
+        if (!StringUtils.isEmpty(artifactId) && !StringUtils.isEmpty(groupId)) {
             org.apache.maven.artifact.Artifact artifact =
-                artifactFactory.createDependencyArtifact( groupId, artifactId, anyVersion, "pom", null, "compile" );
-            ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata( artifact );
-            try
-            {
-                repositoryMetadataManager.resolve( artifactRepositoryMetadata, remoteRepositories, localRepository );
+                    artifactFactory.createDependencyArtifact(groupId, artifactId, anyVersion, "pom", null, "compile");
+            ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata(artifact);
+            try {
+                repositoryMetadataManager.resolve(artifactRepositoryMetadata, remoteRepositories, localRepository);
 
                 final Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
-                if ( artifactMetadata.getVersioning() != null )
-                {
+                if (artifactMetadata.getVersioning() != null) {
                     foundSomething = true;
-                    if ( StringUtils.isEmpty( metadata.getGroupId() ) )
-                    {
-                        metadata.setGroupId( groupId );
-                        metadata.setArtifactId( artifactId );
+                    if (StringUtils.isEmpty(metadata.getGroupId())) {
+                        metadata.setGroupId(groupId);
+                        metadata.setArtifactId(artifactId);
                     }
-                    metadata.merge( artifactMetadata );
-                    for ( String v : artifactMetadata.getVersioning().getVersions() )
-                    {
-                        addResolved( path + "/" + v );
+                    metadata.merge(artifactMetadata);
+                    for (String v : artifactMetadata.getVersioning().getVersions()) {
+                        addResolved(path + "/" + v);
                     }
                 }
-            }
-            catch ( RepositoryMetadataResolutionException e )
-            {
-                log.debug( e );
+            } catch (RepositoryMetadataResolutionException e) {
+                log.debug(e);
             }
         }
 
         // if this path a groupId on its own?
-        groupId = path.replace( '/', '.' );
-        final GroupRepositoryMetadata groupRepositoryMetadata = new GroupRepositoryMetadata( groupId );
-        try
-        {
-            repositoryMetadataManager.resolve( groupRepositoryMetadata, remotePluginRepositories, localRepository );
+        groupId = path.replace('/', '.');
+        final GroupRepositoryMetadata groupRepositoryMetadata = new GroupRepositoryMetadata(groupId);
+        try {
+            repositoryMetadataManager.resolve(groupRepositoryMetadata, remotePluginRepositories, localRepository);
             foundSomething = true;
-            metadata.merge( groupRepositoryMetadata.getMetadata() );
-            for ( Plugin plugin : groupRepositoryMetadata.getMetadata().getPlugins() )
-            {
-                addResolved( path + "/" + plugin.getArtifactId() );
+            metadata.merge(groupRepositoryMetadata.getMetadata());
+            for (Plugin plugin : groupRepositoryMetadata.getMetadata().getPlugins()) {
+                addResolved(path + "/" + plugin.getArtifactId());
             }
-        }
-        catch ( RepositoryMetadataResolutionException e )
-        {
-            log.debug( e );
+        } catch (RepositoryMetadataResolutionException e) {
+            log.debug(e);
         }
 
-        if ( !foundSomething )
-        {
-            throw new MetadataNotFoundException( path );
+        if (!foundSomething) {
+            throw new MetadataNotFoundException(path);
         }
-        addResolved( path );
+        addResolved(path);
         return metadata;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getMetadataLastModified( String path )
-        throws IOException, MetadataNotFoundException
-    {
-        Metadata metadata = getMetadata( path );
-        if ( metadata != null )
-        {
-            if ( !StringUtils.isEmpty( metadata.getGroupId() ) || !StringUtils.isEmpty( metadata.getArtifactId() )
-                || !StringUtils.isEmpty( metadata.getVersion() )
-                || ( metadata.getPlugins() != null && !metadata.getPlugins().isEmpty() ) || (
-                metadata.getVersioning() != null && ( !StringUtils.isEmpty( metadata.getVersioning().getLastUpdated() )
-                    || !StringUtils.isEmpty( metadata.getVersioning().getLatest() )
-                    || !StringUtils.isEmpty( metadata.getVersioning().getRelease() )
-                    || ( metadata.getVersioning().getVersions() != null
-                    && !metadata.getVersioning().getVersions().isEmpty() ) || ( metadata.getVersioning().getSnapshot()
-                    != null ) ) ) )
-            {
+    public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
+        Metadata metadata = getMetadata(path);
+        if (metadata != null) {
+            if (!StringUtils.isEmpty(metadata.getGroupId())
+                    || !StringUtils.isEmpty(metadata.getArtifactId())
+                    || !StringUtils.isEmpty(metadata.getVersion())
+                    || (metadata.getPlugins() != null && !metadata.getPlugins().isEmpty())
+                    || (metadata.getVersioning() != null
+                            && (!StringUtils.isEmpty(metadata.getVersioning().getLastUpdated())
+                                    || !StringUtils.isEmpty(
+                                            metadata.getVersioning().getLatest())
+                                    || !StringUtils.isEmpty(
+                                            metadata.getVersioning().getRelease())
+                                    || (metadata.getVersioning().getVersions() != null
+                                            && !metadata.getVersioning()
+                                                    .getVersions()
+                                                    .isEmpty())
+                                    || (metadata.getVersioning().getSnapshot() != null)))) {
                 return System.currentTimeMillis();
             }
         }
-        throw new MetadataNotFoundException( path );
+        throw new MetadataNotFoundException(path);
     }
 
-    public ArchetypeCatalog getArchetypeCatalog()
-        throws IOException, ArchetypeCatalogNotFoundException
-    {
+    public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         return archetypeManager.getDefaultLocalCatalog();
     }
 
-    public long getArchetypeCatalogLastModified()
-        throws IOException, ArchetypeCatalogNotFoundException
-    {
-        if ( archetypeManager.getDefaultLocalCatalog() != null )
-        {
+    public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
+        if (archetypeManager.getDefaultLocalCatalog() != null) {
             return System.currentTimeMillis();
-        }
-        else
-        {
+        } else {
             throw new ArchetypeCatalogNotFoundException();
         }
     }

@@ -16,22 +16,20 @@
 
 package org.codehaus.mojo.mrm.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * A delegating file entry that also knows how to generate the content if the entry it delegates to has problems.
  *
  * @since 1.0
  */
-public class GenerateOnErrorFileEntry
-    extends BaseFileEntry
-{
+public class GenerateOnErrorFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -74,10 +72,9 @@ public class GenerateOnErrorFileEntry
      *                       primary delegate has an error.
      * @since 1.0
      */
-    public GenerateOnErrorFileEntry( FileSystem fileSystem, DirectoryEntry parent, FileEntry delegateEntry,
-                                     FileEntry generatorEntry )
-    {
-        super( fileSystem, parent, delegateEntry.getName() );
+    public GenerateOnErrorFileEntry(
+            FileSystem fileSystem, DirectoryEntry parent, FileEntry delegateEntry, FileEntry generatorEntry) {
+        super(fileSystem, parent, delegateEntry.getName());
         this.generatorEntry = generatorEntry;
         this.delegateEntry = delegateEntry;
     }
@@ -85,23 +82,15 @@ public class GenerateOnErrorFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
-        if ( !error )
-        {
-            try
-            {
+    public long getLastModified() throws IOException {
+        if (!error) {
+            try {
                 return delegateEntry.getLastModified();
-            }
-            catch ( IOException e )
-            {
+            } catch (IOException e) {
                 error = true;
                 return generatorEntry.getLastModified();
             }
-        }
-        else
-        {
+        } else {
             return generatorEntry.getLastModified();
         }
     }
@@ -109,23 +98,15 @@ public class GenerateOnErrorFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
-        if ( !error )
-        {
-            try
-            {
+    public long getSize() throws IOException {
+        if (!error) {
+            try {
                 return delegateEntry.getSize();
-            }
-            catch ( IOException e )
-            {
+            } catch (IOException e) {
                 error = true;
                 return generatorEntry.getSize();
             }
-        }
-        else
-        {
+        } else {
             return generatorEntry.getSize();
         }
     }
@@ -133,25 +114,16 @@ public class GenerateOnErrorFileEntry
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        if ( !error )
-        {
-            try
-            {
+    public InputStream getInputStream() throws IOException {
+        if (!error) {
+            try {
                 return delegateEntry.getInputStream();
-            }
-            catch ( IOException e )
-            {
+            } catch (IOException e) {
                 error = true;
                 return generatorEntry.getInputStream();
             }
-        }
-        else
-        {
+        } else {
             return generatorEntry.getInputStream();
         }
     }
-
 }

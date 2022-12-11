@@ -21,9 +21,7 @@ import java.io.IOException;
 /**
  * A thread that waits for the user to press a key.
  */
-public class ConsoleScanner
-    extends Thread
-{
+public class ConsoleScanner extends Thread {
     /**
      * The guard for {@link #finished}.
      */
@@ -39,48 +37,34 @@ public class ConsoleScanner
     /**
      * creates a new instance.
      */
-    public ConsoleScanner()
-    {
-        setName( "Console scanner" );
-        setDaemon( true );
+    public ConsoleScanner() {
+        setName("Console scanner");
+        setDaemon(true);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void run()
-    {
-        try
-        {
-            synchronized ( lock )
-            {
-                try
-                {
-                    while ( !finished )
-                    {
+    public void run() {
+        try {
+            synchronized (lock) {
+                try {
+                    while (!finished) {
                         checkSystemInput();
-                        try
-                        {
-                            lock.wait( 500 );
-                        }
-                        catch ( InterruptedException e )
-                        {
+                        try {
+                            lock.wait(500);
+                        } catch (InterruptedException e) {
                             // ignore
                         }
                     }
-                }
-                finally
-                {
-                    synchronized ( lock )
-                    {
+                } finally {
+                    synchronized (lock) {
                         finished = true;
                         lock.notifyAll();
                     }
                 }
             }
-        }
-        catch ( IOException e )
-        {
+        } catch (IOException e) {
             // ignore
         }
     }
@@ -90,28 +74,19 @@ public class ConsoleScanner
      *
      * @throws IOException if something went wrong.
      */
-    private void checkSystemInput()
-        throws IOException
-    {
-        while ( System.in.available() > 0 )
-        {
+    private void checkSystemInput() throws IOException {
+        while (System.in.available() > 0) {
             int input = System.in.read();
-            if ( input >= 0 )
-            {
+            if (input >= 0) {
                 char c = (char) input;
-                if ( c == '\n' )
-                {
-                    synchronized ( lock )
-                    {
+                if (c == '\n') {
+                    synchronized (lock) {
                         finished = true;
                         lock.notifyAll();
                     }
                 }
-            }
-            else
-            {
-                synchronized ( lock )
-                {
+            } else {
+                synchronized (lock) {
                     finished = true;
                     lock.notifyAll();
                 }
@@ -124,13 +99,9 @@ public class ConsoleScanner
      *
      * @throws InterruptedException if interrupted.
      */
-    public void waitForFinished()
-        throws InterruptedException
-    {
-        synchronized ( lock )
-        {
-            while ( !finished )
-            {
+    public void waitForFinished() throws InterruptedException {
+        synchronized (lock) {
+            while (!finished) {
                 lock.wait();
             }
         }

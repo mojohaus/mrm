@@ -25,72 +25,58 @@ import org.eclipse.jetty.util.log.Slf4jLog;
  *
  * @author Slawomir Jaranowski
  */
-class ServerLogger extends Slf4jLog
-{
+class ServerLogger extends Slf4jLog {
     private final boolean debugEnabled;
 
-    ServerLogger( boolean debugEnabled )
-    {
-        this( ServerLogger.class.getName(), debugEnabled );
+    ServerLogger(boolean debugEnabled) {
+        this(ServerLogger.class.getName(), debugEnabled);
     }
 
-    ServerLogger( String name, boolean debugEnabled )
-    {
-        super( name );
+    ServerLogger(String name, boolean debugEnabled) {
+        super(name);
         this.debugEnabled = debugEnabled;
     }
 
     @Override
-    public void debug( String msg, Object... args )
-    {
-        if ( isDebugEnabled() )
-        {
-            super.debug( msg, args );
+    public void debug(String msg, Object... args) {
+        if (isDebugEnabled()) {
+            super.debug(msg, args);
         }
     }
 
     @Override
-    public void debug( String msg, long arg )
-    {
-        if ( isDebugEnabled() )
-        {
-            super.debug( msg, arg );
+    public void debug(String msg, long arg) {
+        if (isDebugEnabled()) {
+            super.debug(msg, arg);
         }
     }
 
     @Override
-    public void debug( Throwable thrown )
-    {
-        if ( isDebugEnabled() )
-        {
-            super.debug( thrown );
+    public void debug(Throwable thrown) {
+        if (isDebugEnabled()) {
+            super.debug(thrown);
         }
     }
 
     @Override
-    public void debug( String msg, Throwable thrown )
-    {
-        if ( isDebugEnabled() )
-        {
-            super.debug( msg, thrown );
+    public void debug(String msg, Throwable thrown) {
+        if (isDebugEnabled()) {
+            super.debug(msg, thrown);
         }
     }
 
     @Override
-    public boolean isDebugEnabled()
-    {
+    public boolean isDebugEnabled() {
         return debugEnabled;
     }
 
     @Override
-    public void setDebugEnabled( boolean enabled )
-    {
+    public void setDebugEnabled(boolean enabled) {
         // do nothing
     }
 
     @Override
-    protected Logger newLogger( String fullname )
-    {
-        return new ServerLogger( fullname, debugEnabled );
+    protected Logger newLogger(String fullname) {
+        return new ServerLogger(fullname, debugEnabled);
     }
 }

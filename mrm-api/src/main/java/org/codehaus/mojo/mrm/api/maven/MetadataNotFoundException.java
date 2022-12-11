@@ -21,9 +21,7 @@ package org.codehaus.mojo.mrm.api.maven;
  *
  * @since 1.0
  */
-public class MetadataNotFoundException
-    extends Exception
-{
+public class MetadataNotFoundException extends Exception {
     /**
      * Ensure consistent serialization.
      *
@@ -44,9 +42,8 @@ public class MetadataNotFoundException
      * @param path the path of the metadata that was not found.
      * @since 1.0
      */
-    public MetadataNotFoundException( String path )
-    {
-        this( path, path );
+    public MetadataNotFoundException(String path) {
+        this(path, path);
     }
 
     /**
@@ -56,9 +53,8 @@ public class MetadataNotFoundException
      * @param path    the path of the metadata that was not found.
      * @since 1.0
      */
-    public MetadataNotFoundException( String message, String path )
-    {
-        this( message, path, null );
+    public MetadataNotFoundException(String message, String path) {
+        this(message, path, null);
     }
 
     /**
@@ -68,9 +64,8 @@ public class MetadataNotFoundException
      * @param cause the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */
-    public MetadataNotFoundException( String path, Throwable cause )
-    {
-        this( path, path, cause );
+    public MetadataNotFoundException(String path, Throwable cause) {
+        this(path, path, cause);
     }
 
     /**
@@ -81,9 +76,8 @@ public class MetadataNotFoundException
      * @param cause   the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */
-    public MetadataNotFoundException( String message, String path, Throwable cause )
-    {
-        super( message, cause );
+    public MetadataNotFoundException(String message, String path, Throwable cause) {
+        super(message, cause);
         this.path = path;
     }
 
@@ -93,8 +87,7 @@ public class MetadataNotFoundException
      * @return the path of the metadata that was not found.
      * @since 1.0
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 }

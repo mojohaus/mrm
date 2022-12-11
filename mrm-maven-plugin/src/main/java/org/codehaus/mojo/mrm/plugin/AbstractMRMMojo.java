@@ -1,7 +1,5 @@
 package org.codehaus.mojo.mrm.plugin;
 
-import java.util.List;
-
 /*
  * Copyright 2011 Stephen Connolly
  *
@@ -17,6 +15,8 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import java.util.List;
 
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -40,13 +40,11 @@ import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
  *
  * @since 1.0
  */
-public abstract class AbstractMRMMojo
-    extends AbstractMojo
-{
+public abstract class AbstractMRMMojo extends AbstractMojo {
     /**
      * The Maven project.
      */
-    @Parameter( defaultValue = "${project}", required = true, readonly = true )
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
 
     /**
@@ -58,19 +56,19 @@ public abstract class AbstractMRMMojo
     /**
      * The remote repositories.
      */
-    @Parameter( defaultValue = "${project.remoteArtifactRepositories}", readonly = true )
+    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
     protected List<ArtifactRepository> remoteArtifactRepositories;
 
     /**
      * The remote pluginRepositories.
      */
-    @Parameter( defaultValue = "${project.pluginArtifactRepositories}", readonly = true )
+    @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true)
     protected List<ArtifactRepository> remotePluginRepositories;
 
     /**
      * The local repository.
      */
-    @Parameter( defaultValue = "${localRepository}", readonly = true )
+    @Parameter(defaultValue = "${localRepository}", readonly = true)
     protected ArtifactRepository localRepository;
 
     /**
@@ -94,25 +92,25 @@ public abstract class AbstractMRMMojo
     /**
      * The Maven Session Object
      */
-    @Parameter( defaultValue = "${session}", required = true, readonly = true )
+    @Parameter(defaultValue = "${session}", required = true, readonly = true)
     protected MavenSession session;
 
     /**
      * This plugins descriptor.
      */
-    @Parameter( defaultValue = "${plugin}", required = true, readonly = true )
+    @Parameter(defaultValue = "${plugin}", required = true, readonly = true)
     protected PluginDescriptor pluginDescriptor;
 
     /**
      * This mojo's execution.
      */
-    @Parameter( defaultValue = "${mojoExecution}", readonly = true, required = true )
+    @Parameter(defaultValue = "${mojoExecution}", readonly = true, required = true)
     protected MojoExecution mojoExecution;
 
     /**
      * If true, execution of the plugin is skipped.
      */
-    @Parameter( property = "mrm.skip", defaultValue = "false" )
+    @Parameter(property = "mrm.skip", defaultValue = "false")
     protected boolean skip;
 
     /**
@@ -121,35 +119,29 @@ public abstract class AbstractMRMMojo
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
      * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
-    public final void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        if ( skip )
-        {
-            getLog().info( "Skipping invocation per configuration."
-                + " If this is incorrect, ensure the skip parameter is not set to true." );
+    public final void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Skipping invocation per configuration."
+                    + " If this is incorrect, ensure the skip parameter is not set to true.");
             return;
         }
-        if ( pluginDescriptor == null )
-        {
+        if (pluginDescriptor == null) {
             pluginDescriptor = mojoExecution.getMojoDescriptor().getPluginDescriptor();
         }
         doExecute();
     }
 
-    protected MojoExecution getMojoExecution()
-    {
+    protected MojoExecution getMojoExecution() {
         return mojoExecution;
     }
-    
+
     /**
      * Performs this plugin's action.
      *
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
      * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
-    protected abstract void doExecute()
-        throws MojoExecutionException, MojoFailureException;
+    protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
 
     /**
      * Creates an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
@@ -158,10 +150,16 @@ public abstract class AbstractMRMMojo
      * @return an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
      *         Maven itself.
      */
-    protected ProxyArtifactStore createProxyArtifactStore()
-    {
-        return new ProxyArtifactStore( repositoryMetadataManager, remoteArtifactRepositories, remotePluginRepositories,
-                                       localRepository, artifactFactory, artifactResolver, archetypeManager, getLog() );
+    protected ProxyArtifactStore createProxyArtifactStore() {
+        return new ProxyArtifactStore(
+                repositoryMetadataManager,
+                remoteArtifactRepositories,
+                remotePluginRepositories,
+                localRepository,
+                artifactFactory,
+                artifactResolver,
+                archetypeManager,
+                getLog());
     }
 
     /**
@@ -169,8 +167,7 @@ public abstract class AbstractMRMMojo
      *
      * @return a new {@link FactoryHelper} instance for injection into anything that needs one.
      */
-    protected FactoryHelper createFactoryHelper()
-    {
+    protected FactoryHelper createFactoryHelper() {
         return new FactoryHelperImpl();
     }
 
@@ -179,70 +176,60 @@ public abstract class AbstractMRMMojo
      *
      * @since 1.0
      */
-    private class FactoryHelperImpl
-        implements FactoryHelper
-    {
+    private class FactoryHelperImpl implements FactoryHelper {
         /**
          * {@inheritDoc}
          */
-        public RepositoryMetadataManager getRepositoryMetadataManager()
-        {
+        public RepositoryMetadataManager getRepositoryMetadataManager() {
             return repositoryMetadataManager;
         }
 
         /**
          * {@inheritDoc}
          */
-        public List<ArtifactRepository> getRemotePluginRepositories()
-        {
+        public List<ArtifactRepository> getRemotePluginRepositories() {
             return remotePluginRepositories;
         }
 
         /**
          * {@inheritDoc}
          */
-        public ArtifactRepository getLocalRepository()
-        {
+        public ArtifactRepository getLocalRepository() {
             return localRepository;
         }
 
         /**
          * {@inheritDoc}
          */
-        public ArtifactFactory getArtifactFactory()
-        {
+        public ArtifactFactory getArtifactFactory() {
             return artifactFactory;
         }
 
         /**
          * {@inheritDoc}
          */
-        public List<ArtifactRepository> getRemoteArtifactRepositories()
-        {
+        public List<ArtifactRepository> getRemoteArtifactRepositories() {
             return remoteArtifactRepositories;
         }
 
         /**
          * {@inheritDoc}
          */
-        public ArtifactResolver getArtifactResolver()
-        {
+        public ArtifactResolver getArtifactResolver() {
             return artifactResolver;
         }
 
         /**
          * {@inheritDoc}
          */
-        public ArchetypeManager getArchetypeManager()
-        {
+        public ArchetypeManager getArchetypeManager() {
             return archetypeManager;
         }
 
         /**
          * {@inheritDoc}
          */
-        public Log getLog()
-        {
+        public Log getLog() {
             return AbstractMRMMojo.this.getLog();
         }
     }

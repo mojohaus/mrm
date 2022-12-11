@@ -16,13 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.mojo.mrm.api.BaseFileSystem;
-import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.Entry;
-import org.codehaus.mojo.mrm.api.FileEntry;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,14 +24,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.codehaus.mojo.mrm.api.BaseFileSystem;
+import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.Entry;
+import org.codehaus.mojo.mrm.api.FileEntry;
+
 /**
  * A file system who's structure is entirely stored in memory.
  *
  * @since 1.0
  */
-public class MemoryFileSystem
-    extends BaseFileSystem
-{
+public class MemoryFileSystem extends BaseFileSystem {
 
     /**
      * The file system content.
@@ -52,37 +50,30 @@ public class MemoryFileSystem
      *
      * @since 1.0
      */
-    public MemoryFileSystem()
-    {
-        contents.put( getRoot(), new ArrayList<>() );
+    public MemoryFileSystem() {
+        contents.put(getRoot(), new ArrayList<>());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Entry[] listEntries( DirectoryEntry directory )
-    {
-        List<Entry> entries = contents.get( directory == null ? getRoot() : directory );
-        if ( entries == null )
-        {
+    public synchronized Entry[] listEntries(DirectoryEntry directory) {
+        List<Entry> entries = contents.get(directory == null ? getRoot() : directory);
+        if (entries == null) {
             return null;
         }
-        return entries.toArray( new Entry[0] );
+        return entries.toArray(new Entry[0]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( DirectoryEntry directoryEntry )
-        throws IOException
-    {
+    public long getLastModified(DirectoryEntry directoryEntry) throws IOException {
         long lastModified = 0;
-        Entry[] entries = listEntries( directoryEntry );
-        if ( entries != null )
-        {
-            for ( Entry entry : entries )
-            {
-                lastModified = Math.max( lastModified, entry.getLastModified() );
+        Entry[] entries = listEntries(directoryEntry);
+        if (entries != null) {
+            for (Entry entry : entries) {
+                lastModified = Math.max(lastModified, entry.getLastModified());
             }
         }
 
@@ -92,63 +83,53 @@ public class MemoryFileSystem
     /**
      * {@inheritDoc}
      */
-    protected synchronized Entry get( DirectoryEntry parent, String name )
-    {
-        List<Entry> parentEntries = contents.get( parent );
-        return parentEntries == null ? null : parentEntries.stream()
-            .filter( entry -> name.equals( entry.getName() ) )
-            .findFirst()
-            .orElse( null );
+    protected synchronized Entry get(DirectoryEntry parent, String name) {
+        List<Entry> parentEntries = contents.get(parent);
+        return parentEntries == null
+                ? null
+                : parentEntries.stream()
+                        .filter(entry -> name.equals(entry.getName()))
+                        .findFirst()
+                        .orElse(null);
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized DirectoryEntry mkdir( DirectoryEntry parent, String name )
-    {
-        parent = getNormalizedParent( parent );
-        List<Entry> entries = getEntriesList( parent );
-        for ( Entry entry : entries )
-        {
-            if ( name.equals( entry.getName() ) )
-            {
-                if ( entry instanceof DirectoryEntry )
-                {
+    public synchronized DirectoryEntry mkdir(DirectoryEntry parent, String name) {
+        parent = getNormalizedParent(parent);
+        List<Entry> entries = getEntriesList(parent);
+        for (Entry entry : entries) {
+            if (name.equals(entry.getName())) {
+                if (entry instanceof DirectoryEntry) {
                     return (DirectoryEntry) entry;
                 }
                 return null;
             }
         }
-        DirectoryEntry entry = new DefaultDirectoryEntry( this, parent, name );
-        entries.add( entry );
+        DirectoryEntry entry = new DefaultDirectoryEntry(this, parent, name);
+        entries.add(entry);
         return entry;
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException
-    {
-        parent = getNormalizedParent( parent );
-        List<Entry> entries = getEntriesList( parent );
-        for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
-        {
+    public synchronized FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
+        parent = getNormalizedParent(parent);
+        List<Entry> entries = getEntriesList(parent);
+        for (Iterator<Entry> i = entries.iterator(); i.hasNext(); ) {
             Entry entry = i.next();
-            if ( name.equals( entry.getName() ) )
-            {
-                if ( entry instanceof FileEntry )
-                {
+            if (name.equals(entry.getName())) {
+                if (entry instanceof FileEntry) {
                     i.remove();
-                }
-                else
-                {
+                } else {
                     return null;
                 }
             }
         }
-        FileEntry entry = new MemoryFileEntry( this, parent, name, IOUtils.toByteArray( content ) );
-        entries.add( entry );
+        FileEntry entry = new MemoryFileEntry(this, parent, name, IOUtils.toByteArray(content));
+        entries.add(entry);
         return entry;
     }
 
@@ -159,15 +140,11 @@ public class MemoryFileSystem
      * @return the actual directory entry instance used as the key in {@link #contents}.
      * @since 1.0
      */
-    private DirectoryEntry getNormalizedParent( DirectoryEntry parent )
-    {
-        if ( parent.getParent() == null )
-        {
+    private DirectoryEntry getNormalizedParent(DirectoryEntry parent) {
+        if (parent.getParent() == null) {
             return getRoot();
-        }
-        else
-        {
-            return mkdir( parent.getParent(), parent.getName() );
+        } else {
+            return mkdir(parent.getParent(), parent.getName());
         }
     }
 
@@ -178,47 +155,36 @@ public class MemoryFileSystem
      * @return the list of entries (never <code>null</code>).
      * @since 1.0
      */
-    private synchronized List<Entry> getEntriesList( DirectoryEntry directory )
-    {
-        return contents.computeIfAbsent( directory, k -> new ArrayList<>() );
+    private synchronized List<Entry> getEntriesList(DirectoryEntry directory) {
+        return contents.computeIfAbsent(directory, k -> new ArrayList<>());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized void remove( Entry entry )
-    {
+    public synchronized void remove(Entry entry) {
         List<Entry> entries;
-        if ( entry == null )
-        {
+        if (entry == null) {
             return;
         }
         DirectoryEntry parent = entry.getParent();
-        if ( parent == null )
-        {
+        if (parent == null) {
             return;
-        }
-        else
-        {
-            entries = contents.get( parent );
-            if ( entries == null )
-            {
+        } else {
+            entries = contents.get(parent);
+            if (entries == null) {
                 return;
             }
         }
-        for ( Iterator<Entry> i = entries.iterator(); i.hasNext(); )
-        {
+        for (Iterator<Entry> i = entries.iterator(); i.hasNext(); ) {
             Entry e = i.next();
-            if ( entry.equals( e ) )
-            {
-                if ( e instanceof DirectoryEntry )
-                {
-                    Entry[] children = listEntries( (DirectoryEntry) e );
-                    for ( int j = children.length - 1; j >= 0; j-- )
-                    {
-                        remove( children[j] );
+            if (entry.equals(e)) {
+                if (e instanceof DirectoryEntry) {
+                    Entry[] children = listEntries((DirectoryEntry) e);
+                    for (int j = children.length - 1; j >= 0; j--) {
+                        remove(children[j]);
                     }
-                    contents.remove( e );
+                    contents.remove(e);
                 }
                 i.remove();
                 return;
