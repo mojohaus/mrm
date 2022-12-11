@@ -16,6 +16,9 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
@@ -26,14 +29,10 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * A file system server.
  */
-public class FileSystemServer
-{
+public class FileSystemServer {
 
     /**
      * Guard for {@link #starting}, {@link #started}, {@link #finishing}, {@link #finished}, {@link #boundPort}
@@ -121,13 +120,17 @@ public class FileSystemServer
      * @param fileSystem  the file system to serve.
      * @param debugServer the server debug mode
      */
-    public FileSystemServer( String name, int port, String contextPath, FileSystem fileSystem,
-                             String settingsServletPath, boolean debugServer )
-    {
+    public FileSystemServer(
+            String name,
+            int port,
+            String contextPath,
+            FileSystem fileSystem,
+            String settingsServletPath,
+            boolean debugServer) {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
-        this.contextPath = sanitizeContextPath( contextPath );
+        this.contextPath = sanitizeContextPath(contextPath);
         this.settingsServletPath = settingsServletPath;
         this.debugServer = debugServer;
     }
@@ -139,19 +142,15 @@ public class FileSystemServer
      * @param contextPath the contextPath to sanitize
      * @return sanitized {@code contextPath}
      */
-    static String sanitizeContextPath( String contextPath )
-    {
-        if ( contextPath == null || contextPath.isEmpty() || contextPath.equals( "/" ) )
-        {
+    static String sanitizeContextPath(String contextPath) {
+        if (contextPath == null || contextPath.isEmpty() || contextPath.equals("/")) {
             return "/";
         }
-        if ( !contextPath.startsWith( "/" ) )
-        {
+        if (!contextPath.startsWith("/")) {
             return "/" + contextPath;
         }
-        if ( contextPath.endsWith( "/" ) )
-        {
-            return contextPath.substring( 0, contextPath.length() - 1 );
+        if (contextPath.endsWith("/")) {
+            return contextPath.substring(0, contextPath.length() - 1);
         }
         return contextPath;
     }
@@ -162,13 +161,9 @@ public class FileSystemServer
      *
      * @throws MojoExecutionException if the file system server could not be started.
      */
-    public void ensureStarted()
-        throws MojoExecutionException
-    {
-        synchronized ( lock )
-        {
-            if ( started || starting )
-            {
+    public void ensureStarted() throws MojoExecutionException {
+        synchronized (lock) {
+            if (started || starting) {
                 return;
             }
             starting = true;
@@ -176,39 +171,30 @@ public class FileSystemServer
             finished = false;
             finishing = false;
         }
-        Thread worker = new Thread( new Worker(), "FileSystemServer[" + name + "]" );
-        worker.setDaemon( true );
+        Thread worker = new Thread(new Worker(), "FileSystemServer[" + name + "]");
+        worker.setDaemon(true);
         worker.start();
-        try
-        {
-            synchronized ( lock )
-            {
-                while ( starting && !started && !finished && !finishing )
-                {
+        try {
+            synchronized (lock) {
+                while (starting && !started && !finished && !finishing) {
                     lock.wait();
                 }
-                if ( problem != null )
-                {
+                if (problem != null) {
                     throw problem;
                 }
             }
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( e.getMessage(), e );
+        } catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
-
 
     /**
      * Returns <code>true</code> if and only if the file system server is finished.
      *
      * @return <code>true</code> if and only if the file system server is finished.
      */
-    public boolean isFinished()
-    {
-        synchronized ( lock )
-        {
+    public boolean isFinished() {
+        synchronized (lock) {
             return finished;
         }
     }
@@ -218,10 +204,8 @@ public class FileSystemServer
      *
      * @return <code>true</code> if and only if the file system server is started.
      */
-    public boolean isStarted()
-    {
-        synchronized ( lock )
-        {
+    public boolean isStarted() {
+        synchronized (lock) {
             return finished;
         }
     }
@@ -229,10 +213,8 @@ public class FileSystemServer
     /**
      * Signal the file system server to shut down.
      */
-    public void finish()
-    {
-        synchronized ( lock )
-        {
+    public void finish() {
+        synchronized (lock) {
             finishing = true;
             lock.notifyAll();
         }
@@ -243,13 +225,9 @@ public class FileSystemServer
      *
      * @throws InterruptedException if interrupted.
      */
-    public void waitForFinished()
-        throws InterruptedException
-    {
-        synchronized ( lock )
-        {
-            while ( !finished )
-            {
+    public void waitForFinished() throws InterruptedException {
+        synchronized (lock) {
+            while (!finished) {
                 lock.wait();
             }
         }
@@ -260,10 +238,8 @@ public class FileSystemServer
      *
      * @return the port that the file system server is/will server on.
      */
-    public int getPort()
-    {
-        synchronized ( lock )
-        {
+    public int getPort() {
+        synchronized (lock) {
             return started ? boundPort : requestedPort;
         }
     }
@@ -273,9 +249,8 @@ public class FileSystemServer
      *
      * @return the root url that the file system server is/will server on.
      */
-    public String getUrl()
-    {
-        return "http://localhost:" + getPort() + ( contextPath.equals( "/" ) ? "" : contextPath );
+    public String getUrl() {
+        return "http://localhost:" + getPort() + (contextPath.equals("/") ? "" : contextPath);
     }
 
     /**
@@ -284,81 +259,60 @@ public class FileSystemServer
      * @return the scheme + raw IP address + port + contextPath
      * @throws UnknownHostException if the local host name could not be resolved into an address.
      */
-    public String getRemoteUrl() throws UnknownHostException
-    {
+    public String getRemoteUrl() throws UnknownHostException {
         return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort()
-            + ( contextPath.equals( "/" ) ? "" : contextPath );
+                + (contextPath.equals("/") ? "" : contextPath);
     }
 
     /**
      * The work to monitor and control the Jetty instance that hosts the file system.
      */
-    private final class Worker
-        implements Runnable
-    {
+    private final class Worker implements Runnable {
         /**
          * {@inheritDoc}
          */
-        public void run()
-        {
-            try
-            {
-                Logger serverLogger = new ServerLogger( debugServer );
-                Log.setLog( serverLogger );
+        public void run() {
+            try {
+                Logger serverLogger = new ServerLogger(debugServer);
+                Log.setLog(serverLogger);
                 Log.initialized();
 
-                Server server = new Server( requestedPort );
+                Server server = new Server(requestedPort);
 
-                try
-                {
+                try {
                     ServletContextHandler context = new ServletContextHandler();
-                    context.setContextPath( contextPath );
-                    context.addServlet( new ServletHolder( new FileSystemServlet( fileSystem, settingsServletPath ) ),
-                                        "/*" );
-                    server.setHandler( context );
+                    context.setContextPath(contextPath);
+                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
+                    server.setHandler(context);
                     server.start();
-                    synchronized ( lock )
-                    {
-                        boundPort = ( (ServerConnector) server.getConnectors()[0] ).getLocalPort();
+                    synchronized (lock) {
+                        boundPort = ((ServerConnector) server.getConnectors()[0]).getLocalPort();
                         starting = false;
                         started = true;
                         lock.notifyAll();
                     }
-                }
-                catch ( Exception e )
-                {
-                    synchronized ( lock )
-                    {
+                } catch (Exception e) {
+                    synchronized (lock) {
                         problem = e;
                     }
-                    serverLogger.warn( e );
+                    serverLogger.warn(e);
                     throw e;
                 }
-                synchronized ( lock )
-                {
-                    while ( !finishing )
-                    {
-                        try
-                        {
-                            lock.wait( 500 );
-                        }
-                        catch ( InterruptedException e )
-                        {
+                synchronized (lock) {
+                    while (!finishing) {
+                        try {
+                            lock.wait(500);
+                        } catch (InterruptedException e) {
                             // ignore
                         }
                     }
                 }
                 server.stop();
                 server.join();
-            }
-            catch ( Exception e )
-            {
+            } catch (Exception e) {
                 // ignore
-            }
-            finally
-            {
-                synchronized ( lock )
-                {
+            } finally {
+                synchronized (lock) {
                     started = false;
                     starting = false;
                     finishing = false;
@@ -369,5 +323,4 @@ public class FileSystemServer
             }
         }
     }
-
 }

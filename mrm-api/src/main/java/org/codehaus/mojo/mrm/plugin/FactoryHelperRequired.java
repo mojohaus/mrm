@@ -19,16 +19,15 @@ package org.codehaus.mojo.mrm.plugin;
 /**
  * Marker interface to indicate that a {@link ArtifactStoreFactory} or {@link FileSystemFactory} should be provided with
  * a {@link FactoryHelper} before use.
- * 
+ *
  * @since 1.0
  */
-public interface FactoryHelperRequired
-{
+public interface FactoryHelperRequired {
     /**
      * Provide the {@link FactoryHelper} instance.
-     * 
+     *
      * @param factoryHelper the {@link FactoryHelper} instance.
      * @since 1.0
      */
-    void setFactoryHelper( FactoryHelper factoryHelper );
+    void setFactoryHelper(FactoryHelper factoryHelper);
 }

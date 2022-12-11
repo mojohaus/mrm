@@ -30,9 +30,7 @@ import java.util.TimeZone;
  * @serial
  * @since 1.0
  */
-public final class Artifact
-    implements Serializable, Comparable<Artifact>
-{
+public final class Artifact implements Serializable, Comparable<Artifact> {
 
     /**
      * Ensure consistent serialization.
@@ -120,9 +118,14 @@ public final class Artifact
      *                    <code>timestamp!=null</code>)
      * @since 1.0
      */
-    private Artifact( String groupId, String artifactId, String version, String classifier, String type, Long timestamp,
-                      Integer buildNumber )
-    {
+    private Artifact(
+            String groupId,
+            String artifactId,
+            String version,
+            String classifier,
+            String type,
+            Long timestamp,
+            Integer buildNumber) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -144,11 +147,15 @@ public final class Artifact
      * @param buildNumber The build number.
      * @since 1.0
      */
-    public Artifact( String groupId, String artifactId, String version, String classifier, String type, long timestamp,
-                     int buildNumber )
-    {
-        this( groupId, artifactId, version, classifier, type, Long.valueOf( timestamp ),
-              Integer.valueOf( buildNumber ) );
+    public Artifact(
+            String groupId,
+            String artifactId,
+            String version,
+            String classifier,
+            String type,
+            long timestamp,
+            int buildNumber) {
+        this(groupId, artifactId, version, classifier, type, Long.valueOf(timestamp), Integer.valueOf(buildNumber));
     }
 
     /**
@@ -162,9 +169,8 @@ public final class Artifact
      * @param buildNumber The build number.
      * @since 1.0
      */
-    public Artifact( String groupId, String artifactId, String version, String type, long timestamp, int buildNumber )
-    {
-        this( groupId, artifactId, version, null, type, new Long( timestamp ), new Integer( buildNumber ) );
+    public Artifact(String groupId, String artifactId, String version, String type, long timestamp, int buildNumber) {
+        this(groupId, artifactId, version, null, type, new Long(timestamp), new Integer(buildNumber));
     }
 
     /**
@@ -177,9 +183,8 @@ public final class Artifact
      * @param type       The type.
      * @since 1.0
      */
-    public Artifact( String groupId, String artifactId, String version, String classifier, String type )
-    {
-        this( groupId, artifactId, version, classifier, type, null, null );
+    public Artifact(String groupId, String artifactId, String version, String classifier, String type) {
+        this(groupId, artifactId, version, classifier, type, null, null);
     }
 
     /**
@@ -191,9 +196,8 @@ public final class Artifact
      * @param type       The type.
      * @since 1.0
      */
-    public Artifact( String groupId, String artifactId, String version, String type )
-    {
-        this( groupId, artifactId, version, null, type );
+    public Artifact(String groupId, String artifactId, String version, String type) {
+        this(groupId, artifactId, version, null, type);
     }
 
     /**
@@ -202,12 +206,12 @@ public final class Artifact
      * @return the name of the artifact.
      * @since 1.0
      */
-    public String getName()
-    {
-        if ( name == null )
-        {
-            name = MessageFormat.format( "{0}-{1}{2}.{3}", new Object[] {artifactId, getTimestampVersion(),
-                ( classifier == null ? "" : "-" + classifier ), type} );
+    public String getName() {
+        if (name == null) {
+            name = MessageFormat.format(
+                    "{0}-{1}{2}.{3}",
+                    new Object[] {artifactId, getTimestampVersion(), (classifier == null ? "" : "-" + classifier), type
+                    });
         }
         return name;
     }
@@ -218,8 +222,7 @@ public final class Artifact
      * @return the groupId of the artifact.
      * @since 1.0
      */
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return groupId;
     }
 
@@ -229,8 +232,7 @@ public final class Artifact
      * @return the artifactId of the artifact.
      * @since 1.0
      */
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
@@ -240,8 +242,7 @@ public final class Artifact
      * @return the version of the artifact.
      * @since 1.0
      */
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
@@ -251,8 +252,7 @@ public final class Artifact
      * @return the type of the artifact.
      * @since 1.0
      */
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
@@ -262,8 +262,7 @@ public final class Artifact
      * @return the classifier of the artifact (may be <code>null</code>).
      * @since 1.0
      */
-    public String getClassifier()
-    {
+    public String getClassifier() {
         return classifier;
     }
 
@@ -273,8 +272,7 @@ public final class Artifact
      * @return the timestamp of the artifact (may be <code>null</code>).
      * @since 1.0
      */
-    public Long getTimestamp()
-    {
+    public Long getTimestamp() {
         return timestamp;
     }
 
@@ -284,8 +282,7 @@ public final class Artifact
      * @return the build number of the artifact (may be <code>null</code>).
      * @since 1.0
      */
-    public Integer getBuildNumber()
-    {
+    public Integer getBuildNumber() {
         return buildNumber;
     }
 
@@ -297,17 +294,13 @@ public final class Artifact
      * (may be <code>null</code>).
      * @since 1.0
      */
-    public String getTimestampString()
-    {
-        if ( timestamp == null )
-        {
+    public String getTimestampString() {
+        if (timestamp == null) {
             return null;
-        }
-        else
-        {
-            SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-            fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-            return fmt.format( new Date( timestamp.longValue() ) );
+        } else {
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss");
+            fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return fmt.format(new Date(timestamp.longValue()));
         }
     }
 
@@ -323,21 +316,20 @@ public final class Artifact
      * @return the timestamp version.
      * @since 1.0
      */
-    public String getTimestampVersion()
-    {
-        if ( timestampVersion == null )
-        {
-            if ( timestamp != null )
-            {
+    public String getTimestampVersion() {
+        if (timestampVersion == null) {
+            if (timestamp != null) {
                 assert isSnapshot();
-                SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-                fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                timestampVersion = MessageFormat.format( "{0}-{1}-{2}", new Object[] {
-                    this.version.substring( 0, this.version.length() - "-SNAPSHOT".length() ),
-                    fmt.format( new Date( timestamp.longValue() ) ), buildNumber} );
-            }
-            else
-            {
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss");
+                fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                timestampVersion = MessageFormat.format(
+                        "{0}-{1}-{2}",
+                        new Object[] {
+                            this.version.substring(0, this.version.length() - "-SNAPSHOT".length()),
+                            fmt.format(new Date(timestamp.longValue())),
+                            buildNumber
+                        });
+            } else {
                 timestampVersion = version;
             }
         }
@@ -350,53 +342,42 @@ public final class Artifact
      * @return <code>true</code> if and only if the artifact is a SNAPSHOT artifact.
      * @since 1.0
      */
-    public boolean isSnapshot()
-    {
-        return version.endsWith( "-SNAPSHOT" );
+    public boolean isSnapshot() {
+        return version.endsWith("-SNAPSHOT");
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         Artifact artifact = (Artifact) o;
 
-        if ( !groupId.equals( artifact.groupId ) )
-        {
+        if (!groupId.equals(artifact.groupId)) {
             return false;
         }
-        if ( !artifactId.equals( artifact.artifactId ) )
-        {
+        if (!artifactId.equals(artifact.artifactId)) {
             return false;
         }
-        if ( !version.equals( artifact.version ) )
-        {
+        if (!version.equals(artifact.version)) {
             return false;
         }
-        if ( !type.equals( artifact.type ) )
-        {
+        if (!type.equals(artifact.type)) {
             return false;
         }
-        if ( !Objects.equals( classifier, artifact.classifier ) )
-        {
+        if (!Objects.equals(classifier, artifact.classifier)) {
             return false;
         }
-        if ( !Objects.equals( buildNumber, artifact.buildNumber ) )
-        {
+        if (!Objects.equals(buildNumber, artifact.buildNumber)) {
             return false;
         }
-        if ( !Objects.equals( timestamp, artifact.timestamp ) )
-        {
+        if (!Objects.equals(timestamp, artifact.timestamp)) {
             return false;
         }
 
@@ -411,31 +392,24 @@ public final class Artifact
      * for SNAPSHOT versions).
      * @since 1.0
      */
-    public boolean equalSnapshots( Artifact artifact )
-    {
-        if ( this == artifact )
-        {
+    public boolean equalSnapshots(Artifact artifact) {
+        if (this == artifact) {
             return true;
         }
 
-        if ( !groupId.equals( artifact.groupId ) )
-        {
+        if (!groupId.equals(artifact.groupId)) {
             return false;
         }
-        if ( !artifactId.equals( artifact.artifactId ) )
-        {
+        if (!artifactId.equals(artifact.artifactId)) {
             return false;
         }
-        if ( !version.equals( artifact.version ) )
-        {
+        if (!version.equals(artifact.version)) {
             return false;
         }
-        if ( !type.equals( artifact.type ) )
-        {
+        if (!type.equals(artifact.type)) {
             return false;
         }
-        if ( !Objects.equals( classifier, artifact.classifier ) )
-        {
+        if (!Objects.equals(classifier, artifact.classifier)) {
             return false;
         }
 
@@ -445,41 +419,37 @@ public final class Artifact
     /**
      * {@inheritDoc}
      */
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = groupId.hashCode();
         result = 31 * result + artifactId.hashCode();
         result = 31 * result + version.hashCode();
         result = 31 * result + type.hashCode();
-        result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
+        result = 31 * result + (classifier != null ? classifier.hashCode() : 0);
         return result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    public String toString() {
         final StringBuffer sb = new StringBuffer();
-        sb.append( "Artifact" );
-        sb.append( "{" ).append( groupId );
-        sb.append( ":" ).append( artifactId );
-        sb.append( ":" ).append( getTimestampVersion() );
-        if ( classifier != null )
-        {
-            sb.append( ":" ).append( classifier );
+        sb.append("Artifact");
+        sb.append("{").append(groupId);
+        sb.append(":").append(artifactId);
+        sb.append(":").append(getTimestampVersion());
+        if (classifier != null) {
+            sb.append(":").append(classifier);
         }
-        sb.append( ":" ).append( type );
-        sb.append( '}' );
+        sb.append(":").append(type);
+        sb.append('}');
         return sb.toString();
     }
 
     /**
      * {@inheritDoc}
      */
-    public int compareTo( Artifact that )
-    {
-        int rv = this.getGroupId().compareTo( that.getGroupId() );
-        return rv == 0 ? getName().compareTo( that.getName() ) : rv;
+    public int compareTo(Artifact that) {
+        int rv = this.getGroupId().compareTo(that.getGroupId());
+        return rv == 0 ? getName().compareTo(that.getName()) : rv;
     }
 }

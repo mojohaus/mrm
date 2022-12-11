@@ -16,6 +16,9 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
@@ -23,17 +26,12 @@ import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * A file entry backed by a {@link Artifact} in a {@link ArtifactStore}.
  *
  * @since 1.0
  */
-public class ArtifactFileEntry
-    extends BaseFileEntry
-{
+public class ArtifactFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -67,9 +65,8 @@ public class ArtifactFileEntry
      * @param store      the artifact store.
      * @since 1.0
      */
-    protected ArtifactFileEntry( FileSystem fileSystem, DirectoryEntry parent, Artifact artifact, ArtifactStore store )
-    {
-        super( fileSystem, parent, artifact.getName() );
+    protected ArtifactFileEntry(FileSystem fileSystem, DirectoryEntry parent, Artifact artifact, ArtifactStore store) {
+        super(fileSystem, parent, artifact.getName());
         this.artifact = artifact;
         this.store = store;
     }
@@ -77,48 +74,33 @@ public class ArtifactFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
-        try
-        {
-            return store.getSize( artifact );
-        }
-        catch ( ArtifactNotFoundException e )
-        {
-            throw new IOException( "Artifact does not exist", e );
+    public long getSize() throws IOException {
+        try {
+            return store.getSize(artifact);
+        } catch (ArtifactNotFoundException e) {
+            throw new IOException("Artifact does not exist", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        try
-        {
-            return store.get( artifact );
-        }
-        catch ( ArtifactNotFoundException e )
-        {
-            throw new IOException( "Artifact does not exist", e );
+    public InputStream getInputStream() throws IOException {
+        try {
+            return store.get(artifact);
+        } catch (ArtifactNotFoundException e) {
+            throw new IOException("Artifact does not exist", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
-        try
-        {
-            return store.getLastModified( artifact );
-        }
-        catch ( ArtifactNotFoundException e )
-        {
-            throw new IOException( "Artifact does not exist", e );
+    public long getLastModified() throws IOException {
+        try {
+            return store.getLastModified(artifact);
+        } catch (ArtifactNotFoundException e) {
+            throw new IOException("Artifact does not exist", e);
         }
     }
 
@@ -128,8 +110,7 @@ public class ArtifactFileEntry
      * @return the backing artifact.
      * @since 1.0
      */
-    public Artifact getArtifact()
-    {
+    public Artifact getArtifact() {
         return artifact;
     }
 }

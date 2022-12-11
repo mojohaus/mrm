@@ -1,20 +1,18 @@
 package org.codehaus.mojo.mrm.plugin;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * A mock Maven repository.
  *
  * @since 1.0
  */
-public class MockRepo
-    implements ArtifactStoreFactory, FactoryHelperRequired
-{
+public class MockRepo implements ArtifactStoreFactory, FactoryHelperRequired {
 
     /**
      * Our helper.
@@ -55,59 +53,46 @@ public class MockRepo
     /**
      * {@inheritDoc}
      */
-    public ArtifactStore newInstance()
-    {
-        if ( factoryHelper == null )
-        {
-            throw new IllegalStateException( "FactoryHelper has not been set" );
+    public ArtifactStore newInstance() {
+        if (factoryHelper == null) {
+            throw new IllegalStateException("FactoryHelper has not been set");
         }
-        if ( source == null )
-        {
-            throw new IllegalStateException( "Must provide the 'source' of the mock repository" );
+        if (source == null) {
+            throw new IllegalStateException("Must provide the 'source' of the mock repository");
         }
 
         File root = source;
-        if ( cloneTo != null )
-        {
-            if ( !cloneTo.mkdirs() && cloneClean )
-            {
-                try
-                {
-                    FileUtils.cleanDirectory( cloneTo );
-                }
-                catch ( IOException e )
-                {
-                    throw new IllegalStateException( "Failed to clean directory: " + e.getMessage() );
+        if (cloneTo != null) {
+            if (!cloneTo.mkdirs() && cloneClean) {
+                try {
+                    FileUtils.cleanDirectory(cloneTo);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Failed to clean directory: " + e.getMessage());
                 }
             }
 
-            try
-            {
-                FileUtils.copyDirectory( source, cloneTo );
+            try {
+                FileUtils.copyDirectory(source, cloneTo);
                 root = cloneTo;
-            }
-            catch ( IOException e )
-            {
-                throw new IllegalStateException( "Failed to copy directory: " + e.getMessage() );
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to copy directory: " + e.getMessage());
             }
         }
 
-        return new MockArtifactStore( factoryHelper.getLog(), root, lazyArchiver );
+        return new MockArtifactStore(factoryHelper.getLog(), root, lazyArchiver);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFactoryHelper( FactoryHelper factoryHelper )
-    {
+    public void setFactoryHelper(FactoryHelper factoryHelper) {
         this.factoryHelper = factoryHelper;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    public String toString() {
         return "Mock content (source: " + source + ')';
     }
 }

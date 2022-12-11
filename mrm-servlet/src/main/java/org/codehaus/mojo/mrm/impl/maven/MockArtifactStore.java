@@ -71,9 +71,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  *
  * @since 1.0
  */
-public class MockArtifactStore
-    extends BaseArtifactStore
-{
+public class MockArtifactStore extends BaseArtifactStore {
 
     private final Log log;
 
@@ -93,7 +91,6 @@ public class MockArtifactStore
      */
     private Map<String, Map<String, Map<String, Map<Artifact, Content>>>> contents = new HashMap<>();
 
-
     private Content archetypeCatalog;
 
     /**
@@ -102,9 +99,8 @@ public class MockArtifactStore
      * @param root the root to search for POMs within.
      * @since 1.0
      */
-    public MockArtifactStore( File root )
-    {
-        this( null, root );
+    public MockArtifactStore(File root) {
+        this(null, root);
     }
 
     /**
@@ -114,9 +110,8 @@ public class MockArtifactStore
      * @param log  the {@link Log} to log to.
      * @since 1.0
      */
-    public MockArtifactStore( Log log, File root )
-    {
-        this( log, root, true );
+    public MockArtifactStore(Log log, File root) {
+        this(log, root, true);
     }
 
     /**
@@ -126,93 +121,76 @@ public class MockArtifactStore
      * @param log  the {@link Log} to log to.
      * @since 1.0
      */
-    public MockArtifactStore( Log log, File root, boolean lazyArchiver )
-    {
+    public MockArtifactStore(Log log, File root, boolean lazyArchiver) {
         this.log = log;
         this.lazyArchiver = lazyArchiver;
 
-        if ( root.isDirectory() )
-        {
+        if (root.isDirectory()) {
             MavenXpp3Reader pomReader = new MavenXpp3Reader();
-            Collection<File> poms = FileUtils.listFiles( root, POM_EXTENSIONS, true );
-            for ( File file : poms )
-            {
-                try ( FileReader fileReader = new FileReader( file ) )
-                {
-                    Model model = pomReader.read( fileReader );
-                    String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
-                    String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
-                    set( new Artifact( groupId, model.getArtifactId(), version, "pom" ),
-                         new FileContent( file ) );
+            Collection<File> poms = FileUtils.listFiles(root, POM_EXTENSIONS, true);
+            for (File file : poms) {
+                try (FileReader fileReader = new FileReader(file)) {
+                    Model model = pomReader.read(fileReader);
+                    String groupId = model.getGroupId() != null
+                            ? model.getGroupId()
+                            : model.getParent().getGroupId();
+                    String version = model.getVersion() != null
+                            ? model.getVersion()
+                            : model.getParent().getVersion();
+                    set(new Artifact(groupId, model.getArtifactId(), version, "pom"), new FileContent(file));
 
-                    final String basename = FilenameUtils.getBaseName( file.getName() );
+                    final String basename = FilenameUtils.getBaseName(file.getName());
 
-                    if ( StringUtils.isEmpty( model.getPackaging() ) || "jar".equals( model.getPackaging() ) )
-                    {
-                        File mainFile = new File( file.getParentFile(), basename + ".jar" );
+                    if (StringUtils.isEmpty(model.getPackaging()) || "jar".equals(model.getPackaging())) {
+                        File mainFile = new File(file.getParentFile(), basename + ".jar");
 
                         Content content;
-                        if ( mainFile.isDirectory() )
-                        {
-                            content = new DirectoryContent( mainFile, lazyArchiver );
-                        }
-                        else
-                        {
-                            content = new BytesContent( Utils.newEmptyJarContent() );
+                        if (mainFile.isDirectory()) {
+                            content = new DirectoryContent(mainFile, lazyArchiver);
+                        } else {
+                            content = new BytesContent(Utils.newEmptyJarContent());
                         }
 
-                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ), content );
-                    }
-                    else if ( "maven-plugin".equals( model.getPackaging() ) )
-                    {
-                        set( new Artifact( groupId, model.getArtifactId(), version, "jar" ),
-                             new BytesContent(
-                                 Utils.newEmptyMavenPluginJarContent( groupId, model.getArtifactId(),
-                                                                      version ) ) );
+                        set(new Artifact(groupId, model.getArtifactId(), version, "jar"), content);
+                    } else if ("maven-plugin".equals(model.getPackaging())) {
+                        set(
+                                new Artifact(groupId, model.getArtifactId(), version, "jar"),
+                                new BytesContent(
+                                        Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(), version)));
                     }
 
                     File[] classifiedFiles = file.getParentFile()
-                        .listFiles( ( dir, name ) -> FilenameUtils.getBaseName( name ).startsWith( basename + '-' ) );
+                            .listFiles((dir, name) ->
+                                    FilenameUtils.getBaseName(name).startsWith(basename + '-'));
 
-                    for ( File classifiedFile : classifiedFiles )
-                    {
-                        String type = org.codehaus.plexus.util.FileUtils.extension( classifiedFile.getName() );
-                        String classifier =
-                            FilenameUtils.getBaseName( classifiedFile.getName() ).substring( basename.length() + 1 );
+                    for (File classifiedFile : classifiedFiles) {
+                        String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
+                        String classifier = FilenameUtils.getBaseName(classifiedFile.getName())
+                                .substring(basename.length() + 1);
 
                         Content content;
-                        if ( classifiedFile.isDirectory() )
-                        {
-                            content = new DirectoryContent( classifiedFile, lazyArchiver );
-                        }
-                        else
-                        {
-                            content = new FileContent( classifiedFile );
+                        if (classifiedFile.isDirectory()) {
+                            content = new DirectoryContent(classifiedFile, lazyArchiver);
+                        } else {
+                            content = new FileContent(classifiedFile);
                         }
 
-                        set( new Artifact( groupId, model.getArtifactId(), version, classifier, type ), content );
+                        set(new Artifact(groupId, model.getArtifactId(), version, classifier, type), content);
                     }
-                }
-                catch ( IOException e )
-                {
-                    if ( log != null )
-                    {
-                        log.warn( "Could not read from " + file, e );
+                } catch (IOException e) {
+                    if (log != null) {
+                        log.warn("Could not read from " + file, e);
                     }
-                }
-                catch ( XmlPullParserException e )
-                {
-                    if ( log != null )
-                    {
-                        log.warn( "Could not parse " + file, e );
+                } catch (XmlPullParserException e) {
+                    if (log != null) {
+                        log.warn("Could not parse " + file, e);
                     }
                 }
             }
 
-            File archetypeCatalogFile = new File( root, "archetype-catalog.xml" );
-            if ( archetypeCatalogFile.isFile() )
-            {
-                archetypeCatalog = new FileContent( archetypeCatalogFile );
+            File archetypeCatalogFile = new File(root, "archetype-catalog.xml");
+            if (archetypeCatalogFile.isFile()) {
+                archetypeCatalog = new FileContent(archetypeCatalogFile);
             }
         }
     }
@@ -220,27 +198,20 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getGroupIds( String parentGroupId )
-    {
+    public synchronized Set<String> getGroupIds(String parentGroupId) {
         TreeSet<String> result = new TreeSet<>();
-        if ( StringUtils.isEmpty( parentGroupId ) )
-        {
-            for ( String groupId : contents.keySet() )
-            {
-                int index = groupId.indexOf( '.' );
-                result.add( index == -1 ? groupId : groupId.substring( 0, index ) );
+        if (StringUtils.isEmpty(parentGroupId)) {
+            for (String groupId : contents.keySet()) {
+                int index = groupId.indexOf('.');
+                result.add(index == -1 ? groupId : groupId.substring(0, index));
             }
-        }
-        else
-        {
+        } else {
             String prefix = parentGroupId + '.';
             int start = prefix.length();
-            for ( String groupId : contents.keySet() )
-            {
-                if ( groupId.startsWith( prefix ) )
-                {
-                    int index = groupId.indexOf( '.', start );
-                    result.add( index == -1 ? groupId.substring( start ) : groupId.substring( start, index ) );
+            for (String groupId : contents.keySet()) {
+                if (groupId.startsWith(prefix)) {
+                    int index = groupId.indexOf('.', start);
+                    result.add(index == -1 ? groupId.substring(start) : groupId.substring(start, index));
                 }
             }
         }
@@ -250,67 +221,55 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getArtifactIds( String groupId )
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        return artifactMap == null ? Collections.emptySet() : new TreeSet<>( artifactMap.keySet() );
+    public synchronized Set<String> getArtifactIds(String groupId) {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
+        return artifactMap == null ? Collections.emptySet() : new TreeSet<>(artifactMap.keySet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<String> getVersions( String groupId, String artifactId )
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        return versionMap == null ? Collections.emptySet() : new TreeSet<>( versionMap.keySet() );
+    public synchronized Set<String> getVersions(String groupId, String artifactId) {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
+        Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+        return versionMap == null ? Collections.emptySet() : new TreeSet<>(versionMap.keySet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized Set<Artifact> getArtifacts( String groupId, String artifactId, String version )
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        Map<String, Map<Artifact, Content>> versionMap = ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
+    public synchronized Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
+        Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
 
-        return filesMap == null ? Collections.emptySet() : new HashSet<>( filesMap.keySet() );
+        return filesMap == null ? Collections.emptySet() : new HashSet<>(filesMap.keySet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized long getLastModified( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+    public synchronized long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
-            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
-        if ( content == null )
-        {
-            if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
-            {
+                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
+        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
+        Content content = (filesMap == null ? null : filesMap.get(artifact));
+        if (content == null) {
+            if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
                 Artifact best = null;
-                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
-                {
+                for (Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
                     Artifact a = entry.getKey();
-                    if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
-                    {
+                    if (artifact.equalSnapshots(a) && (best == null || best.compareTo(a) < 0)) {
                         best = a;
                         content = entry.getValue();
                     }
                 }
-                if ( content == null )
-                {
-                    throw new ArtifactNotFoundException( artifact );
+                if (content == null) {
+                    throw new ArtifactNotFoundException(artifact);
                 }
-            }
-            else
-            {
-                throw new ArtifactNotFoundException( artifact );
+            } else {
+                throw new ArtifactNotFoundException(artifact);
             }
         }
         return content.getLastModified();
@@ -319,36 +278,27 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized long getSize( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+    public synchronized long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
-            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
-        if ( content == null )
-        {
-            if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
-            {
+                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
+        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
+        Content content = (filesMap == null ? null : filesMap.get(artifact));
+        if (content == null) {
+            if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
                 Artifact best = null;
-                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
-                {
+                for (Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
                     Artifact a = entry.getKey();
-                    if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
-                    {
+                    if (artifact.equalSnapshots(a) && (best == null || best.compareTo(a) < 0)) {
                         best = a;
                         content = entry.getValue();
                     }
                 }
-                if ( content == null )
-                {
-                    throw new ArtifactNotFoundException( artifact );
+                if (content == null) {
+                    throw new ArtifactNotFoundException(artifact);
                 }
-            }
-            else
-            {
-                throw new ArtifactNotFoundException( artifact );
+            } else {
+                throw new ArtifactNotFoundException(artifact);
             }
         }
         return content.getLength();
@@ -357,36 +307,27 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized InputStream get( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( artifact.getGroupId() );
+    public synchronized InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
-            ( artifactMap == null ? null : artifactMap.get( artifact.getArtifactId() ) );
-        Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( artifact.getVersion() ) );
-        Content content = ( filesMap == null ? null : filesMap.get( artifact ) );
-        if ( content == null )
-        {
-            if ( artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null )
-            {
+                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
+        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
+        Content content = (filesMap == null ? null : filesMap.get(artifact));
+        if (content == null) {
+            if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
                 Artifact best = null;
-                for ( Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
-                {
+                for (Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
                     Artifact a = entry.getKey();
-                    if ( artifact.equalSnapshots( a ) && ( best == null || best.compareTo( a ) < 0 ) )
-                    {
+                    if (artifact.equalSnapshots(a) && (best == null || best.compareTo(a) < 0)) {
                         best = a;
                         content = entry.getValue();
                     }
                 }
-                if ( content == null )
-                {
-                    throw new ArtifactNotFoundException( artifact );
+                if (content == null) {
+                    throw new ArtifactNotFoundException(artifact);
                 }
-            }
-            else
-            {
-                throw new ArtifactNotFoundException( artifact );
+            } else {
+                throw new ArtifactNotFoundException(artifact);
             }
         }
         return content.getInputStream();
@@ -395,16 +336,11 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized void set( Artifact artifact, InputStream content )
-        throws IOException
-    {
-        try
-        {
-            set( artifact, new BytesContent( IOUtils.toByteArray( content ) ) );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( content );
+    public synchronized void set(Artifact artifact, InputStream content) throws IOException {
+        try {
+            set(artifact, new BytesContent(IOUtils.toByteArray(content)));
+        } finally {
+            IOUtils.closeQuietly(content);
         }
     }
 
@@ -415,223 +351,179 @@ public class MockArtifactStore
      * @param content  the content.
      * @since 1.0
      */
-    private synchronized void set( Artifact artifact, Content content )
-    {
+    private synchronized void set(Artifact artifact, Content content) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap =
-            contents.computeIfAbsent( artifact.getGroupId(), k -> new HashMap<>() );
+                contents.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
         Map<String, Map<Artifact, Content>> versionMap =
-            artifactMap.computeIfAbsent( artifact.getArtifactId(), k -> new HashMap<>() );
-        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent( artifact.getVersion(), k -> new HashMap<>() );
-        filesMap.put( artifact, content );
+                artifactMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+        Map<Artifact, Content> filesMap = versionMap.computeIfAbsent(artifact.getVersion(), k -> new HashMap<>());
+        filesMap.put(artifact, content);
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings( "checkstyle:MethodLength" )
-    public synchronized Metadata getMetadata( String path )
-        throws IOException, MetadataNotFoundException
-    {
+    @SuppressWarnings("checkstyle:MethodLength")
+    public synchronized Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         Metadata metadata = new Metadata();
         boolean foundMetadata = false;
-        path = StringUtils.stripEnd( StringUtils.stripStart( path, "/" ), "/" );
-        String groupId = path.replace( '/', '.' );
-        Set<String> pluginArtifactIds = getArtifactIds( groupId );
-        if ( pluginArtifactIds != null )
-        {
+        path = StringUtils.stripEnd(StringUtils.stripStart(path, "/"), "/");
+        String groupId = path.replace('/', '.');
+        Set<String> pluginArtifactIds = getArtifactIds(groupId);
+        if (pluginArtifactIds != null) {
             List<Plugin> plugins = new ArrayList<>();
-            for ( String artifactId : pluginArtifactIds )
-            {
-                Set<String> pluginVersions = getVersions( groupId, artifactId );
-                if ( pluginVersions == null || pluginVersions.isEmpty() )
-                {
+            for (String artifactId : pluginArtifactIds) {
+                Set<String> pluginVersions = getVersions(groupId, artifactId);
+                if (pluginVersions == null || pluginVersions.isEmpty()) {
                     continue;
                 }
-                String[] versions = pluginVersions.toArray( new String[0] );
-                Arrays.sort( versions, INSTANCE );
-                for ( int j = versions.length - 1; j >= 0; j-- )
-                {
-                    try ( InputStream inputStream = get( new Artifact( groupId, artifactId, versions[j], "pom" ) ) )
-                    {
-                        Model model = new MavenXpp3Reader().read( new XmlStreamReader( inputStream ) );
-                        if ( model == null || !"maven-plugin".equals( model.getPackaging() ) )
-                        {
+                String[] versions = pluginVersions.toArray(new String[0]);
+                Arrays.sort(versions, INSTANCE);
+                for (int j = versions.length - 1; j >= 0; j--) {
+                    try (InputStream inputStream = get(new Artifact(groupId, artifactId, versions[j], "pom"))) {
+                        Model model = new MavenXpp3Reader().read(new XmlStreamReader(inputStream));
+                        if (model == null || !"maven-plugin".equals(model.getPackaging())) {
                             continue;
                         }
                         Plugin plugin = new Plugin();
-                        plugin.setArtifactId( artifactId );
-                        plugin.setName( model.getName() );
+                        plugin.setArtifactId(artifactId);
+                        plugin.setName(model.getName());
                         // TODO proper goal-prefix determination
                         // ugh! this is incredibly hacky and does not handle some fool that sets the goal prefix in
                         // a parent pom... ok unlikely, but stupid is as stupid does
                         boolean havePrefix = false;
                         final Build build = model.getBuild();
-                        if ( build != null && build.getPlugins() != null )
-                        {
-                            havePrefix = setPluginGoalPrefixFromConfiguration( plugin, build.getPlugins() );
+                        if (build != null && build.getPlugins() != null) {
+                            havePrefix = setPluginGoalPrefixFromConfiguration(plugin, build.getPlugins());
                         }
-                        if ( !havePrefix && build != null && build.getPluginManagement() != null
-                            && build.getPluginManagement().getPlugins() != null )
-                        {
-                            havePrefix = setPluginGoalPrefixFromConfiguration( plugin,
-                                                                               build.getPluginManagement()
-                                                                                   .getPlugins() );
+                        if (!havePrefix
+                                && build != null
+                                && build.getPluginManagement() != null
+                                && build.getPluginManagement().getPlugins() != null) {
+                            havePrefix = setPluginGoalPrefixFromConfiguration(
+                                    plugin, build.getPluginManagement().getPlugins());
                         }
-                        if ( !havePrefix && artifactId.startsWith( "maven-" ) && artifactId.endsWith( "-plugin" ) )
-                        {
+                        if (!havePrefix && artifactId.startsWith("maven-") && artifactId.endsWith("-plugin")) {
                             plugin.setPrefix(
-                                StringUtils.removeStart( StringUtils.removeEnd( artifactId, "-plugin" ), "maven-" ) );
+                                    StringUtils.removeStart(StringUtils.removeEnd(artifactId, "-plugin"), "maven-"));
                             havePrefix = true;
                         }
-                        if ( !havePrefix && artifactId.endsWith( "-maven-plugin" ) )
-                        {
-                            plugin.setPrefix( StringUtils.removeEnd( artifactId, "-maven-plugin" ) );
+                        if (!havePrefix && artifactId.endsWith("-maven-plugin")) {
+                            plugin.setPrefix(StringUtils.removeEnd(artifactId, "-maven-plugin"));
                             havePrefix = true;
                         }
-                        if ( !havePrefix )
-                        {
-                            plugin.setPrefix( artifactId );
+                        if (!havePrefix) {
+                            plugin.setPrefix(artifactId);
                         }
-                        plugins.add( plugin );
+                        plugins.add(plugin);
                         foundMetadata = true;
                         break;
-                    }
-                    catch ( ArtifactNotFoundException | XmlPullParserException e )
-                    {
+                    } catch (ArtifactNotFoundException | XmlPullParserException e) {
                         // ignore
                     }
                 }
             }
-            if ( !plugins.isEmpty() )
-            {
-                metadata.setPlugins( plugins );
+            if (!plugins.isEmpty()) {
+                metadata.setPlugins(plugins);
             }
         }
-        int index = path.lastIndexOf( '/' );
-        groupId = ( index == -1 ? groupId : groupId.substring( 0, index ) ).replace( '/', '.' );
-        String artifactId = ( index == -1 ? null : path.substring( index + 1 ) );
-        if ( artifactId != null )
-        {
-            Set<String> artifactVersions = getVersions( groupId, artifactId );
-            if ( artifactVersions != null && !artifactVersions.isEmpty() )
-            {
-                metadata.setGroupId( groupId );
-                metadata.setArtifactId( artifactId );
+        int index = path.lastIndexOf('/');
+        groupId = (index == -1 ? groupId : groupId.substring(0, index)).replace('/', '.');
+        String artifactId = (index == -1 ? null : path.substring(index + 1));
+        if (artifactId != null) {
+            Set<String> artifactVersions = getVersions(groupId, artifactId);
+            if (artifactVersions != null && !artifactVersions.isEmpty()) {
+                metadata.setGroupId(groupId);
+                metadata.setArtifactId(artifactId);
                 Versioning versioning = new Versioning();
-                List<String> versions = new ArrayList<>( artifactVersions );
-                versions.sort( INSTANCE ); // sort the Maven way
+                List<String> versions = new ArrayList<>(artifactVersions);
+                versions.sort(INSTANCE); // sort the Maven way
                 long lastUpdated = 0;
-                for ( String version : versions )
-                {
-                    try
-                    {
-                        long lastModified = getLastModified( new Artifact( groupId, artifactId, version, "pom" ) );
-                        versioning.addVersion( version );
-                        if ( lastModified >= lastUpdated )
-                        {
+                for (String version : versions) {
+                    try {
+                        long lastModified = getLastModified(new Artifact(groupId, artifactId, version, "pom"));
+                        versioning.addVersion(version);
+                        if (lastModified >= lastUpdated) {
                             lastUpdated = lastModified;
-                            versioning.setLastUpdatedTimestamp( new Date( lastModified ) );
-                            versioning.setLatest( version );
-                            if ( !version.endsWith( "-SNAPSHOT" ) )
-                            {
-                                versioning.setRelease( version );
+                            versioning.setLastUpdatedTimestamp(new Date(lastModified));
+                            versioning.setLatest(version);
+                            if (!version.endsWith("-SNAPSHOT")) {
+                                versioning.setRelease(version);
                             }
                         }
-                    }
-                    catch ( ArtifactNotFoundException e )
-                    {
+                    } catch (ArtifactNotFoundException e) {
                         // ignore
                     }
                 }
-                metadata.setVersioning( versioning );
+                metadata.setVersioning(versioning);
                 foundMetadata = true;
             }
         }
 
-        int index2 = index == -1 ? -1 : path.lastIndexOf( '/', index - 1 );
-        groupId = index2 == -1 ? groupId : groupId.substring( 0, index2 ).replace( '/', '.' );
-        artifactId = index2 == -1 ? artifactId : path.substring( index2 + 1, index );
-        String version = index2 == -1 ? null : path.substring( index + 1 );
-        if ( version != null && version.endsWith( "-SNAPSHOT" ) )
-        {
-            Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap =
-                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-            Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
-            if ( filesMap != null )
-            {
+        int index2 = index == -1 ? -1 : path.lastIndexOf('/', index - 1);
+        groupId = index2 == -1 ? groupId : groupId.substring(0, index2).replace('/', '.');
+        artifactId = index2 == -1 ? artifactId : path.substring(index2 + 1, index);
+        String version = index2 == -1 ? null : path.substring(index + 1);
+        if (version != null && version.endsWith("-SNAPSHOT")) {
+            Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
+            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+            Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
+            if (filesMap != null) {
                 List<SnapshotVersion> snapshotVersions = new ArrayList<>();
                 int maxBuildNumber = 0;
                 long lastUpdated = 0;
                 String timestamp = null;
                 boolean found = false;
-                for ( final Map.Entry<Artifact, Content> entry : filesMap.entrySet() )
-                {
+                for (final Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
                     final Artifact artifact = entry.getKey();
                     final Content content = entry.getValue();
-                    SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss" );
-                    fmt.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                    String lastUpdatedTime = fmt.format( new Date( content.getLastModified() ) );
-                    try
-                    {
-                        Maven3.addSnapshotVersion( snapshotVersions, artifact, lastUpdatedTime );
-                    }
-                    catch ( LinkageError e )
-                    {
+                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+                    fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    String lastUpdatedTime = fmt.format(new Date(content.getLastModified()));
+                    try {
+                        Maven3.addSnapshotVersion(snapshotVersions, artifact, lastUpdatedTime);
+                    } catch (LinkageError e) {
                         // Maven 2
                     }
-                    if ( "pom".equals( artifact.getType() ) )
-                    {
-                        if ( artifact.getBuildNumber() != null
-                            && maxBuildNumber < artifact.getBuildNumber() )
-                        {
+                    if ("pom".equals(artifact.getType())) {
+                        if (artifact.getBuildNumber() != null && maxBuildNumber < artifact.getBuildNumber()) {
                             maxBuildNumber = artifact.getBuildNumber();
                             timestamp = artifact.getTimestampString();
+                        } else {
+                            maxBuildNumber = Math.max(1, maxBuildNumber);
                         }
-                        else
-                        {
-                            maxBuildNumber = Math.max( 1, maxBuildNumber );
-                        }
-                        lastUpdated = Math.max( lastUpdated, content.getLastModified() );
+                        lastUpdated = Math.max(lastUpdated, content.getLastModified());
                         found = true;
                     }
                 }
 
-                if ( !snapshotVersions.isEmpty() || found )
-                {
+                if (!snapshotVersions.isEmpty() || found) {
                     Versioning versioning = metadata.getVersioning();
-                    if ( versioning == null )
-                    {
+                    if (versioning == null) {
                         versioning = new Versioning();
                     }
-                    metadata.setGroupId( groupId );
-                    metadata.setArtifactId( artifactId );
-                    metadata.setVersion( version );
-                    try
-                    {
-                        Maven3.addSnapshotVersions( versioning, snapshotVersions );
-                    }
-                    catch ( LinkageError e )
-                    {
+                    metadata.setGroupId(groupId);
+                    metadata.setArtifactId(artifactId);
+                    metadata.setVersion(version);
+                    try {
+                        Maven3.addSnapshotVersions(versioning, snapshotVersions);
+                    } catch (LinkageError e) {
                         // Maven 2
                     }
-                    if ( maxBuildNumber > 0 )
-                    {
+                    if (maxBuildNumber > 0) {
                         Snapshot snapshot = new Snapshot();
-                        snapshot.setBuildNumber( maxBuildNumber );
-                        snapshot.setTimestamp( timestamp );
-                        versioning.setSnapshot( snapshot );
+                        snapshot.setBuildNumber(maxBuildNumber);
+                        snapshot.setTimestamp(timestamp);
+                        versioning.setSnapshot(snapshot);
                     }
-                    versioning.setLastUpdatedTimestamp( new Date( lastUpdated ) );
-                    metadata.setVersioning( versioning );
+                    versioning.setLastUpdatedTimestamp(new Date(lastUpdated));
+                    metadata.setVersioning(versioning);
                     foundMetadata = true;
                 }
             }
-
         }
-        if ( !foundMetadata )
-        {
-            throw new MetadataNotFoundException( path );
+        if (!foundMetadata) {
+            throw new MetadataNotFoundException(path);
         }
         return metadata;
     }
@@ -639,132 +531,95 @@ public class MockArtifactStore
     /**
      * {@inheritDoc}
      */
-    public synchronized long getMetadataLastModified( String path )
-        throws IOException, MetadataNotFoundException
-    {
+    public synchronized long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         boolean haveResult = false;
         long result = 0;
-        path = StringUtils.stripEnd( StringUtils.stripStart( path, "/" ), "/" );
-        String groupId = path.replace( '/', '.' );
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get( groupId );
-        if ( artifactMap != null )
-        {
-            for ( Map<String, Map<Artifact, Content>> versionMap : artifactMap.values() )
-            {
-                for ( Map<Artifact, Content> filesMap : versionMap.values() )
-                {
-                    for ( Content content : filesMap.values() )
-                    {
+        path = StringUtils.stripEnd(StringUtils.stripStart(path, "/"), "/");
+        String groupId = path.replace('/', '.');
+        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
+        if (artifactMap != null) {
+            for (Map<String, Map<Artifact, Content>> versionMap : artifactMap.values()) {
+                for (Map<Artifact, Content> filesMap : versionMap.values()) {
+                    for (Content content : filesMap.values()) {
                         haveResult = true;
-                        result = Math.max( result, content.getLastModified() );
+                        result = Math.max(result, content.getLastModified());
                     }
                 }
             }
         }
-        int index = path.lastIndexOf( '/' );
-        groupId = index == -1 ? groupId : groupId.substring( 0, index ).replace( '/', '.' );
-        String artifactId = ( index == -1 ? null : path.substring( index + 1 ) );
-        if ( artifactId != null )
-        {
-            artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap =
-                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-            if ( versionMap != null )
-            {
-                for ( Map<Artifact, Content> filesMap : versionMap.values() )
-                {
-                    for ( Content content : filesMap.values() )
-                    {
+        int index = path.lastIndexOf('/');
+        groupId = index == -1 ? groupId : groupId.substring(0, index).replace('/', '.');
+        String artifactId = (index == -1 ? null : path.substring(index + 1));
+        if (artifactId != null) {
+            artifactMap = contents.get(groupId);
+            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+            if (versionMap != null) {
+                for (Map<Artifact, Content> filesMap : versionMap.values()) {
+                    for (Content content : filesMap.values()) {
                         haveResult = true;
-                        result = Math.max( result, content.getLastModified() );
+                        result = Math.max(result, content.getLastModified());
                     }
                 }
             }
         }
-        int index2 = index == -1 ? -1 : path.lastIndexOf( '/', index - 1 );
-        groupId = index2 == -1 ? groupId : groupId.substring( 0, index2 ).replace( '/', '.' );
-        artifactId = index2 == -1 ? artifactId : path.substring( index2 + 1, index );
-        String version = index2 == -1 ? null : path.substring( index + 1 );
-        if ( version != null && version.endsWith( "-SNAPSHOT" ) )
-        {
-            artifactMap = contents.get( groupId );
-            Map<String, Map<Artifact, Content>> versionMap =
-                ( artifactMap == null ? null : artifactMap.get( artifactId ) );
-            Map<Artifact, Content> filesMap = ( versionMap == null ? null : versionMap.get( version ) );
-            if ( filesMap != null )
-            {
-                for ( Content content : filesMap.values() )
-                {
+        int index2 = index == -1 ? -1 : path.lastIndexOf('/', index - 1);
+        groupId = index2 == -1 ? groupId : groupId.substring(0, index2).replace('/', '.');
+        artifactId = index2 == -1 ? artifactId : path.substring(index2 + 1, index);
+        String version = index2 == -1 ? null : path.substring(index + 1);
+        if (version != null && version.endsWith("-SNAPSHOT")) {
+            artifactMap = contents.get(groupId);
+            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+            Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
+            if (filesMap != null) {
+                for (Content content : filesMap.values()) {
                     haveResult = true;
-                    result = Math.max( result, content.getLastModified() );
+                    result = Math.max(result, content.getLastModified());
                 }
             }
         }
-        if ( haveResult )
-        {
+        if (haveResult) {
             return result;
         }
-        throw new MetadataNotFoundException( path );
+        throw new MetadataNotFoundException(path);
     }
 
-    public ArchetypeCatalog getArchetypeCatalog()
-        throws IOException, ArchetypeCatalogNotFoundException
-    {
-        if ( archetypeCatalog != null )
-        {
+    public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
+        if (archetypeCatalog != null) {
             ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
-            try
-            {
-                return reader.read( archetypeCatalog.getInputStream() );
-            }
-            catch ( IOException e )
-            {
-                if ( log != null )
-                {
-                    log.warn( "Could not read from archetype-catalog.xml", e );
+            try {
+                return reader.read(archetypeCatalog.getInputStream());
+            } catch (IOException e) {
+                if (log != null) {
+                    log.warn("Could not read from archetype-catalog.xml", e);
                 }
-            }
-            catch ( XmlPullParserException e )
-            {
+            } catch (XmlPullParserException e) {
 
-                if ( log != null )
-                {
-                    log.warn( "Could not parse archetype-catalog.xml", e );
+                if (log != null) {
+                    log.warn("Could not parse archetype-catalog.xml", e);
                 }
             }
         }
         throw new ArchetypeCatalogNotFoundException();
     }
 
-
-    public long getArchetypeCatalogLastModified()
-        throws ArchetypeCatalogNotFoundException
-    {
-        if ( archetypeCatalog != null )
-        {
+    public long getArchetypeCatalogLastModified() throws ArchetypeCatalogNotFoundException {
+        if (archetypeCatalog != null) {
             return archetypeCatalog.getLastModified();
-        }
-        else
-        {
+        } else {
             throw new ArchetypeCatalogNotFoundException();
         }
     }
 
-    private boolean setPluginGoalPrefixFromConfiguration( Plugin plugin,
-                                                          List<org.apache.maven.model.Plugin> pluginConfigs )
-    {
-        for ( org.apache.maven.model.Plugin def : pluginConfigs )
-        {
-            if ( ( def.getGroupId() == null || StringUtils.equals( "org.apache.maven.plugins", def.getGroupId() ) )
-                && StringUtils.equals( "maven-plugin-plugin", def.getArtifactId() ) )
-            {
+    private boolean setPluginGoalPrefixFromConfiguration(
+            Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs) {
+        for (org.apache.maven.model.Plugin def : pluginConfigs) {
+            if ((def.getGroupId() == null || StringUtils.equals("org.apache.maven.plugins", def.getGroupId()))
+                    && StringUtils.equals("maven-plugin-plugin", def.getArtifactId())) {
                 Xpp3Dom configuration = (Xpp3Dom) def.getConfiguration();
-                if ( configuration != null )
-                {
-                    final Xpp3Dom goalPrefix = configuration.getChild( "goalPrefix" );
-                    if ( goalPrefix != null )
-                    {
-                        plugin.setPrefix( goalPrefix.getValue() );
+                if (configuration != null) {
+                    final Xpp3Dom goalPrefix = configuration.getChild("goalPrefix");
+                    if (goalPrefix != null) {
+                        plugin.setPrefix(goalPrefix.getValue());
                         return true;
                     }
                 }
@@ -781,18 +636,15 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private static class VersionComparator
-        implements Comparator<String>
-    {
+    private static class VersionComparator implements Comparator<String> {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings( "unchecked" )
-        public int compare( String o1, String o2 )
-        {
-            ArtifactVersion v1 = new DefaultArtifactVersion( o1 );
-            ArtifactVersion v2 = new DefaultArtifactVersion( o2 );
-            return v1.compareTo( v2 );
+        @SuppressWarnings("unchecked")
+        public int compare(String o1, String o2) {
+            ArtifactVersion v1 = new DefaultArtifactVersion(o1);
+            ArtifactVersion v2 = new DefaultArtifactVersion(o2);
+            return v1.compareTo(v2);
         }
     }
 
@@ -801,8 +653,7 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private interface Content
-    {
+    private interface Content {
 
         /**
          * Returns the last modified timestamp.
@@ -818,8 +669,7 @@ public class MockArtifactStore
          * @return the content.
          * @throws IOException if something went wrong.
          */
-        InputStream getInputStream()
-            throws IOException;
+        InputStream getInputStream() throws IOException;
 
         /**
          * Returns the length of the content.
@@ -834,9 +684,7 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private static class BytesContent
-        implements Content
-    {
+    private static class BytesContent implements Content {
 
         /**
          * The last modified timestamp.
@@ -858,8 +706,7 @@ public class MockArtifactStore
          * @param bytes the content.
          * @since 1.0
          */
-        private BytesContent( byte[] bytes )
-        {
+        private BytesContent(byte[] bytes) {
             this.lastModified = System.currentTimeMillis();
             this.bytes = bytes;
         }
@@ -867,25 +714,21 @@ public class MockArtifactStore
         /**
          * {@inheritDoc}
          */
-        public long getLastModified()
-        {
+        public long getLastModified() {
             return lastModified;
         }
 
         /**
          * {@inheritDoc}
          */
-        public InputStream getInputStream()
-            throws IOException
-        {
-            return new ByteArrayInputStream( bytes );
+        public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(bytes);
         }
 
         /**
          * {@inheritDoc}
          */
-        public long getLength()
-        {
+        public long getLength() {
             return bytes.length;
         }
     }
@@ -895,9 +738,7 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private static class FileContent
-        implements Content
-    {
+    private static class FileContent implements Content {
 
         /**
          * The backing file.
@@ -912,39 +753,33 @@ public class MockArtifactStore
          * @param file the backing file.
          * @since 1.0
          */
-        private FileContent( File file )
-        {
+        private FileContent(File file) {
             this.file = file;
         }
 
         /**
          * {@inheritDoc}
          */
-        public long getLastModified()
-        {
+        public long getLastModified() {
             return file.lastModified();
         }
 
         /**
          * {@inheritDoc}
          */
-        public InputStream getInputStream()
-            throws IOException
-        {
-            return new FileInputStream( file );
+        public InputStream getInputStream() throws IOException {
+            return new FileInputStream(file);
         }
 
         /**
          * {@inheritDoc}
          */
-        public long getLength()
-        {
+        public long getLength() {
             return file.length();
         }
     }
 
-    private static class DirectoryContent implements Content
-    {
+    private static class DirectoryContent implements Content {
         private final File directory;
 
         private File archivedFile;
@@ -953,56 +788,43 @@ public class MockArtifactStore
          * @param directory the directory to archive
          * @param lazy      {@code false} if the archive should be created immediately
          */
-        private DirectoryContent( File directory, boolean lazy )
-        {
+        private DirectoryContent(File directory, boolean lazy) {
             this.directory = directory;
 
-            if ( !lazy )
-            {
+            if (!lazy) {
                 createArchive();
             }
         }
 
-        private void createArchive()
-        {
+        private void createArchive() {
             JarArchiver archiver = new JarArchiver();
-            archivedFile = new File( directory.getParentFile(), "_" + directory.getName() );
-            archiver.setDestFile( archivedFile );
-            archiver.addDirectory( directory );
+            archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
+            archiver.setDestFile(archivedFile);
+            archiver.addDirectory(directory);
 
-            try
-            {
+            try {
                 archiver.createArchive();
-            }
-            catch ( ArchiverException | IOException e )
-            {
-                throw new RuntimeException( e.getMessage(), e );
+            } catch (ArchiverException | IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
 
-        public long getLastModified()
-        {
-            if ( archivedFile == null )
-            {
+        public long getLastModified() {
+            if (archivedFile == null) {
                 createArchive();
             }
             return archivedFile.lastModified();
         }
 
-        public InputStream getInputStream()
-            throws IOException
-        {
-            if ( archivedFile == null )
-            {
+        public InputStream getInputStream() throws IOException {
+            if (archivedFile == null) {
                 createArchive();
             }
-            return new FileInputStream( archivedFile );
+            return new FileInputStream(archivedFile);
         }
 
-        public long getLength()
-        {
-            if ( archivedFile == null )
-            {
+        public long getLength() {
+            if (archivedFile == null) {
                 createArchive();
             }
             return archivedFile.length();
@@ -1016,8 +838,7 @@ public class MockArtifactStore
      *
      * @since 1.0
      */
-    private static class Maven3
-    {
+    private static class Maven3 {
         /**
          * Adds a snapshot version to the list of snapshot versions.
          *
@@ -1026,20 +847,16 @@ public class MockArtifactStore
          * @param lastUpdatedTime  the time to flag for last updated.
          * @since 1.0
          */
-        private static void addSnapshotVersion( List<SnapshotVersion> snapshotVersions, Artifact artifact,
-                                                String lastUpdatedTime )
-        {
-            try
-            {
+        private static void addSnapshotVersion(
+                List<SnapshotVersion> snapshotVersions, Artifact artifact, String lastUpdatedTime) {
+            try {
                 SnapshotVersion snapshotVersion = new SnapshotVersion();
-                snapshotVersion.setExtension( artifact.getType() );
-                snapshotVersion.setClassifier( artifact.getClassifier() == null ? "" : artifact.getClassifier() );
-                snapshotVersion.setVersion( artifact.getTimestampVersion() );
-                snapshotVersion.setUpdated( lastUpdatedTime );
-                snapshotVersions.add( snapshotVersion );
-            }
-            catch ( NoClassDefFoundError e )
-            {
+                snapshotVersion.setExtension(artifact.getType());
+                snapshotVersion.setClassifier(artifact.getClassifier() == null ? "" : artifact.getClassifier());
+                snapshotVersion.setVersion(artifact.getTimestampVersion());
+                snapshotVersion.setUpdated(lastUpdatedTime);
+                snapshotVersions.add(snapshotVersion);
+            } catch (NoClassDefFoundError e) {
                 // Maven 2
             }
         }
@@ -1051,17 +868,12 @@ public class MockArtifactStore
          * @param snapshotVersions the snapshot versions to add.
          * @since 1.0
          */
-        private static void addSnapshotVersions( Versioning versioning, List<SnapshotVersion> snapshotVersions )
-        {
-            try
-            {
-                for ( SnapshotVersion snapshotVersion : snapshotVersions )
-                {
-                    versioning.addSnapshotVersion( snapshotVersion );
+        private static void addSnapshotVersions(Versioning versioning, List<SnapshotVersion> snapshotVersions) {
+            try {
+                for (SnapshotVersion snapshotVersion : snapshotVersions) {
+                    versioning.addSnapshotVersion(snapshotVersion);
                 }
-            }
-            catch ( NoClassDefFoundError e )
-            {
+            } catch (NoClassDefFoundError e) {
                 // Maven 2
             }
         }

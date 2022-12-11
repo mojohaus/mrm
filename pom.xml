@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Copyright 2011 Stephen Connolly
   ~
@@ -15,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,10 +29,8 @@
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager :: Project</name>
-  <description>
-    Mock Repository Manager for Maven. The Mock Repository Manager provides a mock Maven
-    repository manager.
-  </description>
+  <description>Mock Repository Manager for Maven. The Mock Repository Manager provides a mock Maven
+    repository manager.</description>
   <url>https://www.mojohaus.org/mrm</url>
   <inceptionYear>2009</inceptionYear>
 
@@ -58,10 +54,10 @@
     <developer>
       <id>rscholte</id>
       <name>Robert Scholte</name>
-      <timezone>Europe/Amsterdam</timezone>
       <roles>
         <role>Java Developer</role>
       </roles>
+      <timezone>Europe/Amsterdam</timezone>
     </developer>
   </developers>
 
@@ -74,8 +70,8 @@
   <scm>
     <connection>scm:git:https://github.com/mojohaus/mrm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mojohaus/mrm.git</developerConnection>
-    <url>https://github.com/mojohaus/mrm/tree/master</url>
     <tag>HEAD</tag>
+    <url>https://github.com/mojohaus/mrm/tree/master</url>
   </scm>
   <issueManagement>
     <system>GitHub</system>
@@ -231,11 +227,11 @@
         <executions>
           <execution>
             <id>default-site</id>
-            <phase>site</phase>
             <goals>
               <goal>site</goal>
               <goal>stage</goal>
             </goals>
+            <phase>site</phase>
           </execution>
         </executions>
       </plugin>

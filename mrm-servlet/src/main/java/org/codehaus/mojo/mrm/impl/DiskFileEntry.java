@@ -16,23 +16,21 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.codehaus.mojo.mrm.api.BaseFileEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.FileSystem;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.codehaus.mojo.mrm.api.BaseFileEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.FileSystem;
 
 /**
  * A file entry backed by a {@link File} on a local disk.
  *
  * @since 1.0
  */
-public class DiskFileEntry
-    extends BaseFileEntry
-{
+public class DiskFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -57,9 +55,8 @@ public class DiskFileEntry
      * @param file       the backing file.
      * @since 1.0
      */
-    public DiskFileEntry( FileSystem fileSystem, DirectoryEntry parent, File file )
-    {
-        this( fileSystem, parent, file.getName(), file );
+    public DiskFileEntry(FileSystem fileSystem, DirectoryEntry parent, File file) {
+        this(fileSystem, parent, file.getName(), file);
     }
 
     /**
@@ -72,34 +69,29 @@ public class DiskFileEntry
      * @param file       the backing file.
      * @since 1.0
      */
-    public DiskFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, File file )
-    {
-        super( fileSystem, parent, name );
+    public DiskFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name, File file) {
+        super(fileSystem, parent, name);
         this.file = file;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-    {
+    public long getLastModified() {
         return file.lastModified();
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-    {
+    public long getSize() {
         return file.length();
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        return new FileInputStream( file );
+    public InputStream getInputStream() throws IOException {
+        return new FileInputStream(file);
     }
 }

@@ -23,10 +23,7 @@ import java.io.IOException;
  *
  * @since 1.0
  */
-public class DefaultDirectoryEntry
-    extends AbstractEntry
-    implements DirectoryEntry
-{
+public class DefaultDirectoryEntry extends AbstractEntry implements DirectoryEntry {
     /**
      * Ensure consistent serialization.
      *
@@ -42,9 +39,8 @@ public class DefaultDirectoryEntry
      * @param name       The name of the entry (or the empty string if this is the root entry).
      * @since 1.0
      */
-    public DefaultDirectoryEntry( FileSystem fileSystem, DirectoryEntry parent, String name )
-    {
-        super( fileSystem, parent, name );
+    public DefaultDirectoryEntry(FileSystem fileSystem, DirectoryEntry parent, String name) {
+        super(fileSystem, parent, name);
     }
 
     /**
@@ -56,25 +52,20 @@ public class DefaultDirectoryEntry
      * @return a {@link DirectoryEntry} in the target filesystem.
      * @since 1.0
      */
-    public static DirectoryEntry equivalent( FileSystem target, DirectoryEntry directory )
-    {
-        if ( target.equals( directory.getFileSystem() ) )
-        {
+    public static DirectoryEntry equivalent(FileSystem target, DirectoryEntry directory) {
+        if (target.equals(directory.getFileSystem())) {
             return directory;
         }
-        if ( directory.getParent() == null )
-        {
+        if (directory.getParent() == null) {
             return target.getRoot();
         }
-        return new DefaultDirectoryEntry( target, equivalent( target, directory.getParent() ), directory.getName() );
+        return new DefaultDirectoryEntry(target, equivalent(target, directory.getParent()), directory.getName());
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
-        return getFileSystem().getLastModified( this );
+    public long getLastModified() throws IOException {
+        return getFileSystem().getLastModified(this);
     }
 }

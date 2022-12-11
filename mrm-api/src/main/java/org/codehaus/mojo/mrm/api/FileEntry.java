@@ -24,9 +24,7 @@ import java.io.InputStream;
  *
  * @since 1.0
  */
-public interface FileEntry
-    extends Entry
-{
+public interface FileEntry extends Entry {
     /**
      * Returns the size in bytes of the entry.
      *
@@ -34,8 +32,7 @@ public interface FileEntry
      * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
-    long getSize()
-        throws IOException;
+    long getSize() throws IOException;
 
     /**
      * Returns the contents of the entry.
@@ -44,6 +41,5 @@ public interface FileEntry
      * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
-    InputStream getInputStream()
-        throws IOException;
+    InputStream getInputStream() throws IOException;
 }

@@ -16,8 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.apache.maven.model.Model;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,21 +28,21 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import org.apache.maven.model.Model;
+
 /**
  * Utility class.
  *
  * @since 1.0
  */
-public final class Utils
-{
+public final class Utils {
     /**
      * Do not instantiate.
      *
      * @since 1.0
      */
-    private Utils()
-    {
-        throw new IllegalAccessError( "Utility class" );
+    private Utils() {
+        throw new IllegalAccessError("Utility class");
     }
 
     /**
@@ -58,20 +56,13 @@ public final class Utils
      * @throws java.io.IOException if things go wrong.
      * @since 1.0
      */
-    public static InputStream asInputStream( Object content )
-        throws IOException
-    {
-        if ( content instanceof byte[] )
-        {
-            return new ByteArrayInputStream( (byte[]) content );
-        }
-        else if ( content instanceof File )
-        {
-            return new FileInputStream( (File) content );
-        }
-        else
-        {
-            return new ByteArrayInputStream( content.toString().getBytes( StandardCharsets.UTF_8 ) );
+    public static InputStream asInputStream(Object content) throws IOException {
+        if (content instanceof byte[]) {
+            return new ByteArrayInputStream((byte[]) content);
+        } else if (content instanceof File) {
+            return new FileInputStream((File) content);
+        } else {
+            return new ByteArrayInputStream(content.toString().getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -82,16 +73,14 @@ public final class Utils
      * @throws IOException if things go wrong.
      * @since 1.0
      */
-    public static byte[] newEmptyJarContent()
-        throws IOException
-    {
+    public static byte[] newEmptyJarContent() throws IOException {
         final Manifest manifest = new Manifest();
-        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
+        manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new JarOutputStream( bos, manifest ).close();
+        new JarOutputStream(bos, manifest).close();
         return bos.toByteArray();
     }
 
@@ -105,23 +94,21 @@ public final class Utils
      * @throws IOException if things go wrong.
      * @since 1.0
      */
-    public static byte[] newEmptyMavenPluginJarContent( String groupId, String artifactId, String version )
-        throws IOException
-    {
+    public static byte[] newEmptyMavenPluginJarContent(String groupId, String artifactId, String version)
+            throws IOException {
         final Manifest manifest = new Manifest();
-        manifest.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Archiver-Version", "1.0" );
-        manifest.getMainAttributes().putValue( "Created-By", "Mock Repository Maven Plugin" );
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        manifest.getMainAttributes().putValue("Archiver-Version", "1.0");
+        manifest.getMainAttributes().putValue("Created-By", "Mock Repository Maven Plugin");
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try ( JarOutputStream jos = new JarOutputStream( bos, manifest ) )
-        {
-            JarEntry entry = new JarEntry( "META-INF/maven/plugin.xml" );
-            jos.putNextEntry( entry );
-            jos.write(
-                ( "<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>"
-                    + version
-                    + "</version></plugin>" ).getBytes() );
+        try (JarOutputStream jos = new JarOutputStream(bos, manifest)) {
+            JarEntry entry = new JarEntry("META-INF/maven/plugin.xml");
+            jos.putNextEntry(entry);
+            jos.write(("<plugin><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>"
+                            + version
+                            + "</version></plugin>")
+                    .getBytes());
             jos.closeEntry();
         }
         return bos.toByteArray();
@@ -136,9 +123,8 @@ public final class Utils
      * @return the base filepath for artifacts at the specified coordinates.
      * @since 1.0
      */
-    public static String getGAVPathName( String groupId, String artifactId, String version )
-    {
-        return getGAVPath( groupId, artifactId, version ) + '/' + artifactId + '-' + version;
+    public static String getGAVPathName(String groupId, String artifactId, String version) {
+        return getGAVPath(groupId, artifactId, version) + '/' + artifactId + '-' + version;
     }
 
     /**
@@ -150,10 +136,9 @@ public final class Utils
      * @return the path.
      * @since 1.0
      */
-    public static String getGAVPath( String groupId, String artifactId, String version )
-    {
-        return groupId.replace( '.', '/' ) + ( artifactId != null ? ( '/' + artifactId + ( version != null ? ( '/'
-            + version ) : "" ) ) : "" );
+    public static String getGAVPath(String groupId, String artifactId, String version) {
+        return groupId.replace('.', '/')
+                + (artifactId != null ? ('/' + artifactId + (version != null ? ('/' + version) : "")) : "");
     }
 
     /**
@@ -163,11 +148,9 @@ public final class Utils
      * @return the version of the project.
      * @since 1.0
      */
-    public static String getVersion( Model model )
-    {
+    public static String getVersion(Model model) {
         String version = model.getVersion();
-        if ( version == null )
-        {
+        if (version == null) {
             version = model.getParent().getVersion();
         }
         return version;
@@ -180,11 +163,9 @@ public final class Utils
      * @return the artifactId of the project.
      * @since 1.0
      */
-    public static String getArtifactId( Model model )
-    {
+    public static String getArtifactId(Model model) {
         String artifactId = model.getArtifactId();
-        if ( artifactId == null )
-        {
+        if (artifactId == null) {
             artifactId = model.getParent().getArtifactId();
         }
         return artifactId;
@@ -197,11 +178,9 @@ public final class Utils
      * @return the groupId of the project.
      * @since 1.0
      */
-    public static String getGroupId( Model model )
-    {
+    public static String getGroupId(Model model) {
         String groupId = model.getGroupId();
-        if ( groupId == null )
-        {
+        if (groupId == null) {
             groupId = model.getParent().getGroupId();
         }
         return groupId;
@@ -215,18 +194,15 @@ public final class Utils
      * @throws UnsupportedEncodingException if the path cannot be encoded.
      * @since 1.0
      */
-    public static String urlEncodePath( String path )
-        throws UnsupportedEncodingException
-    {
-        StringBuilder buf = new StringBuilder( path.length() + 64 );
+    public static String urlEncodePath(String path) throws UnsupportedEncodingException {
+        StringBuilder buf = new StringBuilder(path.length() + 64);
         int last = 0;
-        for ( int i = path.indexOf( '/' ); i != -1; i = path.indexOf( '/', last ) )
-        {
-            buf.append( urlEncodePathSegment( path.substring( last, i ) ) );
-            buf.append( path, i, Math.min( path.length(), i + 1 ) );
+        for (int i = path.indexOf('/'); i != -1; i = path.indexOf('/', last)) {
+            buf.append(urlEncodePathSegment(path.substring(last, i)));
+            buf.append(path, i, Math.min(path.length(), i + 1));
             last = i + 1;
         }
-        buf.append( path.substring( last ) );
+        buf.append(path.substring(last));
         return buf.toString();
     }
 
@@ -237,14 +213,11 @@ public final class Utils
      * @return the path segment encoded for use as an URL parameter.
      * @since 1.0
      */
-    public static String urlEncodePathSegment( String pathSegment )
-    {
-        StringBuilder buf = new StringBuilder( pathSegment.length() + 64 );
-        byte[] chars = pathSegment.getBytes( StandardCharsets.UTF_8 );
-        for ( byte aChar : chars )
-        {
-            switch ( aChar )
-            {
+    public static String urlEncodePathSegment(String pathSegment) {
+        StringBuilder buf = new StringBuilder(pathSegment.length() + 64);
+        byte[] chars = pathSegment.getBytes(StandardCharsets.UTF_8);
+        for (byte aChar : chars) {
+            switch (aChar) {
                 case '$':
                 case '-':
                 case '_':
@@ -317,18 +290,17 @@ public final class Utils
                 case 'x':
                 case 'y':
                 case 'z':
-                    buf.append( (char) aChar );
+                    buf.append((char) aChar);
                     break;
                 case ' ':
-                    buf.append( '+' );
+                    buf.append('+');
                     break;
                 default:
-                    buf.append( '%' );
-                    if ( ( aChar & 0xf0 ) == 0 )
-                    {
-                        buf.append( '0' );
+                    buf.append('%');
+                    if ((aChar & 0xf0) == 0) {
+                        buf.append('0');
                     }
-                    buf.append( Integer.toHexString( aChar & 0xff ) );
+                    buf.append(Integer.toHexString(aChar & 0xff));
                     break;
             }
         }

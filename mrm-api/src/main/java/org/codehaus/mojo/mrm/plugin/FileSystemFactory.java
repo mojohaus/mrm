@@ -20,19 +20,17 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 
 /**
  * Something that produces new {@link FileSystem} instances.
- * 
+ *
  * @see FactoryHelperRequired
  * @since 1.0
  */
-public interface FileSystemFactory
-{
+public interface FileSystemFactory {
     /**
      * Creates a new {@link FileSystem} instance, note that implementations are free to create a singleton and always
      * return that instance.
-     * 
+     *
      * @return the {@link FileSystem} instance.
      * @since 1.0
      */
     FileSystem newInstance();
-
 }

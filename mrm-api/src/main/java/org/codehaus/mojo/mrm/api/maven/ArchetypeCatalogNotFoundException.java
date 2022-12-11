@@ -21,9 +21,7 @@ package org.codehaus.mojo.mrm.api.maven;
  *
  * @since 1.0
  */
-public class ArchetypeCatalogNotFoundException
-    extends Exception
-{
+public class ArchetypeCatalogNotFoundException extends Exception {
     /**
      * Ensure consistent serialization.
      *
@@ -36,8 +34,7 @@ public class ArchetypeCatalogNotFoundException
      *
      * @since 1.0
      */
-    public ArchetypeCatalogNotFoundException()
-    {
+    public ArchetypeCatalogNotFoundException() {
         super();
     }
 
@@ -47,9 +44,8 @@ public class ArchetypeCatalogNotFoundException
      * @param message The message.
      * @since 1.0
      */
-    public ArchetypeCatalogNotFoundException( String message )
-    {
-        this( message, null );
+    public ArchetypeCatalogNotFoundException(String message) {
+        this(message, null);
     }
 
     /**
@@ -59,8 +55,7 @@ public class ArchetypeCatalogNotFoundException
      * @param cause   the reason why it was not found (or <code>null</code> if there is no specific reason)
      * @since 1.0
      */
-    public ArchetypeCatalogNotFoundException( String message, Throwable cause )
-    {
-        super( message, cause );
+    public ArchetypeCatalogNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

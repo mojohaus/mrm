@@ -33,73 +33,56 @@ import org.codehaus.plexus.util.StringUtils;
  * <p>
  * Starts a mock repository manager for manual testing.
  */
-@Mojo( name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true )
-public class RunMojo
-    extends AbstractStartMojo
-{
+@Mojo(name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true)
+public class RunMojo extends AbstractStartMojo {
     /**
      * ServletPath for the settings.xml, so it can be downloaded.
      */
-    @Parameter( property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml" )
+    @Parameter(property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml")
     private String settingsServletPath;
 
     /**
      * {@inheritDoc}
      */
-    public void doExecute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        if ( !session.getSettings().isInteractiveMode() )
-        {
+    public void doExecute() throws MojoExecutionException, MojoFailureException {
+        if (!session.getSettings().isInteractiveMode()) {
             throw new MojoExecutionException(
-                "Cannot run a mock repository in batch mode (as there is no way to signal shutdown) "
-                    + "use mrm:start instead" );
+                    "Cannot run a mock repository in batch mode (as there is no way to signal shutdown) "
+                            + "use mrm:start instead");
         }
-        FileSystemServer mrm = createFileSystemServer( createArtifactStore() );
-        getLog().info( "Starting Mock Repository Manager" );
+        FileSystemServer mrm = createFileSystemServer(createArtifactStore());
+        getLog().info("Starting Mock Repository Manager");
         mrm.ensureStarted();
         String url = mrm.getUrl();
-        try
-        {
-            getLog().info( "Mock Repository Manager " + url + " is started." );
-            if ( StringUtils.isNotEmpty( settingsServletPath ) )
-            {
+        try {
+            getLog().info("Mock Repository Manager " + url + " is started.");
+            if (StringUtils.isNotEmpty(settingsServletPath)) {
                 String downloadUrl;
-                try
-                {
+                try {
                     downloadUrl = mrm.getRemoteUrl();
-                }
-                catch ( UnknownHostException e )
-                {
+                } catch (UnknownHostException e) {
                     downloadUrl = mrm.getUrl();
                 }
 
-                String settings = FileUtils.filename( settingsServletPath );
+                String settings = FileUtils.filename(settingsServletPath);
 
-                getLog().info(
-                    "To share this repository manager, let users download " + downloadUrl + "/" + settingsServletPath );
-                getLog().info( "Maven should be started as 'mvn --settings " + settings + " [phase|goal]'" );
+                getLog().info("To share this repository manager, let users download " + downloadUrl + "/"
+                        + settingsServletPath);
+                getLog().info("Maven should be started as 'mvn --settings " + settings + " [phase|goal]'");
             }
             ConsoleScanner consoleScanner = new ConsoleScanner();
             consoleScanner.start();
-            getLog().info( "Hit ENTER on the console to stop the Mock Repository Manager and continue the build." );
+            getLog().info("Hit ENTER on the console to stop the Mock Repository Manager and continue the build.");
             consoleScanner.waitForFinished();
-        }
-        catch ( InterruptedException e )
-        {
+        } catch (InterruptedException e) {
             // ignore
-        }
-        finally
-        {
-            getLog().info( "Stopping Mock Repository Manager " + url );
+        } finally {
+            getLog().info("Stopping Mock Repository Manager " + url);
             mrm.finish();
-            try
-            {
+            try {
                 mrm.waitForFinished();
-                getLog().info( "Mock Repository Manager " + url + " is stopped." );
-            }
-            catch ( InterruptedException e )
-            {
+                getLog().info("Mock Repository Manager " + url + " is stopped.");
+            } catch (InterruptedException e) {
                 // ignore
             }
         }
@@ -109,9 +92,7 @@ public class RunMojo
      * {@inheritDoc}
      */
     @Override
-    protected String getSettingsServletPath()
-    {
+    protected String getSettingsServletPath() {
         return settingsServletPath;
     }
-
 }

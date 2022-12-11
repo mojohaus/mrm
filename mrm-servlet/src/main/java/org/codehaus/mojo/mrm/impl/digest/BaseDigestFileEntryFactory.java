@@ -21,7 +21,4 @@ package org.codehaus.mojo.mrm.impl.digest;
  *
  * @since 1.0
  */
-public abstract class BaseDigestFileEntryFactory
-    implements DigestFileEntryFactory
-{
-}
+public abstract class BaseDigestFileEntryFactory implements DigestFileEntryFactory {}

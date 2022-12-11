@@ -16,6 +16,9 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -24,21 +27,16 @@ import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Common base class for the mojos that start a repository.
  *
  * @since 1.0
  */
-public abstract class AbstractStartMojo
-    extends AbstractMRMMojo
-{
+public abstract class AbstractStartMojo extends AbstractMRMMojo {
     /**
      * The port to serve the repository on. If not specified a random port will be used.
      */
-    @Parameter( property = "mrm.port" )
+    @Parameter(property = "mrm.port")
     private int port;
 
     /**
@@ -52,7 +50,7 @@ public abstract class AbstractStartMojo
      *
      * @since 1.4.0
      */
-    @Parameter( property = "mrm.basePath", defaultValue = "/" )
+    @Parameter(property = "mrm.basePath", defaultValue = "/")
     private String basePath;
 
     /**
@@ -70,7 +68,7 @@ public abstract class AbstractStartMojo
      *
      * @since 1.5.0
      */
-    @Parameter( property = "mrm.debugServer", defaultValue = "false" )
+    @Parameter(property = "mrm.debugServer", defaultValue = "false")
     private boolean debugServer;
 
     /**
@@ -79,13 +77,14 @@ public abstract class AbstractStartMojo
      * @param artifactStore the artifact store to serve.
      * @return the file system server.
      */
-    protected FileSystemServer createFileSystemServer( ArtifactStore artifactStore )
-    {
-        return new FileSystemServer( ArtifactUtils.versionlessKey( project.getGroupId(), project.getArtifactId() ),
-                                     Math.max( 0, Math.min( port, 65535 ) ),
-                                     basePath,
-                                     new AutoDigestFileSystem( new ArtifactStoreFileSystem( artifactStore ) ),
-                                     getSettingsServletPath(), debugServer );
+    protected FileSystemServer createFileSystemServer(ArtifactStore artifactStore) {
+        return new FileSystemServer(
+                ArtifactUtils.versionlessKey(project.getGroupId(), project.getArtifactId()),
+                Math.max(0, Math.min(port, 65535)),
+                basePath,
+                new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
+                getSettingsServletPath(),
+                debugServer);
     }
 
     /**
@@ -93,8 +92,7 @@ public abstract class AbstractStartMojo
      *
      * @return the servlet path to the settings file of {@code null}
      */
-    protected String getSettingsServletPath()
-    {
+    protected String getSettingsServletPath() {
         return null;
     }
 
@@ -104,32 +102,25 @@ public abstract class AbstractStartMojo
      * @return an artifact store.
      * @throws org.apache.maven.plugin.MojoExecutionException if the configuration is invalid.
      */
-    protected ArtifactStore createArtifactStore()
-        throws MojoExecutionException
-    {
-        if ( repositories == null )
-        {
-            getLog().info( "Configuring Mock Repository Manager to proxy through this Maven instance" );
+    protected ArtifactStore createArtifactStore() throws MojoExecutionException {
+        if (repositories == null) {
+            getLog().info("Configuring Mock Repository Manager to proxy through this Maven instance");
             return createProxyArtifactStore();
         }
-        getLog().info( "Configuring Mock Repository Manager..." );
+        getLog().info("Configuring Mock Repository Manager...");
         List<ArtifactStore> stores = new ArrayList<>();
-        if ( repositories == null || repositories.length == 0 )
-        {
+        if (repositories == null || repositories.length == 0) {
             repositories = new ArtifactStoreFactory[] {new ProxyRepo()};
         }
         FactoryHelper helper = createFactoryHelper();
-        for ( ArtifactStoreFactory artifactStoreFactory : repositories )
-        {
-            if ( artifactStoreFactory instanceof FactoryHelperRequired )
-            {
-                ( (FactoryHelperRequired) artifactStoreFactory ).setFactoryHelper( helper );
+        for (ArtifactStoreFactory artifactStoreFactory : repositories) {
+            if (artifactStoreFactory instanceof FactoryHelperRequired) {
+                ((FactoryHelperRequired) artifactStoreFactory).setFactoryHelper(helper);
             }
-            getLog().info( "  " + artifactStoreFactory.toString() );
-            stores.add( artifactStoreFactory.newInstance() );
+            getLog().info("  " + artifactStoreFactory.toString());
+            stores.add(artifactStoreFactory.newInstance());
         }
-        ArtifactStore[] artifactStores = stores.toArray( new ArtifactStore[0] );
-        return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore( artifactStores );
+        ArtifactStore[] artifactStores = stores.toArray(new ArtifactStore[0]);
+        return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore(artifactStores);
     }
-
 }

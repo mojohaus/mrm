@@ -24,8 +24,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
  * @see FactoryHelperRequired
  * @since 1.0
  */
-public interface ArtifactStoreFactory
-{
+public interface ArtifactStoreFactory {
     /**
      * Creates a new {@link ArtifactStore} instance, note that implementations are free to create a singleton and always
      * return that instance.
@@ -34,5 +33,4 @@ public interface ArtifactStoreFactory
      * @since 1.0
      */
     ArtifactStore newInstance();
-
 }

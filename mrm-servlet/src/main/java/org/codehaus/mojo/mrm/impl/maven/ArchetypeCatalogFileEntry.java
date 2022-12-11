@@ -34,9 +34,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
  *
  * @since 1.0
  */
-public class ArchetypeCatalogFileEntry
-    extends BaseFileEntry
-{
+public class ArchetypeCatalogFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -62,48 +60,37 @@ public class ArchetypeCatalogFileEntry
      * @param store      the artifact store.
      * @since 1.0
      */
-    public ArchetypeCatalogFileEntry( FileSystem fileSystem, DirectoryEntry parent, ArtifactStore store )
-    {
-        super( fileSystem, parent, "archetype-catalog.xml" );
+    public ArchetypeCatalogFileEntry(FileSystem fileSystem, DirectoryEntry parent, ArtifactStore store) {
+        super(fileSystem, parent, "archetype-catalog.xml");
         this.store = store;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
-        try
-        {
+    public long getSize() throws IOException {
+        try {
             ArchetypeCatalog metadata = store.getArchetypeCatalog();
             ArchetypeCatalogXpp3Writer writer = new ArchetypeCatalogXpp3Writer();
             StringWriter stringWriter = new StringWriter();
-            writer.write( stringWriter, metadata );
+            writer.write(stringWriter, metadata);
             return stringWriter.toString().getBytes().length;
-        }
-        catch ( ArchetypeCatalogNotFoundException e )
-        {
-            throw new IOException( "File not found", e );
+        } catch (ArchetypeCatalogNotFoundException e) {
+            throw new IOException("File not found", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        try
-        {
+    public InputStream getInputStream() throws IOException {
+        try {
             ArchetypeCatalog metadata = store.getArchetypeCatalog();
             ArchetypeCatalogXpp3Writer writer = new ArchetypeCatalogXpp3Writer();
             StringWriter stringWriter = new StringWriter();
-            writer.write( stringWriter, metadata );
-            return new ByteArrayInputStream( stringWriter.toString().getBytes() );
-        }
-        catch ( ArchetypeCatalogNotFoundException e )
-        {
+            writer.write(stringWriter, metadata);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes());
+        } catch (ArchetypeCatalogNotFoundException e) {
             return null;
         }
     }
@@ -111,17 +98,11 @@ public class ArchetypeCatalogFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
-        try
-        {
+    public long getLastModified() throws IOException {
+        try {
             return store.getArchetypeCatalogLastModified();
-        }
-        catch ( ArchetypeCatalogNotFoundException e )
-        {
-            throw new IOException( "File not found", e );
+        } catch (ArchetypeCatalogNotFoundException e) {
+            throw new IOException("File not found", e);
         }
     }
-
 }

@@ -16,12 +16,12 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import java.util.Map;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-
-import java.util.Map;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
@@ -32,38 +32,30 @@ import java.util.Map;
  * Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
  * by integration tests.
  */
-@Mojo( name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true )
-public class StopMojo
-    extends AbstractMRMMojo
-{
+@Mojo(name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true)
+public class StopMojo extends AbstractMRMMojo {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings( "rawtypes" )
-    public void doExecute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        Map pluginContext = session.getPluginContext( pluginDescriptor, project );
+    @SuppressWarnings("rawtypes")
+    public void doExecute() throws MojoExecutionException, MojoFailureException {
+        Map pluginContext = session.getPluginContext(pluginDescriptor, project);
         FileSystemServer mrm =
-            (FileSystemServer) pluginContext.get( StartMojo.getFileSystemServerKey( getMojoExecution() ) );
+                (FileSystemServer) pluginContext.get(StartMojo.getFileSystemServerKey(getMojoExecution()));
 
-        if ( mrm == null )
-        {
-            getLog().info( "Mock Repository Manager was not started" );
+        if (mrm == null) {
+            getLog().info("Mock Repository Manager was not started");
             return;
         }
         String url = mrm.getUrl();
-        getLog().info( "Stopping Mock Repository Manager on " + url );
+        getLog().info("Stopping Mock Repository Manager on " + url);
         mrm.finish();
-        try
-        {
+        try {
             mrm.waitForFinished();
-            getLog().info( "Mock Repository Manager " + url + " is stopped." );
-            pluginContext.remove( FileSystemServer.class.getName() );
-        }
-        catch ( InterruptedException e )
-        {
-            throw new MojoExecutionException( e.getMessage(), e );
+            getLog().info("Mock Repository Manager " + url + " is stopped.");
+            pluginContext.remove(FileSystemServer.class.getName());
+        } catch (InterruptedException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 }

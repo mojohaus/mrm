@@ -16,20 +16,18 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.codehaus.mojo.mrm.api.BaseFileEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.FileSystem;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.codehaus.mojo.mrm.api.BaseFileEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.FileSystem;
+
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileEntry} that is hosted at a remote {@link URL}.
  */
-public class RemoteFileEntry
-    extends BaseFileEntry
-{
+public class RemoteFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -51,36 +49,29 @@ public class RemoteFileEntry
      * @param name       the name of the entry.
      * @param url        the content of the entry.
      */
-    public RemoteFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, URL url )
-    {
-        super( fileSystem, parent, name );
+    public RemoteFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name, URL url) {
+        super(fileSystem, parent, name);
         this.url = url;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
+    public long getLastModified() throws IOException {
         return url.openConnection().getLastModified();
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
+    public long getSize() throws IOException {
         return url.openConnection().getContentLength();
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
+    public InputStream getInputStream() throws IOException {
         return url.openConnection().getInputStream();
     }
 }

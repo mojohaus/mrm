@@ -21,7 +21,4 @@ package org.codehaus.mojo.mrm.api;
  *
  * @since 1.0
  */
-public interface DirectoryEntry
-    extends Entry
-{
-}
+public interface DirectoryEntry extends Entry {}

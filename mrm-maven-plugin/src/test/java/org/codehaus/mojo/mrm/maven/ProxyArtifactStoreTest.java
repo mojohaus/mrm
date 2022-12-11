@@ -34,58 +34,56 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-public class ProxyArtifactStoreTest
-{
+public class ProxyArtifactStoreTest {
 
-    @Test( expected = ArtifactNotFoundException.class )
-    public void verifyArtifactNotFoundExceptionOnGet()
-        throws Exception
-    {
-        ArtifactFactory artifactFactory = mock( ArtifactFactory.class );
-        ArtifactResolver artifactResolver = mock( ArtifactResolver.class );
-        ProxyArtifactStore store =
-            new ProxyArtifactStore( null, Collections.emptyList(),
-                                    Collections.emptyList(), null, artifactFactory,
-                                    artifactResolver, null, null );
+    @Test(expected = ArtifactNotFoundException.class)
+    public void verifyArtifactNotFoundExceptionOnGet() throws Exception {
+        ArtifactFactory artifactFactory = mock(ArtifactFactory.class);
+        ArtifactResolver artifactResolver = mock(ArtifactResolver.class);
+        ProxyArtifactStore store = new ProxyArtifactStore(
+                null,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                null,
+                artifactFactory,
+                artifactResolver,
+                null,
+                null);
 
-        doThrow( org.apache.maven.artifact.resolver.ArtifactNotFoundException.class )
-            .when( artifactResolver )
-            .resolve( isNull(), eq( Collections.emptyList() ), any() );
+        doThrow(org.apache.maven.artifact.resolver.ArtifactNotFoundException.class)
+                .when(artifactResolver)
+                .resolve(isNull(), eq(Collections.emptyList()), any());
 
-        Artifact artifact = new Artifact( "localhost", "test", "1.0-SNAPSHOT", "pom" );
-        store.get( artifact );
+        Artifact artifact = new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom");
+        store.get(artifact);
     }
 
-    @Test( expected = RuntimeException.class )
-    public void verifyArtifactResolutionExceptionOnGet()
-        throws Exception
-    {
-        ArtifactFactory artifactFactory = mock( ArtifactFactory.class );
-        ArtifactResolver artifactResolver = mock( ArtifactResolver.class );
-        ProxyArtifactStore store =
-            new ProxyArtifactStore( null, Collections.emptyList(),
-                                    Collections.emptyList(), null, artifactFactory,
-                                    artifactResolver, null, null );
+    @Test(expected = RuntimeException.class)
+    public void verifyArtifactResolutionExceptionOnGet() throws Exception {
+        ArtifactFactory artifactFactory = mock(ArtifactFactory.class);
+        ArtifactResolver artifactResolver = mock(ArtifactResolver.class);
+        ProxyArtifactStore store = new ProxyArtifactStore(
+                null,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                null,
+                artifactFactory,
+                artifactResolver,
+                null,
+                null);
 
-        doThrow( RuntimeException.class )
-            .when( artifactResolver )
-            .resolve( isNull(), eq( Collections.emptyList() ), any() );
+        doThrow(RuntimeException.class).when(artifactResolver).resolve(isNull(), eq(Collections.emptyList()), any());
 
-        Artifact artifact = new Artifact( "localhost", "test", "1.0-SNAPSHOT", "pom" );
-        store.get( artifact );
+        Artifact artifact = new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom");
+        store.get(artifact);
     }
 
-    @Test( expected = RuntimeException.class )
-    public void verifyArchetypeCatalogNotFoundException()
-        throws Exception
-    {
-        ArchetypeManager archetypeManager = mock( ArchetypeManager.class );
-        ProxyArtifactStore store =
-            new ProxyArtifactStore( null, Collections.emptyList(),
-                                    Collections.emptyList(), null, null, null, archetypeManager,
-                                    null );
-        doThrow( RuntimeException.class ).when( archetypeManager ).getDefaultLocalCatalog();
+    @Test(expected = RuntimeException.class)
+    public void verifyArchetypeCatalogNotFoundException() throws Exception {
+        ArchetypeManager archetypeManager = mock(ArchetypeManager.class);
+        ProxyArtifactStore store = new ProxyArtifactStore(
+                null, Collections.emptyList(), Collections.emptyList(), null, null, null, archetypeManager, null);
+        doThrow(RuntimeException.class).when(archetypeManager).getDefaultLocalCatalog();
         store.getArchetypeCatalog();
     }
-
 }

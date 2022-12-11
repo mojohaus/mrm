@@ -16,22 +16,20 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
-import org.apache.maven.archetype.catalog.ArchetypeCatalog;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Set;
+
+import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 
 /**
  * An artifact store holds Maven {@link Artifact}s and can provide {@link Metadata} about the artifacts that it holds.
  *
  * @since 1.0
  */
-public interface ArtifactStore
-    extends Serializable
-{
+public interface ArtifactStore extends Serializable {
 
     /**
      * <p>
@@ -64,7 +62,7 @@ public interface ArtifactStore
      * one and only one additional segment.
      * @since 1.0
      */
-    Set<String> getGroupIds( String parentGroupId );
+    Set<String> getGroupIds(String parentGroupId);
 
     /**
      * <p>
@@ -81,7 +79,7 @@ public interface ArtifactStore
      * {@code groupId}.
      * @since 1.0
      */
-    Set<String> getArtifactIds( String groupId );
+    Set<String> getArtifactIds(String groupId);
 
     /**
      * <p>
@@ -99,7 +97,7 @@ public interface ArtifactStore
      * {@code groupId:artifactId}.
      * @since 1.0
      */
-    Set<String> getVersions( String groupId, String artifactId );
+    Set<String> getVersions(String groupId, String artifactId);
 
     /**
      * Returns the set of artifacts at the specified groupId:artifactId:version. Some implementations may be lazy
@@ -115,7 +113,7 @@ public interface ArtifactStore
      * specified {@code groupId:artifactId:version}.
      * @since 1.0
      */
-    Set<Artifact> getArtifacts( String groupId, String artifactId, String version );
+    Set<Artifact> getArtifacts(String groupId, String artifactId, String version);
 
     /**
      * Returns the time that the specified artifact was last modified.
@@ -130,8 +128,7 @@ public interface ArtifactStore
      * @throws ArtifactNotFoundException if the artifact definitely does not exist.
      * @since 1.0
      */
-    long getLastModified( Artifact artifact )
-        throws IOException, ArtifactNotFoundException;
+    long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException;
 
     /**
      * Returns the size in bytes of the specified artifact.
@@ -142,8 +139,7 @@ public interface ArtifactStore
      * @throws ArtifactNotFoundException if the artifact definitely does not exist.
      * @since 1.0
      */
-    long getSize( Artifact artifact )
-        throws IOException, ArtifactNotFoundException;
+    long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException;
 
     /**
      * Retrieves the the artifact as an {@link InputStream}. The caller is responsible for closing the stream.
@@ -154,8 +150,7 @@ public interface ArtifactStore
      * @throws ArtifactNotFoundException if the artifact does not exist.
      * @since 1.0
      */
-    InputStream get( Artifact artifact )
-        throws IOException, ArtifactNotFoundException;
+    InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException;
 
     /**
      * Create/update the specified artifact. This is an optional method for implementers.
@@ -166,8 +161,7 @@ public interface ArtifactStore
      * @throws UnsupportedOperationException if the implementation is a read-only implementation.
      * @since 1.0
      */
-    void set( Artifact artifact, InputStream content )
-        throws IOException;
+    void set(Artifact artifact, InputStream content) throws IOException;
 
     /**
      * Returns the specified metadata.
@@ -178,8 +172,7 @@ public interface ArtifactStore
      * @throws MetadataNotFoundException if the metadata does not exist.
      * @since 1.0
      */
-    Metadata getMetadata( String path )
-        throws IOException, MetadataNotFoundException;
+    Metadata getMetadata(String path) throws IOException, MetadataNotFoundException;
 
     /**
      * Create/update the specified metadata.
@@ -189,7 +182,7 @@ public interface ArtifactStore
      * @throws IOException if an I/O error occurs.
      * @since 1.1.0
      */
-    void setMetadata( String path, Metadata content ) throws IOException;
+    void setMetadata(String path, Metadata content) throws IOException;
 
     /**
      * Returns the time that the specified metadata was last modified.
@@ -204,8 +197,7 @@ public interface ArtifactStore
      * @throws MetadataNotFoundException if the metadata definitely does not exist.
      * @since 1.0
      */
-    long getMetadataLastModified( String path )
-        throws IOException, MetadataNotFoundException;
+    long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException;
 
     /**
      * @return ArchetypeCatalog
@@ -228,6 +220,5 @@ public interface ArtifactStore
      * @throws IOException if an I/O error occurs.
      * @since 1.0
      */
-    void setArchetypeCatalog( InputStream content ) throws IOException;
-
+    void setArchetypeCatalog(InputStream content) throws IOException;
 }

@@ -53,9 +53,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  *
  * @since 1.0
  */
-public class DiskArtifactStore
-    extends BaseArtifactStore
-{
+public class DiskArtifactStore extends BaseArtifactStore {
     /**
      * The root of the artifact store.
      *
@@ -71,13 +69,11 @@ public class DiskArtifactStore
      * @param root the root directory of the artifact store.
      * @since 1.0
      */
-    public DiskArtifactStore( File root )
-    {
+    public DiskArtifactStore(File root) {
         this.root = root;
     }
 
-    public DiskArtifactStore canWrite( boolean canWrite )
-    {
+    public DiskArtifactStore canWrite(boolean canWrite) {
         this.canWrite = canWrite;
         return this;
     }
@@ -85,159 +81,133 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public Set<String> getGroupIds( String parentGroupId )
-    {
-        File parentDir =
-            StringUtils.isEmpty( parentGroupId ) ? root : new File( root, parentGroupId.replace( '.', '/' ) );
-        if ( !parentDir.isDirectory() )
-        {
+    public Set<String> getGroupIds(String parentGroupId) {
+        File parentDir = StringUtils.isEmpty(parentGroupId) ? root : new File(root, parentGroupId.replace('.', '/'));
+        if (!parentDir.isDirectory()) {
             return Collections.emptySet();
         }
         File[] groupDirs = parentDir.listFiles();
-        if ( groupDirs == null )
-        {
+        if (groupDirs == null) {
             return Collections.emptySet();
         }
-        return Arrays.stream( groupDirs ).filter( File::isDirectory )
-            .map( File::getName )
-            .collect( Collectors.toSet() );
-
+        return Arrays.stream(groupDirs)
+                .filter(File::isDirectory)
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public Set<String> getArtifactIds( String groupId )
-    {
-        File groupDir = new File( root, groupId.replace( '.', '/' ) );
-        if ( !groupDir.isDirectory() )
-        {
+    public Set<String> getArtifactIds(String groupId) {
+        File groupDir = new File(root, groupId.replace('.', '/'));
+        if (!groupDir.isDirectory()) {
             return Collections.emptySet();
         }
 
         File[] artifactDirs = groupDir.listFiles();
-        if ( artifactDirs == null )
-        {
+        if (artifactDirs == null) {
             return Collections.emptySet();
         }
 
-        return Arrays.stream( artifactDirs ).filter( File::isDirectory )
-            .map( File::getName )
-            .collect( Collectors.toSet() );
-
+        return Arrays.stream(artifactDirs)
+                .filter(File::isDirectory)
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public Set<String> getVersions( String groupId, String artifactId )
-    {
-        File groupDir = new File( root, groupId.replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifactId );
-        if ( !artifactDir.isDirectory() )
-        {
+    public Set<String> getVersions(String groupId, String artifactId) {
+        File groupDir = new File(root, groupId.replace('.', '/'));
+        File artifactDir = new File(groupDir, artifactId);
+        if (!artifactDir.isDirectory()) {
             return Collections.emptySet();
         }
         File[] dirs = artifactDir.listFiles();
-        if ( dirs == null )
-        {
+        if (dirs == null) {
             return Collections.emptySet();
         }
 
-        return Arrays.stream( dirs ).filter( File::isDirectory )
-            .map( File::getName )
-            .collect( Collectors.toSet() );
+        return Arrays.stream(dirs).filter(File::isDirectory).map(File::getName).collect(Collectors.toSet());
     }
 
     /**
      * {@inheritDoc}
      */
-    public Set<Artifact> getArtifacts( final String groupId, final String artifactId, final String version )
-    {
-        File groupDir = new File( root, groupId.replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifactId );
-        File versionDir = new File( artifactDir, version );
-        if ( !versionDir.isDirectory() )
-        {
+    public Set<Artifact> getArtifacts(final String groupId, final String artifactId, final String version) {
+        File groupDir = new File(root, groupId.replace('.', '/'));
+        File artifactDir = new File(groupDir, artifactId);
+        File versionDir = new File(artifactDir, version);
+        if (!versionDir.isDirectory()) {
             return Collections.emptySet();
         }
         final Pattern rule;
 
-        abstract class ArtifactFactory
-        {
-            abstract Artifact get( File file );
+        abstract class ArtifactFactory {
+            abstract Artifact get(File file);
         }
 
         final ArtifactFactory factory;
-        if ( version.endsWith( "-SNAPSHOT" ) )
-        {
-            rule = Pattern.compile(
-                "\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd( version, "-SNAPSHOT" )
+        if (version.endsWith("-SNAPSHOT")) {
+            rule = Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
                     + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
-                    + "\\.([^/]*)" );
-            factory = new ArtifactFactory()
-            {
-                public Artifact get( File file )
-                {
-                    Matcher matcher = rule.matcher( file.getName() );
-                    if ( !matcher.matches() )
-                    {
+                    + "\\.([^/]*)");
+            factory = new ArtifactFactory() {
+                public Artifact get(File file) {
+                    Matcher matcher = rule.matcher(file.getName());
+                    if (!matcher.matches()) {
                         return null;
                     }
-                    if ( matcher.group( 1 ).equals( "SNAPSHOT" ) )
-                    {
-                        return new Artifact( groupId, artifactId, version, matcher.group( 9 ), matcher.group( 10 ) );
+                    if (matcher.group(1).equals("SNAPSHOT")) {
+                        return new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
                     }
-                    try
-                    {
+                    try {
                         Calendar cal = new GregorianCalendar();
-                        cal.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-                        cal.set( Calendar.YEAR, Integer.parseInt( matcher.group( 2 ) ) );
-                        cal.set( Calendar.MONTH, Integer.parseInt( matcher.group( 3 ) ) - 1 );
-                        cal.set( Calendar.DAY_OF_MONTH, Integer.parseInt( matcher.group( 4 ) ) );
-                        cal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( matcher.group( 5 ) ) );
-                        cal.set( Calendar.MINUTE, Integer.parseInt( matcher.group( 6 ) ) );
-                        cal.set( Calendar.SECOND, Integer.parseInt( matcher.group( 7 ) ) );
+                        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+                        cal.set(Calendar.YEAR, Integer.parseInt(matcher.group(2)));
+                        cal.set(Calendar.MONTH, Integer.parseInt(matcher.group(3)) - 1);
+                        cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(matcher.group(4)));
+                        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(matcher.group(5)));
+                        cal.set(Calendar.MINUTE, Integer.parseInt(matcher.group(6)));
+                        cal.set(Calendar.SECOND, Integer.parseInt(matcher.group(7)));
                         long timestamp = cal.getTimeInMillis();
-                        int buildNumber = Integer.parseInt( matcher.group( 8 ) );
-                        return new Artifact( groupId, artifactId, version, matcher.group( 9 ), matcher.group( 10 ),
-                                             timestamp, buildNumber );
-                    }
-                    catch ( NullPointerException e )
-                    {
+                        int buildNumber = Integer.parseInt(matcher.group(8));
+                        return new Artifact(
+                                groupId,
+                                artifactId,
+                                version,
+                                matcher.group(9),
+                                matcher.group(10),
+                                timestamp,
+                                buildNumber);
+                    } catch (NullPointerException e) {
                         return null;
                     }
                 }
             };
-        }
-        else
-        {
-            rule = Pattern.compile( "\\Q" + artifactId + "\\E-\\Q" + version + "\\E(?:-([^.]+))?\\.(.+)" );
-            factory = new ArtifactFactory()
-            {
-                public Artifact get( File file )
-                {
-                    Matcher matcher = rule.matcher( file.getName() );
-                    if ( !matcher.matches() )
-                    {
+        } else {
+            rule = Pattern.compile("\\Q" + artifactId + "\\E-\\Q" + version + "\\E(?:-([^.]+))?\\.(.+)");
+            factory = new ArtifactFactory() {
+                public Artifact get(File file) {
+                    Matcher matcher = rule.matcher(file.getName());
+                    if (!matcher.matches()) {
                         return null;
                     }
-                    return new Artifact( groupId, artifactId, version, matcher.group( 1 ), matcher.group( 2 ) );
+                    return new Artifact(groupId, artifactId, version, matcher.group(1), matcher.group(2));
                 }
             };
         }
         File[] files = versionDir.listFiles();
-        Set<Artifact> result = new HashSet<>( files.length );
-        for ( File file : files )
-        {
-            if ( !file.isFile() || !rule.matcher( file.getName() ).matches() )
-            {
+        Set<Artifact> result = new HashSet<>(files.length);
+        for (File file : files) {
+            if (!file.isFile() || !rule.matcher(file.getName()).matches()) {
                 continue;
             }
-            Artifact artifact = factory.get( file );
-            if ( artifact != null )
-            {
-                result.add( artifact );
+            Artifact artifact = factory.get(file);
+            if (artifact != null) {
+                result.add(artifact);
             }
         }
         return result;
@@ -246,13 +216,10 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        File file = getFile( artifact );
-        if ( !file.isFile() )
-        {
-            throw new ArtifactNotFoundException( artifact );
+    public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        File file = getFile(artifact);
+        if (!file.isFile()) {
+            throw new ArtifactNotFoundException(artifact);
         }
         return file.lastModified();
     }
@@ -260,13 +227,10 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public long getSize( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        File file = getFile( artifact );
-        if ( !file.isFile() )
-        {
-            throw new ArtifactNotFoundException( artifact );
+    public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        File file = getFile(artifact);
+        if (!file.isFile()) {
+            throw new ArtifactNotFoundException(artifact);
         }
         return file.length();
     }
@@ -274,168 +238,127 @@ public class DiskArtifactStore
     /**
      * {@inheritDoc}
      */
-    public InputStream get( Artifact artifact )
-        throws IOException, ArtifactNotFoundException
-    {
-        File file = getFile( artifact );
-        if ( !file.isFile() )
-        {
-            throw new ArtifactNotFoundException( artifact );
+    public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        File file = getFile(artifact);
+        if (!file.isFile()) {
+            throw new ArtifactNotFoundException(artifact);
         }
-        return new FileInputStream( file );
+        return new FileInputStream(file);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void set( Artifact artifact, InputStream content )
-        throws IOException
-    {
-        if ( !canWrite )
-        {
-            throw new UnsupportedOperationException( "Read-only store" );
+    public void set(Artifact artifact, InputStream content) throws IOException {
+        if (!canWrite) {
+            throw new UnsupportedOperationException("Read-only store");
         }
 
-        File targetFile = getFile( artifact );
+        File targetFile = getFile(artifact);
 
-        if ( !targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs() )
-        {
-            throw new IOException( "Failed to create " + targetFile.getParentFile().getPath() );
+        if (!targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs()) {
+            throw new IOException(
+                    "Failed to create " + targetFile.getParentFile().getPath());
         }
 
-        try ( OutputStream output = Files.newOutputStream( targetFile.toPath() ) )
-        {
-            IOUtils.copy( content, output );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( content );
+        try (OutputStream output = Files.newOutputStream(targetFile.toPath())) {
+            IOUtils.copy(content, output);
+        } finally {
+            IOUtils.closeQuietly(content);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public Metadata getMetadata( String path )
-        throws IOException, MetadataNotFoundException
-    {
+    public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         File file = root;
-        String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for ( String part : parts )
-        {
-            file = new File( file, part );
+        String[] parts = StringUtils.strip(path, "/").split("/");
+        for (String part : parts) {
+            file = new File(file, part);
         }
-        file = new File( file, "maven-metadata.xml" );
-        if ( !file.isFile() )
-        {
-            throw new MetadataNotFoundException( path );
+        file = new File(file, "maven-metadata.xml");
+        if (!file.isFile()) {
+            throw new MetadataNotFoundException(path);
         }
 
-        try ( InputStream inputStream = Files.newInputStream( file.toPath() ) )
-        {
-            return new MetadataXpp3Reader().read( inputStream );
-        }
-        catch ( XmlPullParserException e )
-        {
-            throw new IOException( e.getMessage(), e );
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+            return new MetadataXpp3Reader().read(inputStream);
+        } catch (XmlPullParserException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 
     @Override
-    public void setMetadata( String path, Metadata metadata )
-        throws IOException
-    {
-        if ( !canWrite )
-        {
-            throw new UnsupportedOperationException( "Read-only store" );
+    public void setMetadata(String path, Metadata metadata) throws IOException {
+        if (!canWrite) {
+            throw new UnsupportedOperationException("Read-only store");
         }
 
         File file = root;
-        String[] parts = StringUtils.strip( path, "/" ).split( "/" );
-        for ( String part : parts )
-        {
-            file = new File( file, part );
+        String[] parts = StringUtils.strip(path, "/").split("/");
+        for (String part : parts) {
+            file = new File(file, part);
         }
 
-        file = new File( file, "maven-metadata.xml" );
+        file = new File(file, "maven-metadata.xml");
 
-        try ( OutputStream outputStream = Files.newOutputStream( file.toPath() ) )
-        {
-            new MetadataXpp3Writer().write( outputStream, metadata );
+        try (OutputStream outputStream = Files.newOutputStream(file.toPath())) {
+            new MetadataXpp3Writer().write(outputStream, metadata);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getMetadataLastModified( String path )
-        throws IOException, MetadataNotFoundException
-    {
+    public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         File file = root;
-        String[] parts = StringUtils.strip( path, "/" ).split( "/" );
+        String[] parts = StringUtils.strip(path, "/").split("/");
         Stack<File> stack = new Stack<>();
-        for ( int i = 0; i < parts.length; i++ )
-        {
-            if ( "..".equals( parts[i] ) )
-            {
-                if ( !stack.isEmpty() )
-                {
+        for (int i = 0; i < parts.length; i++) {
+            if ("..".equals(parts[i])) {
+                if (!stack.isEmpty()) {
                     file = stack.pop();
-                }
-                else
-                {
+                } else {
                     file = root;
                 }
-            }
-            else if ( !".".equals( parts[i] ) )
-            {
-                file = new File( file, parts[i] );
-                stack.push( file );
+            } else if (!".".equals(parts[i])) {
+                file = new File(file, parts[i]);
+                stack.push(file);
             }
         }
-        file = new File( file, "maven-metadata.xml" );
-        if ( !file.isFile() )
-        {
-            throw new MetadataNotFoundException( path );
+        file = new File(file, "maven-metadata.xml");
+        if (!file.isFile()) {
+            throw new MetadataNotFoundException(path);
         }
         return file.lastModified();
     }
 
-    public ArchetypeCatalog getArchetypeCatalog()
-        throws IOException, ArchetypeCatalogNotFoundException
-    {
-        File file = new File( root, "archetype-catalog.xml" );
-        if ( !file.isFile() )
-        {
+    public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
+        File file = new File(root, "archetype-catalog.xml");
+        if (!file.isFile()) {
             throw new ArchetypeCatalogNotFoundException();
         }
 
-        try ( InputStream inputStream = Files.newInputStream( file.toPath() ) )
-        {
-            return new ArchetypeCatalogXpp3Reader().read( inputStream );
-        }
-        catch ( XmlPullParserException e )
-        {
-            throw new IOException( e.getMessage(), e );
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+            return new ArchetypeCatalogXpp3Reader().read(inputStream);
+        } catch (XmlPullParserException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 
-    public long getArchetypeCatalogLastModified()
-        throws IOException, ArchetypeCatalogNotFoundException
-    {
-        File file = new File( root, "archetype-catalog.xml" );
-        if ( !file.isFile() )
-        {
+    public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
+        File file = new File(root, "archetype-catalog.xml");
+        if (!file.isFile()) {
             throw new ArchetypeCatalogNotFoundException();
         }
         return file.lastModified();
     }
 
-    private File getFile( Artifact artifact )
-    {
-        File groupDir = new File( root, artifact.getGroupId().replace( '.', '/' ) );
-        File artifactDir = new File( groupDir, artifact.getArtifactId() );
-        File versionDir = new File( artifactDir, artifact.getVersion() );
-        return new File( versionDir, artifact.getName() );
+    private File getFile(Artifact artifact) {
+        File groupDir = new File(root, artifact.getGroupId().replace('.', '/'));
+        File artifactDir = new File(groupDir, artifact.getArtifactId());
+        File versionDir = new File(artifactDir, artifact.getVersion());
+        return new File(versionDir, artifact.getName());
     }
 }

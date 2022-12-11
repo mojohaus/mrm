@@ -16,12 +16,6 @@
 
 package org.codehaus.mojo.mrm.impl;
 
-import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
-import org.codehaus.mojo.mrm.api.DirectoryEntry;
-import org.codehaus.mojo.mrm.api.Entry;
-import org.codehaus.mojo.mrm.api.FileEntry;
-import org.codehaus.mojo.mrm.api.FileSystem;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -29,14 +23,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
+import org.codehaus.mojo.mrm.api.DirectoryEntry;
+import org.codehaus.mojo.mrm.api.Entry;
+import org.codehaus.mojo.mrm.api.FileEntry;
+import org.codehaus.mojo.mrm.api.FileSystem;
+
 /**
  * A file system that is a composite of multiple file systems.
  *
  * @since 1.0
  */
-public class CompositeFileSystem
-    implements FileSystem
-{
+public class CompositeFileSystem implements FileSystem {
 
     /**
      * Ensure consistent serialization.
@@ -57,7 +55,7 @@ public class CompositeFileSystem
      *
      * @since 1.0
      */
-    private final DirectoryEntry root = new DefaultDirectoryEntry( this, null, "" );
+    private final DirectoryEntry root = new DefaultDirectoryEntry(this, null, "");
 
     /**
      * Creates a new {@link FileSystem} that will delegate to each of the supplied delegate {@link FileSystem} in turn
@@ -65,73 +63,56 @@ public class CompositeFileSystem
      *
      * @param delegates the delegate {@link FileSystem}s (in order of preference).
      */
-    public CompositeFileSystem( FileSystem[] delegates )
-    {
+    public CompositeFileSystem(FileSystem[] delegates) {
         this.delegates = delegates;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Entry[] listEntries( DirectoryEntry directory )
-    {
+    public Entry[] listEntries(DirectoryEntry directory) {
         Map<String, Entry> result = new TreeMap<>();
-        for ( FileSystem delegate : delegates )
-        {
-            Entry[] entries = delegate.listEntries( DefaultDirectoryEntry.equivalent( delegate, directory ) );
-            if ( entries == null )
-            {
+        for (FileSystem delegate : delegates) {
+            Entry[] entries = delegate.listEntries(DefaultDirectoryEntry.equivalent(delegate, directory));
+            if (entries == null) {
                 continue;
             }
-            for ( Entry entry : entries )
-            {
-                if ( result.containsKey( entry.getName() ) )
-                {
+            for (Entry entry : entries) {
+                if (result.containsKey(entry.getName())) {
                     continue;
                 }
-                if ( entry instanceof DirectoryEntry )
-                {
-                    result.put( entry.getName(),
-                                new DefaultDirectoryEntry( this, directory, entry.getName() ) );
-                }
-                else if ( entry instanceof FileEntry )
-                {
-                    result.put( entry.getName(), new LinkFileEntry( this, directory, (FileEntry) entry ) );
+                if (entry instanceof DirectoryEntry) {
+                    result.put(entry.getName(), new DefaultDirectoryEntry(this, directory, entry.getName()));
+                } else if (entry instanceof FileEntry) {
+                    result.put(entry.getName(), new LinkFileEntry(this, directory, (FileEntry) entry));
                 }
             }
         }
-        return result.values().toArray( new Entry[0] );
+        return result.values().toArray(new Entry[0]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Entry get( String path )
-    {
-        return Arrays.stream( delegates ).map( fileSystem -> fileSystem.get( path ) )
-            .filter( Objects::nonNull )
-            .filter( entry -> entry instanceof DirectoryEntry )
-            .map( entry -> DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ) )
-            .findFirst()
-            .orElse( null );
-
+    public Entry get(String path) {
+        return Arrays.stream(delegates)
+                .map(fileSystem -> fileSystem.get(path))
+                .filter(Objects::nonNull)
+                .filter(entry -> entry instanceof DirectoryEntry)
+                .map(entry -> DefaultDirectoryEntry.equivalent(this, (DirectoryEntry) entry))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( DirectoryEntry entry )
-        throws IOException
-    {
+    public long getLastModified(DirectoryEntry entry) throws IOException {
         long lastModified = 0;
-        for ( FileSystem delegate : delegates )
-        {
-            try
-            {
-                lastModified = Math.max( lastModified, delegate.getLastModified( entry ) );
-            }
-            catch ( IOException e )
-            {
+        for (FileSystem delegate : delegates) {
+            try {
+                lastModified = Math.max(lastModified, delegate.getLastModified(entry));
+            } catch (IOException e) {
                 // ignore
             }
         }
@@ -141,43 +122,35 @@ public class CompositeFileSystem
     /**
      * {@inheritDoc}
      */
-    public DirectoryEntry getRoot()
-    {
+    public DirectoryEntry getRoot() {
         return root;
     }
 
     /**
      * {@inheritDoc}
      */
-    public DirectoryEntry mkdir( DirectoryEntry parent, String name )
-    {
+    public DirectoryEntry mkdir(DirectoryEntry parent, String name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException
-    {
+    public FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public FileEntry put( DirectoryEntry parent, String name, byte[] content )
-        throws IOException
-    {
+    public FileEntry put(DirectoryEntry parent, String name, byte[] content) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
-    public void remove( Entry entry )
-    {
+    public void remove(Entry entry) {
         throw new UnsupportedOperationException();
     }
-
 }

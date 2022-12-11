@@ -21,10 +21,7 @@ package org.codehaus.mojo.mrm.api;
  *
  * @since 1.0
  */
-public abstract class BaseFileEntry
-    extends AbstractEntry
-    implements FileEntry
-{
+public abstract class BaseFileEntry extends AbstractEntry implements FileEntry {
     /**
      * Ensure consistent serialization.
      *
@@ -40,8 +37,7 @@ public abstract class BaseFileEntry
      * @param name       The name of the entry.
      * @since 1.0
      */
-    protected BaseFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name )
-    {
-        super( fileSystem, parent, name );
+    protected BaseFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name) {
+        super(fileSystem, parent, name);
     }
 }

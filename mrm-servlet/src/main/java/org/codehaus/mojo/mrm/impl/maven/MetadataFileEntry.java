@@ -16,6 +16,11 @@
 
 package org.codehaus.mojo.mrm.impl.maven;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
@@ -24,19 +29,12 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-
 /**
  * A file entry backed by {@link Metadata} in a {@link ArtifactStore}.
  *
  * @since 1.0
  */
-public class MetadataFileEntry
-    extends BaseFileEntry
-{
+public class MetadataFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -70,9 +68,8 @@ public class MetadataFileEntry
      * @param store      the artifact store.
      * @since 1.0
      */
-    public MetadataFileEntry( FileSystem fileSystem, DirectoryEntry parent, String path, ArtifactStore store )
-    {
-        super( fileSystem, parent, "maven-metadata.xml" );
+    public MetadataFileEntry(FileSystem fileSystem, DirectoryEntry parent, String path, ArtifactStore store) {
+        super(fileSystem, parent, "maven-metadata.xml");
         this.path = path;
         this.store = store;
     }
@@ -80,39 +77,29 @@ public class MetadataFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
-        try
-        {
-            Metadata metadata = store.getMetadata( path );
+    public long getSize() throws IOException {
+        try {
+            Metadata metadata = store.getMetadata(path);
             MetadataXpp3Writer writer = new MetadataXpp3Writer();
             StringWriter stringWriter = new StringWriter();
-            writer.write( stringWriter, metadata );
+            writer.write(stringWriter, metadata);
             return stringWriter.toString().getBytes().length;
-        }
-        catch ( MetadataNotFoundException e )
-        {
-            throw new IOException( "File not found", e );
+        } catch (MetadataNotFoundException e) {
+            throw new IOException("File not found", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
-        try
-        {
-            Metadata metadata = store.getMetadata( path );
+    public InputStream getInputStream() throws IOException {
+        try {
+            Metadata metadata = store.getMetadata(path);
             MetadataXpp3Writer writer = new MetadataXpp3Writer();
             StringWriter stringWriter = new StringWriter();
-            writer.write( stringWriter, metadata );
-            return new ByteArrayInputStream( stringWriter.toString().getBytes() );
-        }
-        catch ( MetadataNotFoundException e )
-        {
+            writer.write(stringWriter, metadata);
+            return new ByteArrayInputStream(stringWriter.toString().getBytes());
+        } catch (MetadataNotFoundException e) {
             return null;
         }
     }
@@ -120,17 +107,11 @@ public class MetadataFileEntry
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
-        try
-        {
-            return store.getMetadataLastModified( path );
-        }
-        catch ( MetadataNotFoundException e )
-        {
-            throw new IOException( "File not found", e );
+    public long getLastModified() throws IOException {
+        try {
+            return store.getMetadataLastModified(path);
+        } catch (MetadataNotFoundException e) {
+            throw new IOException("File not found", e);
         }
     }
-
 }

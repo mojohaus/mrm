@@ -16,22 +16,20 @@
 
 package org.codehaus.mojo.mrm.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.codehaus.mojo.mrm.api.BaseFileEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * An entry backed by a {@link FileEntry} on a (possibly different) {@link FileSystem}.
  *
  * @since 1.0
  */
-public class LinkFileEntry
-    extends BaseFileEntry
-{
+public class LinkFileEntry extends BaseFileEntry {
 
     /**
      * Ensure consistent serialization.
@@ -56,9 +54,8 @@ public class LinkFileEntry
      * @param entry      the backing entry.
      * @since 1.0
      */
-    public LinkFileEntry( FileSystem fileSystem, DirectoryEntry parent, FileEntry entry )
-    {
-        this( fileSystem, parent, entry.getName(), entry );
+    public LinkFileEntry(FileSystem fileSystem, DirectoryEntry parent, FileEntry entry) {
+        this(fileSystem, parent, entry.getName(), entry);
     }
 
     /**
@@ -71,37 +68,29 @@ public class LinkFileEntry
      * @param entry      the backing entry.
      * @since 1.0
      */
-    public LinkFileEntry( FileSystem fileSystem, DirectoryEntry parent, String name, FileEntry entry )
-    {
-        super( fileSystem, parent, name );
+    public LinkFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name, FileEntry entry) {
+        super(fileSystem, parent, name);
         this.entry = entry;
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified()
-        throws IOException
-    {
+    public long getLastModified() throws IOException {
         return entry.getLastModified();
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getSize()
-        throws IOException
-    {
+    public long getSize() throws IOException {
         return entry.getSize();
     }
 
     /**
      * {@inheritDoc}
      */
-    public InputStream getInputStream()
-        throws IOException
-    {
+    public InputStream getInputStream() throws IOException {
         return entry.getInputStream();
     }
-
 }

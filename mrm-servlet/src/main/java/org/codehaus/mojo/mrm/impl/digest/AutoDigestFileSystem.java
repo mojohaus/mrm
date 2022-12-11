@@ -43,9 +43,7 @@ import org.codehaus.mojo.mrm.impl.LinkFileEntry;
  *
  * @since 1.0
  */
-public class AutoDigestFileSystem
-    extends BaseFileSystem
-{
+public class AutoDigestFileSystem extends BaseFileSystem {
     /**
      * The backing filesystem.
      *
@@ -67,10 +65,9 @@ public class AutoDigestFileSystem
      * @param backing the backing file system.
      * @since 1.0
      */
-    public AutoDigestFileSystem( FileSystem backing )
-    {
-        this( backing,
-              new DigestFileEntryFactory[] {new MD5DigestFileEntry.Factory(), new SHA1DigestFileEntry.Factory()} );
+    public AutoDigestFileSystem(FileSystem backing) {
+        this(backing, new DigestFileEntryFactory[] {new MD5DigestFileEntry.Factory(), new SHA1DigestFileEntry.Factory()
+        });
     }
 
     /**
@@ -81,167 +78,125 @@ public class AutoDigestFileSystem
      * @param digestFactories the digest factories.
      * @since 1.0
      */
-    public AutoDigestFileSystem( FileSystem backing, DigestFileEntryFactory[] digestFactories )
-    {
+    public AutoDigestFileSystem(FileSystem backing, DigestFileEntryFactory[] digestFactories) {
         this.backing = backing;
-        this.digestFactories =
-            Collections.unmodifiableMap( Arrays.stream( digestFactories )
-                                             .collect( Collectors.toMap( DigestFileEntryFactory::getType,
-                                                                         factory -> factory ) ) );
+        this.digestFactories = Collections.unmodifiableMap(Arrays.stream(digestFactories)
+                .collect(Collectors.toMap(DigestFileEntryFactory::getType, factory -> factory)));
     }
 
     /**
      * {@inheritDoc}
      */
-    public Entry[] listEntries( DirectoryEntry directory )
-    {
+    public Entry[] listEntries(DirectoryEntry directory) {
         Map<String, Entry> result = new TreeMap<>();
         Map<String, FileEntry> missing = new HashMap<>();
         Set<String> present = new HashSet<>();
-        Entry[] entries = backing.listEntries( DefaultDirectoryEntry.equivalent( backing, directory ) );
-        for ( Entry entry : entries )
-        {
+        Entry[] entries = backing.listEntries(DefaultDirectoryEntry.equivalent(backing, directory));
+        for (Entry entry : entries) {
             final String name = entry.getName();
-            if ( entry instanceof FileEntry )
-            {
-                for ( String type : digestFactories.keySet() )
-                {
-                    if ( name.endsWith( type ) )
-                    {
-                        present.add( name );
-                    }
-                    else
-                    {
-                        missing.put( name + type, (FileEntry) entry );
+            if (entry instanceof FileEntry) {
+                for (String type : digestFactories.keySet()) {
+                    if (name.endsWith(type)) {
+                        present.add(name);
+                    } else {
+                        missing.put(name + type, (FileEntry) entry);
                     }
                 }
-                result.put( name, new LinkFileEntry( this, directory, (FileEntry) entry ) );
-            }
-            else if ( entry instanceof DirectoryEntry )
-            {
-                result.put( name, DefaultDirectoryEntry.equivalent( this, (DirectoryEntry) entry ) );
+                result.put(name, new LinkFileEntry(this, directory, (FileEntry) entry));
+            } else if (entry instanceof DirectoryEntry) {
+                result.put(name, DefaultDirectoryEntry.equivalent(this, (DirectoryEntry) entry));
             }
         }
-        missing.keySet().removeAll( present );
-        for ( Map.Entry<String, FileEntry> entry : missing.entrySet() )
-        {
+        missing.keySet().removeAll(present);
+        for (Map.Entry<String, FileEntry> entry : missing.entrySet()) {
             String name = entry.getKey();
             FileEntry fileEntry = entry.getValue();
-            for ( DigestFileEntryFactory factory : digestFactories.values() )
-            {
-                if ( name.endsWith( factory.getType() ) )
-                {
-                    result.put( name, factory.create( this, directory, fileEntry ) );
+            for (DigestFileEntryFactory factory : digestFactories.values()) {
+                if (name.endsWith(factory.getType())) {
+                    result.put(name, factory.create(this, directory, fileEntry));
                 }
             }
         }
-        return result.values().toArray( new Entry[0] );
+        return result.values().toArray(new Entry[0]);
     }
 
     /**
      * {@inheritDoc}
      */
-    public long getLastModified( DirectoryEntry entry )
-        throws IOException
-    {
-        return backing.getLastModified( DefaultDirectoryEntry.equivalent( backing, entry ) );
+    public long getLastModified(DirectoryEntry entry) throws IOException {
+        return backing.getLastModified(DefaultDirectoryEntry.equivalent(backing, entry));
     }
 
     /**
      * {@inheritDoc}
      */
-    public Entry get( String path )
-    {
-        Entry entry = backing.get( path );
-        if ( entry == null )
-        {
-            if ( path.startsWith( "/" ) )
-            {
-                path = path.substring( 1 );
+    public Entry get(String path) {
+        Entry entry = backing.get(path);
+        if (entry == null) {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
             }
-            if ( path.length() == 0 )
-            {
+            if (path.length() == 0) {
                 return getRoot();
             }
-            String[] parts = path.split( "/" );
-            if ( parts.length == 0 )
-            {
+            String[] parts = path.split("/");
+            if (parts.length == 0) {
                 return getRoot();
             }
             DirectoryEntry parent = getRoot();
-            for ( int i = 0; i < parts.length - 1; i++ )
-            {
-                parent = new DefaultDirectoryEntry( this, parent, parts[i] );
+            for (int i = 0; i < parts.length - 1; i++) {
+                parent = new DefaultDirectoryEntry(this, parent, parts[i]);
             }
             String name = parts[parts.length - 1];
-            for ( DigestFileEntryFactory factory : digestFactories.values() )
-            {
-                if ( name.endsWith( factory.getType() ) )
-                {
-                    Entry shadow =
-                        backing.get( parent.toPath() + "/" + StringUtils.removeEnd( name, factory.getType() ) );
-                    return factory.create( this, parent, (FileEntry) shadow );
+            for (DigestFileEntryFactory factory : digestFactories.values()) {
+                if (name.endsWith(factory.getType())) {
+                    Entry shadow = backing.get(parent.toPath() + "/" + StringUtils.removeEnd(name, factory.getType()));
+                    return factory.create(this, parent, (FileEntry) shadow);
                 }
             }
-            return get( parent, name );
-        }
-        else
-        {
-            if ( path.startsWith( "/" ) )
-            {
-                path = path.substring( 1 );
+            return get(parent, name);
+        } else {
+            if (path.startsWith("/")) {
+                path = path.substring(1);
             }
-            if ( path.length() == 0 )
-            {
+            if (path.length() == 0) {
                 return getRoot();
             }
-            String[] parts = path.split( "/" );
-            if ( parts.length == 0 )
-            {
+            String[] parts = path.split("/");
+            if (parts.length == 0) {
                 return getRoot();
             }
             DirectoryEntry parent = getRoot();
-            for ( int i = 0; i < parts.length - 1; i++ )
-            {
-                parent = new DefaultDirectoryEntry( this, parent, parts[i] );
+            for (int i = 0; i < parts.length - 1; i++) {
+                parent = new DefaultDirectoryEntry(this, parent, parts[i]);
             }
-            if ( entry instanceof FileEntry )
-            {
+            if (entry instanceof FileEntry) {
                 // repair filesystems that lie to us because they are caching
-                for ( DigestFileEntryFactory factory : digestFactories.values() )
-                {
-                    if ( entry.getName().endsWith( factory.getType() ) )
-                    {
+                for (DigestFileEntryFactory factory : digestFactories.values()) {
+                    if (entry.getName().endsWith(factory.getType())) {
                         Entry shadow = backing.get(
-                            parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), factory.getType() ) );
-                        return new GenerateOnErrorFileEntry( this, parent, (FileEntry) entry,
-                                                             factory.create( this, parent, (FileEntry) shadow ) );
+                                parent.toPath() + "/" + StringUtils.removeEnd(entry.getName(), factory.getType()));
+                        return new GenerateOnErrorFileEntry(
+                                this, parent, (FileEntry) entry, factory.create(this, parent, (FileEntry) shadow));
                     }
                 }
-                return new LinkFileEntry( this, parent, (FileEntry) entry );
-            }
-            else if ( entry instanceof DirectoryEntry )
-            {
-                for ( DigestFileEntryFactory factory : digestFactories.values() )
-                {
-                    if ( entry.getName().endsWith( factory.getType() ) )
-                    {
+                return new LinkFileEntry(this, parent, (FileEntry) entry);
+            } else if (entry instanceof DirectoryEntry) {
+                for (DigestFileEntryFactory factory : digestFactories.values()) {
+                    if (entry.getName().endsWith(factory.getType())) {
                         Entry shadow = backing.get(
-                            parent.toPath() + "/" + StringUtils.removeEnd( entry.getName(), factory.getType() ) );
-                        return factory.create( this, parent, (FileEntry) shadow );
+                                parent.toPath() + "/" + StringUtils.removeEnd(entry.getName(), factory.getType()));
+                        return factory.create(this, parent, (FileEntry) shadow);
                     }
                 }
-                return new DefaultDirectoryEntry( this, parent, entry.getName() );
+                return new DefaultDirectoryEntry(this, parent, entry.getName());
             }
         }
         return null;
     }
 
     @Override
-    public FileEntry put( DirectoryEntry parent, String name, InputStream content )
-        throws IOException
-    {
-        return backing.put( parent, name, content );
+    public FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
+        return backing.put(parent, name, content);
     }
-
 }
