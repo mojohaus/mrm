@@ -44,7 +44,6 @@ import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
-import org.codehaus.mojo.mrm.impl.MemoryFileSystem;
 import org.codehaus.mojo.mrm.impl.Utils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.InterpolationFilterReader;
@@ -81,15 +80,6 @@ public class FileSystemServlet extends HttpServlet {
      * @since 1.0
      */
     private String settingsServletPath;
-
-    /**
-     * Default constructor.
-     *
-     * @since 1.0
-     */
-    public FileSystemServlet() {
-        this.fileSystem = new MemoryFileSystem();
-    }
 
     /**
      * Constructor that takes a specific file system instance.
