@@ -16,6 +16,9 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -34,6 +37,12 @@ import org.apache.maven.plugins.annotations.Mojo;
  */
 @Mojo(name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true)
 public class StopMojo extends AbstractMRMMojo {
+
+    @Inject
+    public StopMojo(@Named("proxyRepo") ArtifactStoreFactory proxyRepo) {
+        super(proxyRepo);
+    }
+
     /**
      * {@inheritDoc}
      */

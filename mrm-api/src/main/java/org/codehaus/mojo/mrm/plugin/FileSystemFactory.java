@@ -21,7 +21,6 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 /**
  * Something that produces new {@link FileSystem} instances.
  *
- * @see FactoryHelperRequired
  * @since 1.0
  */
 public interface FileSystemFactory {

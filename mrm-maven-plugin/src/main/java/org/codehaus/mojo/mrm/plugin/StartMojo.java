@@ -16,6 +16,9 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +44,11 @@ public class StartMojo extends AbstractStartMojo {
      */
     @Parameter(property = "mrm.propertyName", defaultValue = "mrm.repository.url")
     private String propertyName;
+
+    @Inject
+    public StartMojo(FactoryHelper factoryHelper, @Named("proxyRepo") ArtifactStoreFactory proxyRepo) {
+        super(factoryHelper, proxyRepo);
+    }
 
     /**
      * {@inheritDoc}

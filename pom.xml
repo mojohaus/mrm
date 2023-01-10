@@ -93,7 +93,7 @@
 
   <properties>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
-    <mavenVersion>2.2.1</mavenVersion>
+    <mavenVersion>3.2.5</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
     <jetty.version>9.4.50.v20221201</jetty.version>
     <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
@@ -115,11 +115,6 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
-        <version>${mavenVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact-manager</artifactId>
         <version>${mavenVersion}</version>
       </dependency>
       <dependency>
@@ -148,9 +143,9 @@
         <version>4.6.1</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-project</artifactId>
-        <version>${mavenVersion}</version>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>1.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archetype</groupId>

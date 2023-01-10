@@ -16,6 +16,9 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.net.UnknownHostException;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,6 +43,16 @@ public class RunMojo extends AbstractStartMojo {
      */
     @Parameter(property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml")
     private String settingsServletPath;
+
+    /**
+     * Creates a new instance
+     * @param factoryHelper injected {@link FactoryHelper} instance
+     * @param proxyRepo injected proxyRepo
+     */
+    @Inject
+    public RunMojo(FactoryHelper factoryHelper, @Named("proxyRepo") ArtifactStoreFactory proxyRepo) {
+        super(factoryHelper, proxyRepo);
+    }
 
     /**
      * {@inheritDoc}

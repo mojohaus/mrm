@@ -16,82 +16,36 @@
 
 package org.codehaus.mojo.mrm.plugin;
 
-import java.util.List;
-
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.logging.Log;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Helper interface that exposes the Maven components that may be required.
  *
- * @see FactoryHelperRequired
  * @since 1.0
  */
 public interface FactoryHelper {
     /**
-     * Returns the {@link RepositoryMetadataManager} provided by Maven.
-     *
-     * @return The {@link RepositoryMetadataManager} provided by Maven.
+     * @return returns the {@link RepositorySystem} instance
+     */
+    RepositorySystem getRepositorySystem();
+
+    /**
+     * @return returns the {@link RepositoryMetadataManager} instance
      * @since 1.0
      */
     RepositoryMetadataManager getRepositoryMetadataManager();
 
     /**
-     * Returns the remote plugin repositories provided by Maven.
-     *
-     * @return The remote plugin repositories provided by Maven.
-     * @since 1.0
-     */
-    List<ArtifactRepository> getRemotePluginRepositories();
-
-    /**
-     * Returns the {@link ArtifactRepository} provided by Maven.
-     *
-     * @return The {@link ArtifactRepository} provided by Maven.
-     * @since 1.0
-     */
-    ArtifactRepository getLocalRepository();
-
-    /**
-     * Returns the {@link ArtifactFactory} provided by Maven.
-     *
-     * @return The {@link ArtifactFactory} provided by Maven.
+     * @return returns the {@link ArtifactFactory} instance
      * @since 1.0
      */
     ArtifactFactory getArtifactFactory();
 
     /**
-     * Returns the remote repositories that we will query.
-     *
-     * @return The remote repositories that we will query.
-     * @since 1.0
-     */
-    List<ArtifactRepository> getRemoteArtifactRepositories();
-
-    /**
-     * Returns the {@link ArtifactResolver} provided by Maven.
-     *
-     * @return The {@link ArtifactResolver} provided by Maven.
-     * @since 1.0
-     */
-    ArtifactResolver getArtifactResolver();
-
-    /**
-     * Returns the {@link Log} to log to.
-     *
-     * @return The {@link Log} to log to.
-     * @since 1.0
-     */
-    Log getLog();
-
-    /**
-     * Returns the {@link ArchetypeManager}
-     *
-     * @return The {@link ArchetypeManager}
+     * @return returns the {@link ArchetypeManager} instance
      * @since 1.0
      */
     ArchetypeManager getArchetypeManager();
