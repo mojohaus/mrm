@@ -18,19 +18,13 @@ package org.codehaus.mojo.mrm.plugin;
 
 import java.util.List;
 
-import org.apache.maven.archetype.ArchetypeManager;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
@@ -41,17 +35,13 @@ import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
  * @since 1.0
  */
 public abstract class AbstractMRMMojo extends AbstractMojo {
+    protected final ArtifactStoreFactory proxyRepo;
+
     /**
      * The Maven project.
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
-
-    /**
-     * The repository metadata manager.
-     */
-    @Component
-    private RepositoryMetadataManager repositoryMetadataManager;
 
     /**
      * The remote repositories.
@@ -70,24 +60,6 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${localRepository}", readonly = true)
     protected ArtifactRepository localRepository;
-
-    /**
-     * The artifact factory.
-     */
-    @Component
-    protected ArtifactFactory artifactFactory;
-
-    /**
-     * The artifact resolver.
-     */
-    @Component
-    protected ArtifactResolver artifactResolver;
-
-    /**
-     * The archetype manager
-     */
-    @Component
-    protected ArchetypeManager archetypeManager;
 
     /**
      * The Maven Session Object
@@ -112,6 +84,14 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      */
     @Parameter(property = "mrm.skip", defaultValue = "false")
     protected boolean skip;
+
+    /**
+     * Creates a new instance
+     * @param proxyRepo injected proxyRepo
+     */
+    public AbstractMRMMojo(ArtifactStoreFactory proxyRepo) {
+        this.proxyRepo = proxyRepo;
+    }
 
     /**
      * Executes the plugin goal (if the plugin is not skipped)
@@ -151,86 +131,6 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      *         Maven itself.
      */
     protected ProxyArtifactStore createProxyArtifactStore() {
-        return new ProxyArtifactStore(
-                repositoryMetadataManager,
-                remoteArtifactRepositories,
-                remotePluginRepositories,
-                localRepository,
-                artifactFactory,
-                artifactResolver,
-                archetypeManager,
-                getLog());
-    }
-
-    /**
-     * Creates a new {@link FactoryHelper} instance for injection into anything that needs one.
-     *
-     * @return a new {@link FactoryHelper} instance for injection into anything that needs one.
-     */
-    protected FactoryHelper createFactoryHelper() {
-        return new FactoryHelperImpl();
-    }
-
-    /**
-     * Our implementation of {@link FactoryHelper}.
-     *
-     * @since 1.0
-     */
-    private class FactoryHelperImpl implements FactoryHelper {
-        /**
-         * {@inheritDoc}
-         */
-        public RepositoryMetadataManager getRepositoryMetadataManager() {
-            return repositoryMetadataManager;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<ArtifactRepository> getRemotePluginRepositories() {
-            return remotePluginRepositories;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public ArtifactRepository getLocalRepository() {
-            return localRepository;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public ArtifactFactory getArtifactFactory() {
-            return artifactFactory;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<ArtifactRepository> getRemoteArtifactRepositories() {
-            return remoteArtifactRepositories;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public ArtifactResolver getArtifactResolver() {
-            return artifactResolver;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public ArchetypeManager getArchetypeManager() {
-            return archetypeManager;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public Log getLog() {
-            return AbstractMRMMojo.this.getLog();
-        }
+        return (ProxyArtifactStore) proxyRepo.newInstance(session, getLog());
     }
 }

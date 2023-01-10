@@ -16,6 +16,14 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import java.util.Objects;
+
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
 
@@ -24,34 +32,38 @@ import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
  *
  * @since 1.0
  */
-public class ProxyRepo implements ArtifactStoreFactory, FactoryHelperRequired {
+@Named("proxyRepo")
+@Singleton
+public class ProxyRepo implements ArtifactStoreFactory {
 
-    /**
-     * Our factory helper.
-     */
     private FactoryHelper factoryHelper;
 
     /**
-     * {@inheritDoc}
+     * Constructor used by Plexus configuration injector.
+     * Note: since it does not provide the {@link FactoryHelper} instance, the instance needs
+     * to be provided using {@link #setFactoryHelper(FactoryHelper)}
      */
-    public ArtifactStore newInstance() {
-        if (factoryHelper == null) {
-            throw new IllegalStateException("FactoryHelper has not been set");
-        }
-        return new ProxyArtifactStore(
-                factoryHelper.getRepositoryMetadataManager(),
-                factoryHelper.getRemoteArtifactRepositories(),
-                factoryHelper.getRemotePluginRepositories(),
-                factoryHelper.getLocalRepository(),
-                factoryHelper.getArtifactFactory(),
-                factoryHelper.getArtifactResolver(),
-                factoryHelper.getArchetypeManager(),
-                factoryHelper.getLog());
+    public ProxyRepo() {}
+
+    /**
+     * Injects the singleton instance
+     * @param factoryHelper injected {@link FactoryHelper} instance
+     */
+    @Inject
+    public ProxyRepo(FactoryHelper factoryHelper) {
+        this.factoryHelper = factoryHelper;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public ArtifactStore newInstance(MavenSession session, Log log) {
+        return new ProxyArtifactStore(
+                Objects.requireNonNull(factoryHelper, "FactoryHelper has not been set"), session, log);
+    }
+
+    @Override
     public void setFactoryHelper(FactoryHelper factoryHelper) {
         this.factoryHelper = factoryHelper;
     }

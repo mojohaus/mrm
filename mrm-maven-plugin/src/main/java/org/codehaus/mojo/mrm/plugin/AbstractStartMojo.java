@@ -18,6 +18,7 @@ package org.codehaus.mojo.mrm.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,6 +34,9 @@ import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
  * @since 1.0
  */
 public abstract class AbstractStartMojo extends AbstractMRMMojo {
+
+    private final FactoryHelper factoryHelper;
+
     /**
      * The port to serve the repository on. If not specified a random port will be used.
      */
@@ -72,6 +76,16 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
     private boolean debugServer;
 
     /**
+     * Creates a new instance
+     * @param factoryHelper injected {@link FactoryHelper} instance
+     * @param proxyRepo injected proxyHelper instance
+     */
+    public AbstractStartMojo(FactoryHelper factoryHelper, ArtifactStoreFactory proxyRepo) {
+        super(proxyRepo);
+        this.factoryHelper = factoryHelper;
+    }
+
+    /**
      * Creates a file system server from an artifact store.
      *
      * @param artifactStore the artifact store to serve.
@@ -103,6 +117,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
      * @throws org.apache.maven.plugin.MojoExecutionException if the configuration is invalid.
      */
     protected ArtifactStore createArtifactStore() throws MojoExecutionException {
+        Objects.requireNonNull(proxyRepo);
         if (repositories == null) {
             getLog().info("Configuring Mock Repository Manager to proxy through this Maven instance");
             return createProxyArtifactStore();
@@ -110,15 +125,14 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
         getLog().info("Configuring Mock Repository Manager...");
         List<ArtifactStore> stores = new ArrayList<>();
         if (repositories == null || repositories.length == 0) {
-            repositories = new ArtifactStoreFactory[] {new ProxyRepo()};
+            repositories = new ArtifactStoreFactory[] {proxyRepo};
         }
-        FactoryHelper helper = createFactoryHelper();
         for (ArtifactStoreFactory artifactStoreFactory : repositories) {
-            if (artifactStoreFactory instanceof FactoryHelperRequired) {
-                ((FactoryHelperRequired) artifactStoreFactory).setFactoryHelper(helper);
-            }
             getLog().info("  " + artifactStoreFactory.toString());
-            stores.add(artifactStoreFactory.newInstance());
+            if (artifactStoreFactory != proxyRepo) {
+                artifactStoreFactory.setFactoryHelper(factoryHelper);
+            }
+            stores.add(artifactStoreFactory.newInstance(session, getLog()));
         }
         ArtifactStore[] artifactStores = stores.toArray(new ArtifactStore[0]);
         return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore(artifactStores);
