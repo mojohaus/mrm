@@ -1,32 +1,31 @@
- ~~
- ~~ Licensed under the Apache License, Version 2.0 (the "License");
- ~~ you may not use this file except in compliance with the License.
- ~~ You may obtain a copy of the License at
- ~~
- ~~     http://www.apache.org/licenses/LICENSE-2.0
- ~~
- ~~ Unless required by applicable law or agreed to in writing, software
- ~~ distributed under the License is distributed on an "AS IS" BASIS,
- ~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- ~~ See the License for the specific language governing permissions and
- ~~ limitations under the License.
- ~~
+title: Using with Maven Invoker with distribution management
+author: Robert Scholte
+date: 2017-03-20
 
- ------
- Using with Maven Invoker with distribution management
- ------
- Robert Scholte
- ------
- 2017-03-20
- ------
+<!---
+Copyright 2011 Stephen Connolly
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
 Using with Maven Invoker and Distribution Management
+====================================================
 
- When we want to test the distribution of artifacts, we'll have to add a separate execution block: 
- one which is used for the repositories (read, see {{{./invoker-tests.html}Using with Maven Invoker and repositories}})
- and a second one which is used for distribution management (write).
- 
----
+When we want to test the distribution of artifacts, we'll have to add a separate execution block:
+one which is used for the repositories (read, see [Using with Maven Invoker and repositories](./invoker-tests.html))
+and a second one which is used for distribution management (write).
+
+```xml
 <project>
   ...
   <build>
@@ -81,11 +80,11 @@ Using with Maven Invoker and Distribution Management
   </build>
   ...
 </project>
----
+```
   
- Next you need to ensure per <<<pom.xml>>> that the value of <<<mrm.distribution.url>>> is used for the distribution management.
+Next you need to ensure per `pom.xml` that the value of `mrm.distribution.url` is used for the distribution management.
 
----
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   ...
@@ -101,9 +100,9 @@ Using with Maven Invoker and Distribution Management
   </distributionManagement>
   ...
 </project>
----
+```
 
- If you want to split the snapshotRepository from the (release) repository, you have to add an extra execution-block with a different propertyName.
+If you want to split the snapshotRepository from the (release) repository, you have to add an extra execution-block with a different propertyName.
 
- Since you've defined <<<target/hosted-repo>>> as the upload directory, you can use the postbuild-script from the maven-invoker-plugin to verify if all artifacts were uploaded as expected.
+Since you've defined `target/hosted-repo` as the upload directory, you can use the postbuild-script from the maven-invoker-plugin to verify if all artifacts were uploaded as expected.
 
