@@ -1,0 +1,87 @@
+//
+// Copyright 2011 Stephen Connolly
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+:title: Usage
+:author: Stephen Connolly
+:docdate: 2011-11-22
+
+= Usage
+
+The plugin offers goals for hosting a mock repository manager as part of a Maven project lifecycle.
+
+== Basic Usage
+
+Before you start it is best to add `mrm-maven-plugin` as a plugin in your pom.
+
+[,xml]
+----
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>mrm-maven-plugin</artifactId>
+        <version>${project.version}</version>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+----
+
+== Start up a test Mock Repository Manager
+
+To start up a test Mock Repository Manager to allow you to develop your tests using your favorite IDE, invoke
+the `run` goal.
+
+  mvn mrm:run
+
+You can change the port that the mock repository manager binds to either using the `mrm.port` property from the
+command line, e.g.
+
+  mvn mrm:run -Dmrm.port=8080
+
+Or in the `configuration` block in the plugin definition (which has the advantage that all invocations will use
+the same parameters).
+
+[,xml]
+----
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>mrm-maven-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <port>8080</port>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+----
