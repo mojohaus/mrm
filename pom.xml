@@ -95,7 +95,7 @@
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>3.2.5</mavenVersion>
     <mojo.java.target>1.8</mojo.java.target>
-    <jetty.version>9.4.50.v20221201</jetty.version>
+    <jetty.version>9.4.51.v20230217</jetty.version>
     <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-12-24T13:09:21Z</project.build.outputTimestamp>
   </properties>
