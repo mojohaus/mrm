@@ -89,7 +89,7 @@ public class ProxyArtifactStoreTest {
     @Test(expected = RuntimeException.class)
     public void verifyArchetypeCatalogNotFoundException() throws Exception {
         ArchetypeManager archetypeManager = mock(ArchetypeManager.class);
-        doThrow(RuntimeException.class).when(archetypeManager).getDefaultLocalCatalog();
+        doThrow(RuntimeException.class).when(archetypeManager).getLocalCatalog(any());
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).then(i -> mock(RepositorySystem.class));
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));

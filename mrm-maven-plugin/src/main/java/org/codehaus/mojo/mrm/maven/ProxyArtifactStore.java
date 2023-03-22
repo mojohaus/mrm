@@ -20,12 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,25 +29,14 @@ import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Plugin;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataResolutionException;
-import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
+import org.apache.maven.artifact.repository.metadata.*;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.ResolverUtils;
-import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.Artifact;
-import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
-import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
-import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.*;
 import org.codehaus.mojo.mrm.plugin.FactoryHelper;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -263,66 +247,13 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     @Override
     public Metadata getMetadata(String path) throws MetadataNotFoundException {
         path = StringUtils.strip(path, "/");
-        int index = path.lastIndexOf('/');
-        int index2 = index == -1 ? -1 : path.lastIndexOf('/', index - 1);
-
-        String version = index2 == -1 ? null : path.substring(index + 1);
-        String artifactId = index2 == -1 ? null : path.substring(index2 + 1, index);
-        String groupId = index2 == -1 ? null : path.substring(0, index2).replace('/', '.');
-
         Metadata metadata = new Metadata();
-
         boolean foundSomething = false;
 
         // is this path a groupId:artifactId pair?
-        if (version != null
-                && version.endsWith("-SNAPSHOT")
-                && !StringUtils.isEmpty(artifactId)
-                && !StringUtils.isEmpty(groupId)) {
-            org.apache.maven.artifact.Artifact artifact = artifactFactory.createDependencyArtifact(
-                    groupId, artifactId, VersionRange.createFromVersion(version), "pom", null, "compile");
-            SnapshotArtifactRepositoryMetadata artifactRepositoryMetadata =
-                    new SnapshotArtifactRepositoryMetadata(artifact);
-            try {
-                repositoryMetadataManager.resolve(
-                        artifactRepositoryMetadata, artifactRepositories, session.getLocalRepository());
-
-                Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
-                if (artifactMetadata.getVersioning() != null
-                        && artifactMetadata.getVersioning().getSnapshot() != null) {
-                    foundSomething = true;
-                    metadata.setGroupId(groupId);
-                    metadata.setArtifactId(artifactId);
-                    metadata.setVersion(version);
-                    metadata.merge(artifactMetadata);
-                }
-                try {
-                    if (artifactMetadata.getVersioning() != null
-                            && !artifactMetadata
-                                    .getVersioning()
-                                    .getSnapshotVersions()
-                                    .isEmpty()) {
-                        // TODO up to and including Maven 3.0.3 we do not get a populated SnapshotVersions
-                        for (SnapshotVersion v :
-                                artifactMetadata.getVersioning().getSnapshotVersions()) {
-                            metadata.getVersioning().addSnapshotVersion(v);
-                            if (v.getVersion().endsWith("-SNAPSHOT")) {
-                                addResolved(new Artifact(
-                                        groupId, artifactId, version, v.getClassifier(), v.getExtension()));
-                            }
-                        }
-                    }
-                } catch (NoSuchMethodError e) {
-                    // ignore Maven 2.x doesn't give us the info
-                }
-            } catch (RepositoryMetadataResolutionException e) {
-                log.debug(e);
-            }
-        }
-
-        // is this path a groupId:artifactId pair?
-        artifactId = index == -1 ? null : path.substring(index + 1);
-        groupId = index == -1 ? null : path.substring(0, index).replace('/', '.');
+        int slashIndex = path.lastIndexOf('/');
+        String artifactId = slashIndex == -1 ? null : path.substring(slashIndex + 1);
+        String groupId = slashIndex == -1 ? null : path.substring(0, slashIndex).replace('/', '.');
         if (!StringUtils.isEmpty(artifactId) && !StringUtils.isEmpty(groupId)) {
             org.apache.maven.artifact.Artifact artifact =
                     artifactFactory.createDependencyArtifact(groupId, artifactId, ANY_VERSION, "pom", null, "compile");
@@ -346,23 +277,6 @@ public class ProxyArtifactStore extends BaseArtifactStore {
             } catch (RepositoryMetadataResolutionException e) {
                 log.debug(e);
             }
-        }
-
-        // if this path a groupId on its own?
-        groupId = path.replace('/', '.');
-        final GroupRepositoryMetadata groupRepositoryMetadata = new GroupRepositoryMetadata(groupId);
-        try {
-            repositoryMetadataManager.resolve(
-                    groupRepositoryMetadata,
-                    session.getCurrentProject().getPluginArtifactRepositories(),
-                    session.getLocalRepository());
-            foundSomething = true;
-            metadata.merge(groupRepositoryMetadata.getMetadata());
-            for (Plugin plugin : groupRepositoryMetadata.getMetadata().getPlugins()) {
-                addResolved(path + "/" + plugin.getArtifactId());
-            }
-        } catch (RepositoryMetadataResolutionException e) {
-            log.debug(e);
         }
 
         if (!foundSomething) {
@@ -399,12 +313,12 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     @Override
     public ArchetypeCatalog getArchetypeCatalog() {
-        return archetypeManager.getDefaultLocalCatalog();
+        return archetypeManager.getLocalCatalog(session.getProjectBuildingRequest());
     }
 
     @Override
     public long getArchetypeCatalogLastModified() throws ArchetypeCatalogNotFoundException {
-        if (archetypeManager.getDefaultLocalCatalog() != null) {
+        if (archetypeManager.getLocalCatalog(session.getProjectBuildingRequest()) != null) {
             return System.currentTimeMillis();
         } else {
             throw new ArchetypeCatalogNotFoundException();
