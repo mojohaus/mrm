@@ -93,7 +93,7 @@
 
   <properties>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
-    <mavenVersion>3.2.5</mavenVersion>
+    <mavenVersion>3.6.3</mavenVersion>
     <mojo.java.target>8</mojo.java.target>
     <recommendedJavaBuildVersion>11</recommendedJavaBuildVersion>
     <jetty.version>9.4.53.v20231009</jetty.version>
