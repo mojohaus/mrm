@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-parent</artifactId>
-    <version>72</version>
+    <version>76</version>
   </parent>
 
   <groupId>org.codehaus.mojo</groupId>
@@ -94,7 +94,8 @@
   <properties>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>3.2.5</mavenVersion>
-    <mojo.java.target>1.8</mojo.java.target>
+    <mojo.java.target>8</mojo.java.target>
+    <recommendedJavaBuildVersion>11</recommendedJavaBuildVersion>
     <jetty.version>9.4.51.v20230217</jetty.version>
     <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-12-24T13:09:21Z</project.build.outputTimestamp>
@@ -195,17 +196,6 @@
 
     <plugins>
       <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>${checkstyle.spotless.config}</configLocation>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
         <executions>
@@ -241,4 +231,28 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>java11+</id>
+      <activation>
+        <jdk>[11,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <configuration>
+              <configLocation>${checkstyle.spotless.config}</configLocation>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
