@@ -96,7 +96,7 @@
     <mavenVersion>3.2.5</mavenVersion>
     <mojo.java.target>8</mojo.java.target>
     <recommendedJavaBuildVersion>11</recommendedJavaBuildVersion>
-    <jetty.version>9.4.51.v20230217</jetty.version>
+    <jetty.version>9.4.52.v20230823</jetty.version>
     <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
     <project.build.outputTimestamp>2022-12-24T13:09:21Z</project.build.outputTimestamp>
   </properties>
