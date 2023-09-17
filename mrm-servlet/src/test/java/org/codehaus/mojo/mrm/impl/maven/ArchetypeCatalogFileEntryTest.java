@@ -4,38 +4,39 @@ import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ArchetypeCatalogFileEntryTest {
+class ArchetypeCatalogFileEntryTest {
 
     @Test
-    public void testCleanArchetypeCatalogFileEntry() throws Exception {
+    void testCleanArchetypeCatalogFileEntry() throws Exception {
         ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry(null, null, null);
-        assertEquals(null, entry.getFileSystem());
-        assertEquals(null, entry.getParent());
+        assertNull(entry.getFileSystem());
+        assertNull(entry.getParent());
         assertEquals("archetype-catalog.xml", entry.getName());
     }
 
     @Test
-    public void testFileSystem() throws Exception {
+    void testFileSystem() throws Exception {
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry root = mock(DirectoryEntry.class);
         when(fileSystem.getRoot()).thenReturn(root);
         ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry(fileSystem, null, null);
         assertEquals(fileSystem, entry.getFileSystem());
-        assertEquals(null, entry.getParent());
+        assertNull(entry.getParent());
         assertEquals("archetype-catalog.xml", entry.getName());
         assertEquals("archetype-catalog.xml", entry.toPath());
     }
 
     @Test
-    public void testParent() throws Exception {
+    void testParent() throws Exception {
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry parent = mock(DirectoryEntry.class);
         when(fileSystem.getRoot()).thenReturn(parent);
@@ -47,7 +48,7 @@ public class ArchetypeCatalogFileEntryTest {
     }
 
     @Test
-    public void testArtifactStore() throws Exception {
+    void testArtifactStore() throws Exception {
         final long lastModified = System.currentTimeMillis();
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry parent = mock(DirectoryEntry.class);
@@ -62,10 +63,6 @@ public class ArchetypeCatalogFileEntryTest {
         assertEquals("archetype-catalog.xml", entry.toPath());
         assertEquals(entry.getLastModified(), lastModified);
         assertTrue(entry.getSize() > 0);
-        try {
-            assertNotNull(entry.getInputStream());
-        } finally {
-            entry.getInputStream().close();
-        }
+        assertNotNull(entry.getInputStream());
     }
 }
