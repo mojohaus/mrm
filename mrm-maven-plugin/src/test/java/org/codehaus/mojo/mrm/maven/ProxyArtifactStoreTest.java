@@ -32,20 +32,22 @@ import org.codehaus.mojo.mrm.plugin.FactoryHelper;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ProxyArtifactStoreTest {
+class ProxyArtifactStoreTest {
 
     private MavenSession mavenSession;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         mavenSession = mock(MavenSession.class);
         when(mavenSession.getCurrentProject()).thenReturn(new MavenProject() {
             {
@@ -56,8 +58,8 @@ public class ProxyArtifactStoreTest {
         when(mavenSession.getRepositorySession()).thenReturn(new DefaultRepositorySystemSession());
     }
 
-    @Test(expected = ArtifactNotFoundException.class)
-    public void verifyArtifactNotFoundExceptionOnGet() throws Exception {
+    @Test
+    void verifyArtifactNotFoundExceptionOnGet() throws Exception {
         RepositorySystem repositorySystem = mock(RepositorySystem.class);
         doThrow(ArtifactResolutionException.class).when(repositorySystem).resolveArtifact(any(), any());
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
@@ -68,13 +70,15 @@ public class ProxyArtifactStoreTest {
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
 
-        store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom"));
+        assertThrowsExactly(
+                ArtifactNotFoundException.class,
+                () -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void verifyArtifactResolutionExceptionOnGet() throws Exception {
+    @Test
+    void verifyArtifactResolutionExceptionOnGet() throws Exception {
         RepositorySystem repositorySystem = mock(RepositorySystem.class);
-        doThrow(RuntimeException.class).when(repositorySystem).resolveArtifact(any(), any());
+        doThrow(new RuntimeException("test123")).when(repositorySystem).resolveArtifact(any(), any());
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).thenReturn(repositorySystem);
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));
@@ -83,13 +87,15 @@ public class ProxyArtifactStoreTest {
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
 
-        store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom"));
+        RuntimeException exception = assertThrowsExactly(
+                RuntimeException.class, () -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")));
+        assertEquals("test123", exception.getMessage());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void verifyArchetypeCatalogNotFoundException() throws Exception {
+    @Test
+    void verifyArchetypeCatalogNotFoundException() throws Exception {
         ArchetypeManager archetypeManager = mock(ArchetypeManager.class);
-        doThrow(RuntimeException.class).when(archetypeManager).getLocalCatalog(any());
+        doThrow(new RuntimeException("test123")).when(archetypeManager).getLocalCatalog(any());
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).then(i -> mock(RepositorySystem.class));
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));
@@ -97,6 +103,7 @@ public class ProxyArtifactStoreTest {
         when(factoryHelper.getArchetypeManager()).thenReturn(archetypeManager);
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
 
-        store.getArchetypeCatalog();
+        RuntimeException exception = assertThrowsExactly(RuntimeException.class, store::getArchetypeCatalog);
+        assertEquals("test123", exception.getMessage());
     }
 }

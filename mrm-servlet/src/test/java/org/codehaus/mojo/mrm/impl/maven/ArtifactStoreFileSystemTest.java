@@ -25,20 +25,20 @@ import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ArtifactStoreFileSystemTest {
+class ArtifactStoreFileSystemTest {
 
     @Test
-    public void testGroupMetadataRegex() {
+    void testGroupMetadataRegex() {
         Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher("/commons/maven-metadata.xml");
         assertTrue(matcher.matches());
         assertEquals("commons/", matcher.group(1));
@@ -52,7 +52,7 @@ public class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    public void testArtifactRegex() {
+    void testArtifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/commons/maven-metadata.xml");
         assertFalse(matcher.matches());
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
@@ -103,7 +103,7 @@ public class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    public void testSnapshotArtifactRegex() {
+    void testSnapshotArtifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/commons/maven-metadata.xml");
         assertFalse(matcher.matches());
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
@@ -148,7 +148,7 @@ public class ArtifactStoreFileSystemTest {
 
     // MMOCKRM-5
     @Test
-    public void testSiteXmlReleaseVersion() throws Exception {
+    void testSiteXmlReleaseVersion() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getSize(isA(Artifact.class))).thenThrow(ArtifactNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -157,7 +157,7 @@ public class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    public void testSiteXmlSnapshotVersion() throws Exception {
+    void testSiteXmlSnapshotVersion() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getSize(isA(Artifact.class))).thenThrow(ArtifactNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -167,7 +167,7 @@ public class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    public void testArchetypeCatalogNotFound() throws Exception {
+    void testArchetypeCatalogNotFound() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getArchetypeCatalogLastModified()).thenThrow(ArchetypeCatalogNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -176,7 +176,7 @@ public class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    public void testArchetypeCatalog() throws Exception {
+    void testArchetypeCatalog() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getArchetypeCatalog()).thenReturn(new ArchetypeCatalog());
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);

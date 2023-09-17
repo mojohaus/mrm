@@ -4,16 +4,16 @@ import java.io.File;
 
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DiskArtifactStoreTest {
+class DiskArtifactStoreTest {
 
     // MMOCKRM-10
     @Test
-    public void testArchetypeCatalog() throws Exception {
+    void testArchetypeCatalog() throws Exception {
         DiskArtifactStore artifactStore = new DiskArtifactStore(new File("src/test/resources/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);

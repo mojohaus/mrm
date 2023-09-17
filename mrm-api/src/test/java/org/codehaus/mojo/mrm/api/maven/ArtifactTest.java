@@ -15,13 +15,14 @@
  */
 package org.codehaus.mojo.mrm.api.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ArtifactTest {
+class ArtifactTest {
+
     @Test
-    public void testSmokes() throws Exception {
+    void testSmokes() throws Exception {
         assertEquals(new Artifact("foo", "bar", "1.0", "jar"), new Artifact("foo", "bar", "1.0", null, "jar"));
     }
 }
