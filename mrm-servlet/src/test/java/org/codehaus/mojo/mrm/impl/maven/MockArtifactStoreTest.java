@@ -16,31 +16,35 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MockArtifactStoreTest {
+class MockArtifactStoreTest extends AbstractTestSupport {
 
     @TempDir
     Path temporaryFolder;
 
     // MMOCKRM-3
     @Test
-    void testInheritGavFromParent() {
+    void testInheritGavFromParent() throws Exception {
         // don't fail
-        MockArtifactStore mockArtifactStore = new MockArtifactStore(new File("src/test/resources/mmockrm-3"));
+        MockArtifactStore mockArtifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-3"));
         assertEquals(2, mockArtifactStore.getArtifactIds("localhost").size());
     }
 
     // MMOCKRM-6
     @Test
     void testClassifiers() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("src/test/resources/mmockrm-7"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-7"));
 
         Artifact pomArtifact = new Artifact("localhost", "mmockrm-7", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -58,7 +62,7 @@ class MockArtifactStoreTest {
     // MMOCKRM-10
     @Test
     void testArchetypeCatalog() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("src/test/resources/mmockrm-10"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);
         assertEquals(1, catalog.getArchetypes().size());
@@ -72,7 +76,7 @@ class MockArtifactStoreTest {
 
     @Test
     void testDirectoryContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("target/test-classes/mrm-15"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mrm-15"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -105,7 +109,7 @@ class MockArtifactStoreTest {
 
     @Test
     void testEmptyJarContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("target/test-classes/empty-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-empty-jar", "1.0", "pom");
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
@@ -137,7 +141,7 @@ class MockArtifactStoreTest {
 
     @Test
     void testEmptyPluginJarContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("target/test-classes/empty-plugin-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-plugin-jar"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-empty-plugin-jar", "1.0", "pom");
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
@@ -170,7 +174,7 @@ class MockArtifactStoreTest {
 
     @Test
     void testDirectoryWithClassifierContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(new File("target/test-classes/mrm-xx"));
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mrm-xx"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-xx", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -180,5 +184,97 @@ class MockArtifactStoreTest {
 
         Artifact classifiedArtifact = new Artifact("localhost", "mrm-xx", "1.0", "javadoc-resources", "jar");
         assertNotNull(artifactStore.get(classifiedArtifact));
+    }
+
+    @Test
+    void groupMetaDataShouldNotExistForNoPlugins() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+
+        assertThrowsExactly(MetadataNotFoundException.class, () -> artifactStore.getMetadata("localhost"));
+    }
+
+    @Test
+    void groupMetaDataShouldExistPlugins() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-plugin-jar"));
+
+        Metadata metadata = artifactStore.getMetadata("localhost");
+
+        assertNull(metadata.getArtifactId());
+        assertNull(metadata.getGroupId());
+        assertNull(metadata.getVersion());
+        assertNull(metadata.getVersioning());
+        assertEquals(2, metadata.getPlugins().size());
+
+        assertTrue(
+                metadata.getPlugins().stream()
+                        .filter(p -> "mrm-empty-maven-plugin".equals(p.getArtifactId()))
+                        .filter(p -> "mrm-empty".equals(p.getPrefix()))
+                        .anyMatch(p -> "Test Plugin 1".equals(p.getName())),
+                "Plugin 1 not found in metadata");
+
+        assertTrue(
+                metadata.getPlugins().stream()
+                        .filter(p -> "mrm-empty-plugin-jar".equals(p.getArtifactId()))
+                        .filter(p -> "mrm-empty-plugin-jar".equals(p.getPrefix()))
+                        .anyMatch(p -> "Test Plugin 2".equals(p.getName())),
+                "Plugin 2 not found in metadata");
+    }
+
+    @Test
+    void artifactMetaDataShouldExist() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+
+        Metadata metadata = artifactStore.getMetadata("localhost/mrm-empty-jar");
+
+        assertEquals("localhost", metadata.getGroupId());
+        assertEquals("mrm-empty-jar", metadata.getArtifactId());
+        assertNull(metadata.getVersion());
+        assertTrue(metadata.getPlugins().isEmpty());
+        assertEquals("1.0", metadata.getVersioning().getLatest());
+        assertEquals("1.0", metadata.getVersioning().getRelease());
+        assertNull(metadata.getVersioning().getSnapshot());
+        assertNotNull(metadata.getVersioning().getLastUpdated());
+        assertTrue(metadata.getVersioning().getSnapshotVersions().isEmpty());
+        assertEquals(1, metadata.getVersioning().getVersions().size());
+        assertEquals("1.0", metadata.getVersioning().getVersions().get(0));
+    }
+
+    @Test
+    void artifactVersionMetaDataShouldNotExistForReleaseVersion() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+
+        assertThrowsExactly(
+                MetadataNotFoundException.class, () -> artifactStore.getMetadata("localhost/mrm-empty-jar/1.0"));
+    }
+
+    @Test
+    void artifactVersionMetaDataShouldExist() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar-snapshot"));
+
+        Metadata metadata = artifactStore.getMetadata("localhost/mrm-empty-jar/1.0-SNAPSHOT");
+
+        assertEquals("localhost", metadata.getGroupId());
+        assertEquals("mrm-empty-jar", metadata.getArtifactId());
+        assertEquals("1.0-SNAPSHOT", metadata.getVersion());
+        assertTrue(metadata.getPlugins().isEmpty());
+        assertNull(metadata.getVersioning().getLatest());
+        assertNull(metadata.getVersioning().getRelease());
+        assertTrue(metadata.getVersioning().getVersions().isEmpty());
+        assertNotNull(metadata.getVersioning().getLastUpdated());
+        assertEquals(1, metadata.getVersioning().getSnapshot().getBuildNumber());
+        // assertNotNull(metadata.getVersioning().getSnapshot().getTimestamp()); - TODO check and fix
+        assertEquals(2, metadata.getVersioning().getSnapshotVersions().size());
+
+        assertTrue(metadata.getVersioning().getSnapshotVersions().stream()
+                .filter(v -> "".equals(v.getClassifier()))
+                .filter(v -> "pom".equals(v.getExtension()))
+                .filter(v -> !v.getUpdated().isEmpty())
+                .anyMatch(v -> "1.0-SNAPSHOT".equals(v.getVersion())));
+
+        assertTrue(metadata.getVersioning().getSnapshotVersions().stream()
+                .filter(v -> "".equals(v.getClassifier()))
+                .filter(v -> "jar".equals(v.getExtension()))
+                .filter(v -> !v.getUpdated().isEmpty())
+                .anyMatch(v -> "1.0-SNAPSHOT".equals(v.getVersion())));
     }
 }

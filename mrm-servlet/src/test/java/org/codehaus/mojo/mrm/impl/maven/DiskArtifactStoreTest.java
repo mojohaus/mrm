@@ -1,7 +1,5 @@
 package org.codehaus.mojo.mrm.impl.maven;
 
-import java.io.File;
-
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.junit.jupiter.api.Test;
@@ -9,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class DiskArtifactStoreTest {
+class DiskArtifactStoreTest extends AbstractTestSupport {
 
     // MMOCKRM-10
     @Test
     void testArchetypeCatalog() throws Exception {
-        DiskArtifactStore artifactStore = new DiskArtifactStore(new File("src/test/resources/mmockrm-10"));
+        DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);
         assertEquals(1, catalog.getArchetypes().size());
