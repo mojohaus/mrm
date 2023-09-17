@@ -22,7 +22,6 @@ package org.codehaus.mojo.mrm.maven;
 import java.util.Collections;
 
 import org.apache.maven.archetype.ArchetypeManager;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
@@ -65,7 +64,6 @@ class ProxyArtifactStoreTest {
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).thenReturn(repositorySystem);
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));
-        when(factoryHelper.getArtifactFactory()).then(i -> mock(ArtifactFactory.class));
         when(factoryHelper.getArchetypeManager()).then(i -> mock(ArchetypeManager.class));
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
@@ -82,7 +80,6 @@ class ProxyArtifactStoreTest {
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).thenReturn(repositorySystem);
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));
-        when(factoryHelper.getArtifactFactory()).then(i -> mock(ArtifactFactory.class));
         when(factoryHelper.getArchetypeManager()).then(i -> mock(ArchetypeManager.class));
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
@@ -99,7 +96,6 @@ class ProxyArtifactStoreTest {
         FactoryHelper factoryHelper = mock(FactoryHelper.class);
         when(factoryHelper.getRepositorySystem()).then(i -> mock(RepositorySystem.class));
         when(factoryHelper.getRepositoryMetadataManager()).then(i -> mock(RepositoryMetadataManager.class));
-        when(factoryHelper.getArtifactFactory()).then(i -> mock(ArtifactFactory.class));
         when(factoryHelper.getArchetypeManager()).thenReturn(archetypeManager);
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper, mavenSession, null);
 

@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.*;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -86,8 +85,6 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     private final RepositoryMetadataManager repositoryMetadataManager;
 
-    private final ArtifactFactory artifactFactory;
-
     private final ArchetypeManager archetypeManager;
 
     /**
@@ -100,7 +97,6 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     public ProxyArtifactStore(FactoryHelper factoryHelper, MavenSession session, Log log) {
         this.repositorySystem = Objects.requireNonNull(factoryHelper.getRepositorySystem());
         this.repositoryMetadataManager = Objects.requireNonNull(factoryHelper.getRepositoryMetadataManager());
-        this.artifactFactory = Objects.requireNonNull(factoryHelper.getArtifactFactory());
         this.archetypeManager = Objects.requireNonNull(factoryHelper.getArchetypeManager());
         this.log = log;
         this.session = Objects.requireNonNull(session);
@@ -255,8 +251,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
         String artifactId = slashIndex == -1 ? null : path.substring(slashIndex + 1);
         String groupId = slashIndex == -1 ? null : path.substring(0, slashIndex).replace('/', '.');
         if (!StringUtils.isEmpty(artifactId) && !StringUtils.isEmpty(groupId)) {
-            org.apache.maven.artifact.Artifact artifact =
-                    artifactFactory.createDependencyArtifact(groupId, artifactId, ANY_VERSION, "pom", null, "compile");
+            org.apache.maven.artifact.Artifact artifact = createDependencyArtifact(groupId, artifactId);
             ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata(artifact);
             try {
                 repositoryMetadataManager.resolve(
@@ -284,6 +279,12 @@ public class ProxyArtifactStore extends BaseArtifactStore {
         }
         addResolved(path);
         return metadata;
+    }
+
+    private org.apache.maven.artifact.Artifact createDependencyArtifact(String groupId, String artifactId) {
+
+        return new org.apache.maven.artifact.DefaultArtifact(
+                groupId, artifactId, ANY_VERSION, "compile", "pom", "", null);
     }
 
     @Override
