@@ -16,9 +16,6 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
-import java.util.List;
-
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -42,24 +39,6 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
-
-    /**
-     * The remote repositories.
-     */
-    @Parameter(defaultValue = "${project.remoteArtifactRepositories}", readonly = true)
-    protected List<ArtifactRepository> remoteArtifactRepositories;
-
-    /**
-     * The remote pluginRepositories.
-     */
-    @Parameter(defaultValue = "${project.pluginArtifactRepositories}", readonly = true)
-    protected List<ArtifactRepository> remotePluginRepositories;
-
-    /**
-     * The local repository.
-     */
-    @Parameter(defaultValue = "${localRepository}", readonly = true)
-    protected ArtifactRepository localRepository;
 
     /**
      * The Maven Session Object
