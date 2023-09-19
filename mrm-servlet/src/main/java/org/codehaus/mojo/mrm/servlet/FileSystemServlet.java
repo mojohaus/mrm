@@ -23,18 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
@@ -45,8 +40,6 @@ import org.codehaus.mojo.mrm.api.Entry;
 import org.codehaus.mojo.mrm.api.FileEntry;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.impl.Utils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.InterpolationFilterReader;
 
 /**
  * Servlet that serves a {@link FileSystem}.
@@ -77,26 +70,20 @@ public class FileSystemServlet extends HttpServlet {
     private final FileSystem fileSystem;
 
     /**
-     * @since 1.0
-     */
-    private String settingsServletPath;
-
-    /**
      * Constructor that takes a specific file system instance.
      *
      * @param fileSystem the file systen to serve.
      * @since 1.0
      */
-    public FileSystemServlet(FileSystem fileSystem, String settingsServletPath) {
+    public FileSystemServlet(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
-        this.settingsServletPath = settingsServletPath;
     }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("checkstyle:MethodLength")
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
         String context;
         if (path == null) {
@@ -104,27 +91,6 @@ public class FileSystemServlet extends HttpServlet {
             context = req.getContextPath();
         } else {
             context = req.getContextPath() + req.getServletPath();
-        }
-
-        if (path.equals("/" + settingsServletPath)) {
-            resp.setContentType("text/xml");
-            PrintWriter w = resp.getWriter();
-
-            String hostAddress;
-            try {
-                hostAddress = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e) {
-                hostAddress = req.getServerName();
-            }
-
-            String repositoryProxyUrl = req.getScheme() + "://" + hostAddress + ":" + req.getServerPort();
-
-            try (Reader in = new InputStreamReader(FileSystemServlet.class.getResourceAsStream("/settings-mrm.xml"));
-                    Reader settingsReader = new InterpolationFilterReader(
-                            in, Collections.singletonMap("repository.proxy.url", repositoryProxyUrl), "@", "@")) {
-                IOUtil.copy(settingsReader, w);
-            }
-            return;
         }
 
         Entry entry = fileSystem.get(path);

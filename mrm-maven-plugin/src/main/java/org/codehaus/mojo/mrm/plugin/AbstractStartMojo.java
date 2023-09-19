@@ -97,17 +97,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
                 Math.max(0, Math.min(port, 65535)),
                 basePath,
                 new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
-                getSettingsServletPath(),
                 debugServer);
-    }
-
-    /**
-     * When set, this points to the location from where the settings file can be downloaded.
-     *
-     * @return the servlet path to the settings file of {@code null}
-     */
-    protected String getSettingsServletPath() {
-        return null;
     }
 
     /**
