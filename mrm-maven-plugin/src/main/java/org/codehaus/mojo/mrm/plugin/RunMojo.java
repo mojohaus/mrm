@@ -19,14 +19,9 @@ package org.codehaus.mojo.mrm.plugin;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import java.net.UnknownHostException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
@@ -38,11 +33,6 @@ import org.codehaus.plexus.util.StringUtils;
  */
 @Mojo(name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true)
 public class RunMojo extends AbstractStartMojo {
-    /**
-     * ServletPath for the settings.xml, so it can be downloaded.
-     */
-    @Parameter(property = "mrm.settingsServletPath", defaultValue = "settings-mrm.xml")
-    private String settingsServletPath;
 
     /**
      * Creates a new instance
@@ -69,20 +59,6 @@ public class RunMojo extends AbstractStartMojo {
         String url = mrm.getUrl();
         try {
             getLog().info("Mock Repository Manager " + url + " is started.");
-            if (StringUtils.isNotEmpty(settingsServletPath)) {
-                String downloadUrl;
-                try {
-                    downloadUrl = mrm.getRemoteUrl();
-                } catch (UnknownHostException e) {
-                    downloadUrl = mrm.getUrl();
-                }
-
-                String settings = FileUtils.filename(settingsServletPath);
-
-                getLog().info("To share this repository manager, let users download " + downloadUrl + "/"
-                        + settingsServletPath);
-                getLog().info("Maven should be started as 'mvn --settings " + settings + " [phase|goal]'");
-            }
             ConsoleScanner consoleScanner = new ConsoleScanner();
             consoleScanner.start();
             getLog().info("Hit ENTER on the console to stop the Mock Repository Manager and continue the build.");
@@ -99,13 +75,5 @@ public class RunMojo extends AbstractStartMojo {
                 // ignore
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected String getSettingsServletPath() {
-        return settingsServletPath;
     }
 }

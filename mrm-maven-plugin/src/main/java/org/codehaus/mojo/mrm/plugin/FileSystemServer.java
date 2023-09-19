@@ -16,9 +16,6 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
@@ -103,11 +100,6 @@ public class FileSystemServer {
     private final String contextPath;
 
     /**
-     * The path to settingsFile containing the configuration to connect to this repository manager.
-     */
-    private final String settingsServletPath;
-
-    /**
      * Indicate debug level by Jetty server
      */
     private final boolean debugServer;
@@ -120,18 +112,11 @@ public class FileSystemServer {
      * @param fileSystem  the file system to serve.
      * @param debugServer the server debug mode
      */
-    public FileSystemServer(
-            String name,
-            int port,
-            String contextPath,
-            FileSystem fileSystem,
-            String settingsServletPath,
-            boolean debugServer) {
+    public FileSystemServer(String name, int port, String contextPath, FileSystem fileSystem, boolean debugServer) {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
         this.contextPath = sanitizeContextPath(contextPath);
-        this.settingsServletPath = settingsServletPath;
         this.debugServer = debugServer;
     }
 
@@ -254,17 +239,6 @@ public class FileSystemServer {
     }
 
     /**
-     * Same as {@link #getUrl()}, but now for remote users
-     *
-     * @return the scheme + raw IP address + port + contextPath
-     * @throws UnknownHostException if the local host name could not be resolved into an address.
-     */
-    public String getRemoteUrl() throws UnknownHostException {
-        return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + getPort()
-                + (contextPath.equals("/") ? "" : contextPath);
-    }
-
-    /**
      * The work to monitor and control the Jetty instance that hosts the file system.
      */
     private final class Worker implements Runnable {
@@ -282,7 +256,7 @@ public class FileSystemServer {
                 try {
                     ServletContextHandler context = new ServletContextHandler();
                     context.setContextPath(contextPath);
-                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem, settingsServletPath)), "/*");
+                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem)), "/*");
                     server.setHandler(context);
                     server.start();
                     synchronized (lock) {
