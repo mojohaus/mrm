@@ -22,12 +22,6 @@ package org.codehaus.mojo.mrm.api;
  * @since 1.0
  */
 public abstract class BaseFileEntry extends AbstractEntry implements FileEntry {
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * Creates an entry in the specified file system with the specified parent and name.

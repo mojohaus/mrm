@@ -16,14 +16,13 @@
 package org.codehaus.mojo.mrm.api;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * An entry in the repository.
  *
  * @since 1.0
  */
-public interface Entry extends Serializable {
+public interface Entry {
 
     /**
      * Returns the repository that this entry belongs to.

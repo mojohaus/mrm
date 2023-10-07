@@ -16,7 +16,6 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
-import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,14 +29,7 @@ import java.util.TimeZone;
  * @serial
  * @since 1.0
  */
-public final class Artifact implements Serializable, Comparable<Artifact> {
-
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
+public final class Artifact implements Comparable<Artifact> {
 
     /**
      * The groupId of the artifact.
@@ -95,7 +87,7 @@ public final class Artifact implements Serializable, Comparable<Artifact> {
      *
      * @since 1.0
      */
-    private transient String name;
+    private String name;
 
     /**
      * The lazy idempotent cache of the artifact's timestamp version string (which will be equal to the {@link #version}
@@ -103,7 +95,7 @@ public final class Artifact implements Serializable, Comparable<Artifact> {
      *
      * @since 1.0
      */
-    private transient String timestampVersion;
+    private String timestampVersion;
 
     /**
      * Common internal constructor.

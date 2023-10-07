@@ -22,17 +22,9 @@ import java.util.Stack;
 /**
  * Abstract implementation of {@link Entry}.
  *
- * @serial
  * @since 1.0
  */
 public abstract class AbstractEntry implements Entry {
-
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * The file system that this entry belongs to.
@@ -69,30 +61,22 @@ public abstract class AbstractEntry implements Entry {
         this.name = name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public FileSystem getFileSystem() {
         return fileSystem;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public DirectoryEntry getParent() {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -112,18 +96,14 @@ public abstract class AbstractEntry implements Entry {
         return Objects.equals(parent, abstractEntry.parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final int hashCode() {
         int result = name.hashCode();
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Entry[");
@@ -132,9 +112,7 @@ public abstract class AbstractEntry implements Entry {
         return sb.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final String toPath() {
         Stack<String> stack = new Stack<>();
         Entry root = getFileSystem().getRoot();

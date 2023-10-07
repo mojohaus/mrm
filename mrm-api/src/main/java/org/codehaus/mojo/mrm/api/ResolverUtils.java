@@ -13,6 +13,10 @@ import static java.util.Optional.ofNullable;
  */
 public class ResolverUtils {
 
+    private ResolverUtils() {
+        // utility class
+    }
+
     /**
      * <p>Creates a new {@link org.eclipse.aether.artifact.Artifact} based on an {@link Artifact} object.</p>
      * <p>Future deprecation: This method will be replaced with the new Maven 4

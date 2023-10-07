@@ -78,9 +78,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getGroupIds(String parentGroupId) {
         File parentDir = StringUtils.isEmpty(parentGroupId) ? root : new File(root, parentGroupId.replace('.', '/'));
         if (!parentDir.isDirectory()) {
@@ -96,9 +94,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getArtifactIds(String groupId) {
         File groupDir = new File(root, groupId.replace('.', '/'));
         if (!groupDir.isDirectory()) {
@@ -116,9 +112,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getVersions(String groupId, String artifactId) {
         File groupDir = new File(root, groupId.replace('.', '/'));
         File artifactDir = new File(groupDir, artifactId);
@@ -133,9 +127,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return Arrays.stream(dirs).filter(File::isDirectory).map(File::getName).collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<Artifact> getArtifacts(final String groupId, final String artifactId, final String version) {
         File groupDir = new File(root, groupId.replace('.', '/'));
         File artifactDir = new File(groupDir, artifactId);
@@ -213,9 +205,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFile(artifact);
         if (!file.isFile()) {
@@ -224,9 +214,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return file.lastModified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFile(artifact);
         if (!file.isFile()) {
@@ -235,9 +223,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return file.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFile(artifact);
         if (!file.isFile()) {
@@ -246,9 +232,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return new FileInputStream(file);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         if (!canWrite) {
             throw new UnsupportedOperationException("Read-only store");
@@ -268,9 +252,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         File file = root;
         String[] parts = StringUtils.strip(path, "/").split("/");
@@ -308,9 +290,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         File file = root;
         String[] parts = StringUtils.strip(path, "/").split("/");
@@ -334,6 +314,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return file.lastModified();
     }
 
+    @Override
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         File file = new File(root, "archetype-catalog.xml");
         if (!file.isFile()) {
@@ -347,6 +328,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         }
     }
 
+    @Override
     public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
         File file = new File(root, "archetype-catalog.xml");
         if (!file.isFile()) {

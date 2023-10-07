@@ -42,9 +42,7 @@ public class ConsoleScanner extends Thread {
         setDaemon(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void run() {
         try {
             synchronized (lock) {

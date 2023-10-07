@@ -18,7 +18,6 @@ package org.codehaus.mojo.mrm.api.maven;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
@@ -29,7 +28,7 @@ import org.apache.maven.artifact.repository.metadata.Metadata;
  *
  * @since 1.0
  */
-public interface ArtifactStore extends Serializable {
+public interface ArtifactStore {
 
     /**
      * <p>

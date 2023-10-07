@@ -80,7 +80,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
      * @param factoryHelper injected {@link FactoryHelper} instance
      * @param proxyRepo injected proxyHelper instance
      */
-    public AbstractStartMojo(FactoryHelper factoryHelper, ArtifactStoreFactory proxyRepo) {
+    protected AbstractStartMojo(FactoryHelper factoryHelper, ArtifactStoreFactory proxyRepo) {
         super(proxyRepo);
         this.factoryHelper = factoryHelper;
     }

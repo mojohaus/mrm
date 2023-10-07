@@ -24,12 +24,6 @@ import java.io.IOException;
  * @since 1.0
  */
 public class DefaultDirectoryEntry extends AbstractEntry implements DirectoryEntry {
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * Creates an entry in the specified file system with the specified parent and name.
@@ -62,9 +56,7 @@ public class DefaultDirectoryEntry extends AbstractEntry implements DirectoryEnt
         return new DefaultDirectoryEntry(target, equivalent(target, directory.getParent()), directory.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         return getFileSystem().getLastModified(this);
     }

@@ -18,14 +18,13 @@ package org.codehaus.mojo.mrm.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 
 /**
  * A repository is just a type of file system.
  *
  * @since 1.0
  */
-public interface FileSystem extends Serializable {
+public interface FileSystem {
     /**
      * Lists the entries in the specified directory. Some implementations may be lazy caching
      * implementations, in which case it is permitted to return either an empty array, or only those entries which
@@ -74,17 +73,6 @@ public interface FileSystem extends Serializable {
     long getLastModified(DirectoryEntry entry) throws IOException;
 
     /**
-     * Makes the specified child directory.
-     *
-     * @param parent the directory in which the child is to be created.
-     * @param name   the name of the child directory.
-     * @return the child directory entry.
-     * @throws UnsupportedOperationException if the repository is read-only.
-     * @since 1.0
-     */
-    DirectoryEntry mkdir(DirectoryEntry parent, String name);
-
-    /**
      * Puts the specified content into a the specified directory.
      *
      * @param parent  the directory in which the content is to be created/updated.
@@ -96,26 +84,4 @@ public interface FileSystem extends Serializable {
      * @since 1.0
      */
     FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException;
-
-    /**
-     * Puts the specified content into a the specified directory.
-     *
-     * @param parent  the directory in which the content is to be created/updated.
-     * @param name    the name of the file.
-     * @param content the content.
-     * @return the {@link FileEntry} that was created/updated.
-     * @throws UnsupportedOperationException if the repository is read-only.
-     * @throws java.io.IOException           if the content could not be read/written.
-     * @since 1.0
-     */
-    FileEntry put(DirectoryEntry parent, String name, byte[] content) throws IOException;
-
-    /**
-     * Removes the specified entry (and if the entry is a directory, all its children).
-     *
-     * @param entry the entry to remove.
-     * @throws UnsupportedOperationException if the repository is read-only.
-     * @since 1.0
-     */
-    void remove(Entry entry);
 }

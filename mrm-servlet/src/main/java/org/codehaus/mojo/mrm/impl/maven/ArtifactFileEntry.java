@@ -34,13 +34,6 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 public class ArtifactFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The backing {@link Artifact}.
      *
      * @since 1.0
@@ -71,9 +64,7 @@ public class ArtifactFileEntry extends BaseFileEntry {
         this.store = store;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         try {
             return store.getSize(artifact);
@@ -82,9 +73,7 @@ public class ArtifactFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         try {
             return store.get(artifact);
@@ -93,24 +82,12 @@ public class ArtifactFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         try {
             return store.getLastModified(artifact);
         } catch (ArtifactNotFoundException e) {
             throw new IOException("Artifact does not exist", e);
         }
-    }
-
-    /**
-     * Gets the backing artifact.
-     *
-     * @return the backing artifact.
-     * @since 1.0
-     */
-    public Artifact getArtifact() {
-        return artifact;
     }
 }

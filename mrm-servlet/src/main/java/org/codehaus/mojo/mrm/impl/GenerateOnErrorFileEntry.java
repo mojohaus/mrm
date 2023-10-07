@@ -32,13 +32,6 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 public class GenerateOnErrorFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The entry that we can fall back to if there is an {@link #error}.
      *
      * @since 1.0
@@ -79,9 +72,7 @@ public class GenerateOnErrorFileEntry extends BaseFileEntry {
         this.delegateEntry = delegateEntry;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         if (!error) {
             try {
@@ -95,9 +86,7 @@ public class GenerateOnErrorFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         if (!error) {
             try {
@@ -111,9 +100,7 @@ public class GenerateOnErrorFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         if (!error) {
             try {

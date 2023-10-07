@@ -84,9 +84,7 @@ public class AutoDigestFileSystem extends BaseFileSystem {
                 .collect(Collectors.toMap(DigestFileEntryFactory::getType, factory -> factory)));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Entry[] listEntries(DirectoryEntry directory) {
         Map<String, Entry> result = new TreeMap<>();
         Map<String, FileEntry> missing = new HashMap<>();
@@ -120,16 +118,12 @@ public class AutoDigestFileSystem extends BaseFileSystem {
         return result.values().toArray(new Entry[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified(DirectoryEntry entry) throws IOException {
         return backing.getLastModified(DefaultDirectoryEntry.equivalent(backing, entry));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Entry get(String path) {
         Entry entry = backing.get(path);
         if (entry == null) {
