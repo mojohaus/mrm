@@ -54,9 +54,6 @@ public class ProxyRepo implements ArtifactStoreFactory {
         this.factoryHelper = factoryHelper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ArtifactStore newInstance(MavenSession session, Log log) {
         return new ProxyArtifactStore(
@@ -68,9 +65,7 @@ public class ProxyRepo implements ArtifactStoreFactory {
         this.factoryHelper = factoryHelper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String toString() {
         return "Proxy (source: this Maven session)";
     }

@@ -109,6 +109,7 @@ public class FileSystemServer {
      *
      * @param name        The name of the file system server thread.
      * @param port        The port to server on or <code>0</code> to pick a random, but available, port.
+     * @param contextPath The root context path for server
      * @param fileSystem  the file system to serve.
      * @param debugServer the server debug mode
      */
@@ -242,9 +243,8 @@ public class FileSystemServer {
      * The work to monitor and control the Jetty instance that hosts the file system.
      */
     private final class Worker implements Runnable {
-        /**
-         * {@inheritDoc}
-         */
+
+        @Override
         public void run() {
             try {
                 Logger serverLogger = new ServerLogger(debugServer);

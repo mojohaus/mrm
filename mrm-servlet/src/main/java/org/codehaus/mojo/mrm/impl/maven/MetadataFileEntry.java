@@ -37,13 +37,6 @@ import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 public class MetadataFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The path of the backing {@link Metadata}.
      *
      * @since 1.0
@@ -74,9 +67,7 @@ public class MetadataFileEntry extends BaseFileEntry {
         this.store = store;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         try {
             Metadata metadata = store.getMetadata(path);
@@ -89,9 +80,7 @@ public class MetadataFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         try {
             Metadata metadata = store.getMetadata(path);
@@ -104,9 +93,7 @@ public class MetadataFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         try {
             return store.getMetadataLastModified(path);

@@ -32,13 +32,6 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 public class LinkFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The backing entry.
      *
      * @since 1.0
@@ -73,23 +66,17 @@ public class LinkFileEntry extends BaseFileEntry {
         this.entry = entry;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         return entry.getLastModified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         return entry.getSize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         return entry.getInputStream();
     }

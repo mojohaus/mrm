@@ -35,13 +35,6 @@ import org.codehaus.mojo.mrm.api.FileSystem;
 public class MD5DigestFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The entry we will calculate the digest of.
      *
      * @since 1.0
@@ -62,23 +55,17 @@ public class MD5DigestFileEntry extends BaseFileEntry {
         this.entry = entry;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         return entry.getLastModified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         return 32;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(getContent());
     }
@@ -115,16 +102,13 @@ public class MD5DigestFileEntry extends BaseFileEntry {
      * @since 1.0
      */
     public static class Factory extends BaseDigestFileEntryFactory {
-        /**
-         * {@inheritDoc}
-         */
+
+        @Override
         public String getType() {
             return ".md5";
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public FileEntry create(FileSystem fileSystem, DirectoryEntry parent, FileEntry entry) {
             return new MD5DigestFileEntry(fileSystem, parent, entry);
         }

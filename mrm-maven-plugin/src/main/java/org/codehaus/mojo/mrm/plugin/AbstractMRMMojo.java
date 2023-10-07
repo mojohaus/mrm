@@ -68,7 +68,7 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      * Creates a new instance
      * @param proxyRepo injected proxyRepo
      */
-    public AbstractMRMMojo(ArtifactStoreFactory proxyRepo) {
+    protected AbstractMRMMojo(ArtifactStoreFactory proxyRepo) {
         this.proxyRepo = proxyRepo;
     }
 
@@ -78,6 +78,7 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
      * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
+    @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
             getLog().info("Skipping invocation per configuration."

@@ -43,12 +43,9 @@ public class StopMojo extends AbstractMRMMojo {
         super(proxyRepo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("rawtypes")
+    @Override
     public void doExecute() throws MojoExecutionException, MojoFailureException {
-        Map pluginContext = session.getPluginContext(pluginDescriptor, project);
+        Map<String, Object> pluginContext = session.getPluginContext(pluginDescriptor, project);
         FileSystemServer mrm =
                 (FileSystemServer) pluginContext.get(StartMojo.getFileSystemServerKey(getMojoExecution()));
 
@@ -64,6 +61,7 @@ public class StopMojo extends AbstractMRMMojo {
             getLog().info("Mock Repository Manager " + url + " is stopped.");
             pluginContext.remove(FileSystemServer.class.getName());
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new MojoExecutionException(e.getMessage(), e);
         }
     }

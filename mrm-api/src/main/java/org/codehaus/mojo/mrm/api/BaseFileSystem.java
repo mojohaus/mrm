@@ -16,38 +16,24 @@
 
 package org.codehaus.mojo.mrm.api;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * Base implementation of {@link FileSystem} that all implementations should extend from.
  *
  * @since 1.0
  */
 public abstract class BaseFileSystem implements FileSystem {
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
      * The root entry.
      */
     private final DirectoryEntry root = new DefaultDirectoryEntry(this, null, "");
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public DirectoryEntry getRoot() {
         return root;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Entry get(String path) {
         if (path.startsWith("/")) {
             path = path.substring(1);
@@ -86,33 +72,5 @@ public abstract class BaseFileSystem implements FileSystem {
             }
         }
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DirectoryEntry mkdir(DirectoryEntry parent, String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public FileEntry put(DirectoryEntry parent, String name, InputStream content) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public FileEntry put(DirectoryEntry parent, String name, byte[] content) throws IOException {
-        return put(parent, name, new ByteArrayInputStream(content));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void remove(Entry entry) {
-        throw new UnsupportedOperationException();
     }
 }

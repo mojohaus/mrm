@@ -69,9 +69,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         this.backing = backing;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getGroupIds(String parentGroupId) {
         Entry parentEntry =
                 StringUtils.isEmpty(parentGroupId) ? backing.getRoot() : backing.get(parentGroupId.replace('.', '/'));
@@ -86,9 +84,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getArtifactIds(String groupId) {
         Entry parentEntry = backing.get(groupId.replace('.', '/'));
         if (!(parentEntry instanceof DirectoryEntry)) {
@@ -102,9 +98,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getVersions(String groupId, String artifactId) {
         Entry parentEntry = backing.get(groupId.replace('.', '/') + "/" + artifactId);
         if (!(parentEntry instanceof DirectoryEntry)) {
@@ -118,9 +112,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<Artifact> getArtifacts(final String groupId, final String artifactId, final String version) {
         Entry parentEntry = backing.get(groupId.replace('.', '/') + "/" + artifactId + "/" + version);
         if (!(parentEntry instanceof DirectoryEntry)) {
@@ -198,9 +190,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Entry entry = backing.get(artifact.getGroupId().replace('.', '/') + "/" + artifact.getArtifactId() + "/"
                 + artifact.getVersion() + "/" + artifact.getName());
@@ -210,9 +200,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         return entry.getLastModified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Entry entry = backing.get(artifact.getGroupId().replace('.', '/') + "/" + artifact.getArtifactId() + "/"
                 + artifact.getVersion() + "/" + artifact.getName());
@@ -222,9 +210,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         return ((FileEntry) entry).getSize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Entry entry = backing.get(artifact.getGroupId().replace('.', '/') + "/" + artifact.getArtifactId() + "/"
                 + artifact.getVersion() + "/" + artifact.getName());
@@ -234,16 +220,12 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         return ((FileEntry) entry).getInputStream();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         throw new UnsupportedOperationException("Read-only store");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         Entry entry = backing.get(
                 StringUtils.join(StringUtils.split(StringUtils.strip(path, "/"), "/"), "/") + "/maven-metadata.xml");
@@ -258,9 +240,7 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         Entry entry = backing.get(
                 StringUtils.join(StringUtils.split(StringUtils.strip(path, "/"), "/"), "/") + "/maven-metadata.xml");
@@ -270,19 +250,20 @@ public class FileSystemArtifactStore extends BaseArtifactStore {
         return entry.getLastModified();
     }
 
+    @Override
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         Entry entry = backing.get("archetype-catalog.xml");
         if (!(entry instanceof FileEntry)) {
             throw new ArchetypeCatalogNotFoundException();
         }
         try (InputStream inputStream = ((FileEntry) entry).getInputStream()) {
-
             return new ArchetypeCatalogXpp3Reader().read(inputStream);
         } catch (XmlPullParserException e) {
             throw new IOException(e.getMessage(), e);
         }
     }
 
+    @Override
     public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
         Entry entry = backing.get("archetype-catalog.xml");
         if (!(entry instanceof FileEntry)) {

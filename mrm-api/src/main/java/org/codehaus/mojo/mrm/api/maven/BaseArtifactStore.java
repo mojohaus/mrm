@@ -21,9 +21,7 @@ public abstract class BaseArtifactStore implements ArtifactStore {
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         throw new UnsupportedOperationException("Read-only artifact store");
     }
@@ -33,24 +31,18 @@ public abstract class BaseArtifactStore implements ArtifactStore {
         throw new UnsupportedOperationException("Read-only artifact store");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void setArchetypeCatalog(InputStream content) throws IOException {
         throw new UnsupportedOperationException("Read-only artifact store");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         throw new ArchetypeCatalogNotFoundException(
                 "Archetype Catalog not available", new UnsupportedOperationException());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
         throw new ArchetypeCatalogNotFoundException(
                 "Archetype Catalog not available", new UnsupportedOperationException());

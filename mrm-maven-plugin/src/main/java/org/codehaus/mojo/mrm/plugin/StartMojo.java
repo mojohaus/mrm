@@ -50,10 +50,7 @@ public class StartMojo extends AbstractStartMojo {
         super(factoryHelper, proxyRepo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
     public void doExecute() throws MojoExecutionException, MojoFailureException {
         FileSystemServer mrm = createFileSystemServer(createArtifactStore());
         getLog().info("Starting Mock Repository Manager");
@@ -64,7 +61,7 @@ public class StartMojo extends AbstractStartMojo {
             getLog().info("Setting property '" + propertyName + "' to '" + url + "'.");
             project.getProperties().setProperty(propertyName, url);
         }
-        Map pluginContext = session.getPluginContext(pluginDescriptor, project);
+        Map<String, Object> pluginContext = session.getPluginContext(pluginDescriptor, project);
         pluginContext.put(getFileSystemServerKey(getMojoExecution()), mrm);
     }
 

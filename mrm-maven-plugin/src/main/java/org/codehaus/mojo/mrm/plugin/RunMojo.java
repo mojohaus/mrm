@@ -44,9 +44,7 @@ public class RunMojo extends AbstractStartMojo {
         super(factoryHelper, proxyRepo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void doExecute() throws MojoExecutionException, MojoFailureException {
         if (!session.getSettings().isInteractiveMode()) {
             throw new MojoExecutionException(
@@ -64,7 +62,7 @@ public class RunMojo extends AbstractStartMojo {
             getLog().info("Hit ENTER on the console to stop the Mock Repository Manager and continue the build.");
             consoleScanner.waitForFinished();
         } catch (InterruptedException e) {
-            // ignore
+            Thread.currentThread().interrupt();
         } finally {
             getLog().info("Stopping Mock Repository Manager " + url);
             mrm.finish();
@@ -72,7 +70,7 @@ public class RunMojo extends AbstractStartMojo {
                 mrm.waitForFinished();
                 getLog().info("Mock Repository Manager " + url + " is stopped.");
             } catch (InterruptedException e) {
-                // ignore
+                Thread.currentThread().interrupt();
             }
         }
     }

@@ -60,9 +60,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         this.stores = stores;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getGroupIds(String parentGroupId) {
         Set<String> result = new TreeSet<>();
         for (ArtifactStore store : stores) {
@@ -75,9 +73,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getArtifactIds(String groupId) {
         Set<String> result = new TreeSet<>();
         for (ArtifactStore store : stores) {
@@ -89,9 +85,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<String> getVersions(String groupId, String artifactId) {
         Set<String> result = new TreeSet<>();
         for (ArtifactStore store : stores) {
@@ -103,9 +97,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
         Set<Artifact> result = new TreeSet<>();
         for (ArtifactStore store : stores) {
@@ -117,9 +109,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
         for (ArtifactStore store : stores) {
             try {
@@ -131,9 +121,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         throw new ArtifactNotFoundException(artifact);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
         for (ArtifactStore store : stores) {
             try {
@@ -145,9 +133,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         throw new ArtifactNotFoundException(artifact);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         for (ArtifactStore store : stores) {
             try {
@@ -159,16 +145,12 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         throw new ArtifactNotFoundException(artifact);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         throw new IOException("Read-only store");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         boolean found = false;
         Metadata result = new Metadata();
@@ -261,9 +243,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         boolean found = false;
         long lastModified = 0;
@@ -285,6 +265,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return lastModified;
     }
 
+    @Override
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         boolean found = false;
         ArchetypeCatalog result = new ArchetypeCatalog();
@@ -303,6 +284,7 @@ public class CompositeArtifactStore extends BaseArtifactStore {
         return result;
     }
 
+    @Override
     public long getArchetypeCatalogLastModified() throws IOException, ArchetypeCatalogNotFoundException {
         boolean found = false;
         long lastModified = 0;

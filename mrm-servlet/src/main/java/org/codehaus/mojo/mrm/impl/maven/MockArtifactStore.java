@@ -18,10 +18,10 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -195,9 +195,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized Set<String> getGroupIds(String parentGroupId) {
         TreeSet<String> result = new TreeSet<>();
         if (StringUtils.isEmpty(parentGroupId)) {
@@ -218,26 +216,20 @@ public class MockArtifactStore extends BaseArtifactStore {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized Set<String> getArtifactIds(String groupId) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         return artifactMap == null ? Collections.emptySet() : new TreeSet<>(artifactMap.keySet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized Set<String> getVersions(String groupId, String artifactId) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
         return versionMap == null ? Collections.emptySet() : new TreeSet<>(versionMap.keySet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
@@ -246,9 +238,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         return filesMap == null ? Collections.emptySet() : new HashSet<>(filesMap.keySet());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
@@ -275,9 +265,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         return content.getLastModified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
@@ -304,9 +292,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         return content.getLength();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
@@ -333,9 +319,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         return content.getInputStream();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized void set(Artifact artifact, InputStream content) throws IOException {
         try {
             set(artifact, new BytesContent(IOUtils.toByteArray(content)));
@@ -360,9 +344,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         filesMap.put(artifact, content);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     @SuppressWarnings("checkstyle:MethodLength")
     public synchronized Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
         Metadata metadata = new Metadata();
@@ -528,9 +510,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         return metadata;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
         boolean haveResult = false;
         long result = 0;
@@ -583,6 +563,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         throw new MetadataNotFoundException(path);
     }
 
+    @Override
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         if (archetypeCatalog != null) {
             ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
@@ -602,6 +583,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         throw new ArchetypeCatalogNotFoundException();
     }
 
+    @Override
     public long getArchetypeCatalogLastModified() throws ArchetypeCatalogNotFoundException {
         if (archetypeCatalog != null) {
             return archetypeCatalog.getLastModified();
@@ -711,23 +693,17 @@ public class MockArtifactStore extends BaseArtifactStore {
             this.bytes = bytes;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public long getLastModified() {
             return lastModified;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public InputStream getInputStream() throws IOException {
             return new ByteArrayInputStream(bytes);
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public long getLength() {
             return bytes.length;
         }
@@ -757,23 +733,17 @@ public class MockArtifactStore extends BaseArtifactStore {
             this.file = file;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public long getLastModified() {
             return file.lastModified();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public InputStream getInputStream() throws IOException {
-            return new FileInputStream(file);
+            return Files.newInputStream(file.toPath());
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public long getLength() {
             return file.length();
         }
@@ -809,6 +779,7 @@ public class MockArtifactStore extends BaseArtifactStore {
             }
         }
 
+        @Override
         public long getLastModified() {
             if (archivedFile == null) {
                 createArchive();
@@ -816,13 +787,15 @@ public class MockArtifactStore extends BaseArtifactStore {
             return archivedFile.lastModified();
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
             if (archivedFile == null) {
                 createArchive();
             }
-            return new FileInputStream(archivedFile);
+            return Files.newInputStream(archivedFile.toPath());
         }
 
+        @Override
         public long getLength() {
             if (archivedFile == null) {
                 createArchive();

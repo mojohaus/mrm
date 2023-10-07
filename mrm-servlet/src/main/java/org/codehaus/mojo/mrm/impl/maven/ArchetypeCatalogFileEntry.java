@@ -37,13 +37,6 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 public class ArchetypeCatalogFileEntry extends BaseFileEntry {
 
     /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
      * The backing {@link ArtifactStore}.
      *
      * @since 1.0
@@ -65,9 +58,7 @@ public class ArchetypeCatalogFileEntry extends BaseFileEntry {
         this.store = store;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getSize() throws IOException {
         try {
             ArchetypeCatalog metadata = store.getArchetypeCatalog();
@@ -80,9 +71,7 @@ public class ArchetypeCatalogFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public InputStream getInputStream() throws IOException {
         try {
             ArchetypeCatalog metadata = store.getArchetypeCatalog();
@@ -95,9 +84,7 @@ public class ArchetypeCatalogFileEntry extends BaseFileEntry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public long getLastModified() throws IOException {
         try {
             return store.getArchetypeCatalogLastModified();
