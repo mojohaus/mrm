@@ -345,6 +345,14 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
             return new MetadataFileEntry(this, parent, path, store);
         }
 
+        if (name.startsWith("maven-metadata.xml") && (name.endsWith(".sha1") || name.endsWith(".md5"))) {
+            // checksum for metadata ... ignore now
+            // return something != null
+            // TODO add support for storing checksum files
+            // https://github.com/mojohaus/mrm/issues/179
+            return new MetadataFileEntry(this, parent, path, store);
+        }
+
         Artifact artifact = getArtifact(parent, name);
 
         if (artifact == null) {

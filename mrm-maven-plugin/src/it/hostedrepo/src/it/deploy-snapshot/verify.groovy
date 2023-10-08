@@ -8,3 +8,6 @@ assert path != null : "Could not locate pom based on regular expression"
 assert new File(path).exists()
 assert new File(path + '.md5').exists()
 assert new File(path + '.sha1').exists()
+
+def logs = new File( basedir, 'build.log').text;
+assert !logs.contains('[WARNING] Failed to upload checksum')
