@@ -17,7 +17,6 @@
 package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.archetype.ArchetypeManager;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadataManager;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -30,12 +29,6 @@ public interface FactoryHelper {
      * @return returns the {@link RepositorySystem} instance
      */
     RepositorySystem getRepositorySystem();
-
-    /**
-     * @return returns the {@link RepositoryMetadataManager} instance
-     * @since 1.0
-     */
-    RepositoryMetadataManager getRepositoryMetadataManager();
 
     /**
      * @return returns the {@link ArchetypeManager} instance
