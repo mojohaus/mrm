@@ -20,26 +20,40 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.*;
-import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.ResolverUtils;
-import org.codehaus.mojo.mrm.api.maven.*;
+import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
+import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.plugin.FactoryHelper;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.metadata.DefaultMetadata;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.MetadataRequest;
+import org.eclipse.aether.resolution.MetadataResult;
 
 import static java.util.Optional.ofNullable;
 
@@ -51,19 +65,9 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     private final List<RemoteRepository> remoteRepositories;
 
     /**
-     * The remote repositories that we will query.
-     */
-    private final List<ArtifactRepository> artifactRepositories;
-
-    /**
      * The {@link Log} to log to.
      */
     private final Log log;
-
-    /**
-     * A version range that matches any version
-     */
-    private static final VersionRange ANY_VERSION;
 
     /**
      * A cache of what artifacts are present.
@@ -73,17 +77,6 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     private final RepositorySystem repositorySystem;
 
     private final MavenSession session;
-
-    static {
-        try {
-            ANY_VERSION = VersionRange.createFromVersionSpec("[0,]");
-        } catch (InvalidVersionSpecificationException e) {
-            // must never happen... so if it does make sure we stop
-            throw new IllegalStateException("[0,] should always be a valid version specification", e);
-        }
-    }
-
-    private final RepositoryMetadataManager repositoryMetadataManager;
 
     private final ArchetypeManager archetypeManager;
 
@@ -96,16 +89,10 @@ public class ProxyArtifactStore extends BaseArtifactStore {
      */
     public ProxyArtifactStore(FactoryHelper factoryHelper, MavenSession session, Log log) {
         this.repositorySystem = Objects.requireNonNull(factoryHelper.getRepositorySystem());
-        this.repositoryMetadataManager = Objects.requireNonNull(factoryHelper.getRepositoryMetadataManager());
         this.archetypeManager = Objects.requireNonNull(factoryHelper.getArchetypeManager());
         this.log = log;
         this.session = Objects.requireNonNull(session);
 
-        artifactRepositories = Stream.concat(
-                        session.getCurrentProject().getRemoteArtifactRepositories().stream(),
-                        session.getCurrentProject().getPluginArtifactRepositories().stream())
-                .distinct()
-                .collect(Collectors.toList());
         remoteRepositories = Stream.concat(
                         session.getCurrentProject().getRemoteProjectRepositories().stream(),
                         session.getCurrentProject().getRemotePluginRepositories().stream())
@@ -242,49 +229,76 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     @Override
     public Metadata getMetadata(String path) throws MetadataNotFoundException {
-        path = StringUtils.strip(path, "/");
-        Metadata metadata = new Metadata();
-        boolean foundSomething = false;
+        LinkedList<String> pathItems =
+                new LinkedList<>(Arrays.asList(StringUtils.strip(path, "/").split("/")));
 
-        // is this path a groupId:artifactId pair?
-        int slashIndex = path.lastIndexOf('/');
-        String artifactId = slashIndex == -1 ? null : path.substring(slashIndex + 1);
-        String groupId = slashIndex == -1 ? null : path.substring(0, slashIndex).replace('/', '.');
-        if (!StringUtils.isEmpty(artifactId) && !StringUtils.isEmpty(groupId)) {
-            org.apache.maven.artifact.Artifact artifact = createDependencyArtifact(groupId, artifactId);
-            ArtifactRepositoryMetadata artifactRepositoryMetadata = new ArtifactRepositoryMetadata(artifact);
-            try {
-                repositoryMetadataManager.resolve(
-                        artifactRepositoryMetadata, artifactRepositories, session.getLocalRepository());
+        String version;
+        String artifactId;
+        String groupId;
 
-                final Metadata artifactMetadata = artifactRepositoryMetadata.getMetadata();
-                if (artifactMetadata.getVersioning() != null) {
-                    foundSomething = true;
-                    if (StringUtils.isEmpty(metadata.getGroupId())) {
-                        metadata.setGroupId(groupId);
-                        metadata.setArtifactId(artifactId);
-                    }
-                    metadata.merge(artifactMetadata);
-                    for (String v : artifactMetadata.getVersioning().getVersions()) {
-                        addResolved(path + "/" + v);
-                    }
+        org.eclipse.aether.metadata.Metadata.Nature metadataNature;
+
+        if (pathItems.getLast().endsWith("-SNAPSHOT")) {
+            // V level metadata request
+            if (pathItems.size() < 3) {
+                // at least we need G:A:V
+                throw new MetadataNotFoundException(path);
+            }
+            metadataNature = org.eclipse.aether.metadata.Metadata.Nature.SNAPSHOT;
+            version = pathItems.pollLast();
+            artifactId = pathItems.pollLast();
+        } else {
+            // A or G level metadata request
+            metadataNature = org.eclipse.aether.metadata.Metadata.Nature.RELEASE_OR_SNAPSHOT;
+            version = null;
+            artifactId = null;
+        }
+
+        groupId = String.join(".", pathItems);
+
+        org.eclipse.aether.metadata.Metadata requestedMetadata =
+                new DefaultMetadata(groupId, artifactId, version, "maven-metadata.xml", metadataNature);
+        List<MetadataRequest> requests = new ArrayList<>();
+        for (RemoteRepository repo : remoteRepositories) {
+            MetadataRequest request = new MetadataRequest();
+            request.setMetadata(requestedMetadata);
+            request.setRepository(repo);
+            requests.add(request);
+        }
+
+        List<MetadataResult> metadataResults =
+                repositorySystem.resolveMetadata(session.getRepositorySession(), requests);
+
+        Metadata resultMetadata = null;
+        for (MetadataResult result : metadataResults) {
+            if (!result.isResolved()) {
+                continue;
+            }
+            Metadata metadata = readMetadata(result.getMetadata().getFile());
+            if (metadata != null) {
+                if (resultMetadata == null) {
+                    resultMetadata = metadata;
+                } else {
+                    resultMetadata.merge(metadata);
                 }
-            } catch (RepositoryMetadataResolutionException e) {
-                log.debug(e);
             }
         }
 
-        if (!foundSomething) {
+        if (resultMetadata == null) {
             throw new MetadataNotFoundException(path);
         }
+
         addResolved(path);
-        return metadata;
+        return resultMetadata;
     }
 
-    private org.apache.maven.artifact.Artifact createDependencyArtifact(String groupId, String artifactId) {
-
-        return new org.apache.maven.artifact.DefaultArtifact(
-                groupId, artifactId, ANY_VERSION, "compile", "pom", "", null);
+    private Metadata readMetadata(File file) {
+        try (InputStream in = Files.newInputStream(file.toPath())) {
+            return new MetadataXpp3Reader().read(in);
+        } catch (IOException | XmlPullParserException e) {
+            log.warn("Error reading metadata from file: " + file, e);
+        }
+        return null;
     }
 
     @Override
