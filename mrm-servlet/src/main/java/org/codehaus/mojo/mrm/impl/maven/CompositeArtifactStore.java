@@ -18,17 +18,11 @@ package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Plugin;
-import org.apache.maven.artifact.repository.metadata.Snapshot;
-import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
-import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
@@ -152,92 +146,22 @@ public class CompositeArtifactStore extends BaseArtifactStore {
 
     @Override
     public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
-        boolean found = false;
-        Metadata result = new Metadata();
-        Set<String> pluginArtifactIds = new HashSet<>();
-        Set<String> snapshotVersions = new HashSet<>();
+        Metadata result = null;
+
         for (ArtifactStore store : stores) {
             try {
-                Metadata partial = store.getMetadata(path);
-                if (StringUtils.isEmpty(result.getArtifactId()) && !StringUtils.isEmpty(partial.getArtifactId())) {
-                    result.setArtifactId(partial.getArtifactId());
-                    found = true;
-                }
-                if (StringUtils.isEmpty(result.getGroupId()) && !StringUtils.isEmpty(partial.getGroupId())) {
-                    result.setGroupId(partial.getGroupId());
-                    found = true;
-                }
-                if (StringUtils.isEmpty(result.getVersion()) && !StringUtils.isEmpty(partial.getVersion())) {
-                    result.setVersion(partial.getVersion());
-                    found = true;
-                }
-                if (partial.getPlugins() != null && !partial.getPlugins().isEmpty()) {
-                    for (Plugin plugin : partial.getPlugins()) {
-                        if (!pluginArtifactIds.contains(plugin.getArtifactId())) {
-                            result.addPlugin(plugin);
-                            pluginArtifactIds.add(plugin.getArtifactId());
-                        }
-                    }
-                    found = true;
-                }
-                if (partial.getVersioning() != null) {
-                    Versioning rVers = result.getVersioning();
-                    if (rVers == null) {
-                        rVers = new Versioning();
-                    }
-                    Versioning pVers = partial.getVersioning();
-                    String rLU = found ? rVers.getLastUpdated() : null;
-                    String pLU = pVers.getLastUpdated();
-                    if (pLU != null && (rLU == null || rLU.compareTo(pLU) < 0)) {
-                        // partial is newer or only
-                        if (!StringUtils.isEmpty(pVers.getLatest())) {
-                            rVers.setLatest(pVers.getLatest());
-                        }
-
-                        if (!StringUtils.isEmpty(pVers.getRelease())) {
-                            rVers.setRelease(pVers.getRelease());
-                        }
-                        rVers.setLastUpdated(pVers.getLastUpdated());
-                    }
-                    for (String version : pVers.getVersions()) {
-                        if (!rVers.getVersions().contains(version)) {
-                            rVers.addVersion(version);
-                        }
-                    }
-                    if (pVers.getSnapshot() != null) {
-                        if (rVers.getSnapshot() == null
-                                || pVers.getSnapshot().getBuildNumber()
-                                        > rVers.getSnapshot().getBuildNumber()) {
-                            Snapshot snapshot = new Snapshot();
-                            snapshot.setBuildNumber(pVers.getSnapshot().getBuildNumber());
-                            snapshot.setTimestamp(pVers.getSnapshot().getTimestamp());
-                            rVers.setSnapshot(snapshot);
-                        }
-                    }
-                    try {
-                        if (pVers.getSnapshotVersions() != null
-                                && !pVers.getSnapshotVersions().isEmpty()) {
-                            for (SnapshotVersion snapshotVersion : pVers.getSnapshotVersions()) {
-                                String key = snapshotVersion.getVersion() + "-" + snapshotVersion.getClassifier() + "."
-                                        + snapshotVersion.getExtension();
-                                if (!snapshotVersions.contains(key)) {
-                                    rVers.addSnapshotVersion(snapshotVersion);
-                                    snapshotVersions.add(key);
-                                }
-                            }
-                        }
-                    } catch (NoSuchMethodError e) {
-                        // Maven 2
-                    }
-
-                    result.setVersioning(rVers);
-                    found = true;
+                Metadata metadata = store.getMetadata(path);
+                if (result == null) {
+                    result = metadata;
+                } else {
+                    result.merge(metadata);
                 }
             } catch (MetadataNotFoundException e) {
                 // ignore
             }
         }
-        if (!found) {
+
+        if (result == null) {
             throw new MetadataNotFoundException(path);
         }
         return result;

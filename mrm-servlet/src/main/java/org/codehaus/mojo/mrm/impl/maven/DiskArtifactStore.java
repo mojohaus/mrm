@@ -21,24 +21,35 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
+import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
@@ -207,7 +218,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
 
     @Override
     public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
-        File file = getFile(artifact);
+        File file = getFileByBasename(artifact);
         if (!file.isFile()) {
             throw new ArtifactNotFoundException(artifact);
         }
@@ -216,7 +227,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
 
     @Override
     public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
-        File file = getFile(artifact);
+        File file = getFileByBasename(artifact);
         if (!file.isFile()) {
             throw new ArtifactNotFoundException(artifact);
         }
@@ -225,7 +236,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
 
     @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
-        File file = getFile(artifact);
+        File file = getFileByBasename(artifact);
         if (!file.isFile()) {
             throw new ArtifactNotFoundException(artifact);
         }
@@ -253,21 +264,12 @@ public class DiskArtifactStore extends BaseArtifactStore {
     }
 
     @Override
-    public Metadata getMetadata(String path) throws IOException, MetadataNotFoundException {
-        File file = root;
-        String[] parts = StringUtils.strip(path, "/").split("/");
-        for (String part : parts) {
-            file = new File(file, part);
-        }
-        file = new File(file, "maven-metadata.xml");
-        if (!file.isFile()) {
+    public Metadata getMetadata(String path) throws MetadataNotFoundException {
+        MetadataInfo metadataInfo = prepareMetadata(path);
+        if (metadataInfo != null) {
+            return metadataInfo.metadata;
+        } else {
             throw new MetadataNotFoundException(path);
-        }
-
-        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-            return new MetadataXpp3Reader().read(inputStream);
-        } catch (XmlPullParserException e) {
-            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -291,27 +293,13 @@ public class DiskArtifactStore extends BaseArtifactStore {
     }
 
     @Override
-    public long getMetadataLastModified(String path) throws IOException, MetadataNotFoundException {
-        File file = root;
-        String[] parts = StringUtils.strip(path, "/").split("/");
-        Stack<File> stack = new Stack<>();
-        for (int i = 0; i < parts.length; i++) {
-            if ("..".equals(parts[i])) {
-                if (!stack.isEmpty()) {
-                    file = stack.pop();
-                } else {
-                    file = root;
-                }
-            } else if (!".".equals(parts[i])) {
-                file = new File(file, parts[i]);
-                stack.push(file);
-            }
-        }
-        file = new File(file, "maven-metadata.xml");
-        if (!file.isFile()) {
+    public long getMetadataLastModified(String path) throws MetadataNotFoundException {
+        MetadataInfo metadataInfo = prepareMetadata(path);
+        if (metadataInfo != null) {
+            return metadataInfo.lastModified;
+        } else {
             throw new MetadataNotFoundException(path);
         }
-        return file.lastModified();
     }
 
     @Override
@@ -337,10 +325,192 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return file.lastModified();
     }
 
+    private File getFileByBasename(Artifact artifact) {
+        File groupDir = new File(root, artifact.getGroupId().replace('.', '/'));
+        File artifactDir = new File(groupDir, artifact.getArtifactId());
+        File versionDir = new File(artifactDir, artifact.getVersion());
+        File file = new File(versionDir, artifact.getName());
+        if (!file.exists()) {
+            file = new File(versionDir, artifact.getBaseVersionName());
+        }
+        return file;
+    }
+
     private File getFile(Artifact artifact) {
         File groupDir = new File(root, artifact.getGroupId().replace('.', '/'));
         File artifactDir = new File(groupDir, artifact.getArtifactId());
         File versionDir = new File(artifactDir, artifact.getVersion());
         return new File(versionDir, artifact.getName());
+    }
+
+    private MetadataInfo prepareMetadata(String path) {
+        File file = root;
+        String[] parts = StringUtils.strip(path, "/").split("/");
+        for (String part : parts) {
+            file = new File(file, part);
+        }
+
+        MetadataInfo metadataInfo = null;
+        try {
+            metadataInfo = getMetadataFromLocalPath(file);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        if (metadataInfo == null) {
+            try {
+                metadataInfo = getMetadataFromSnapshotVersion(path);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        return metadataInfo;
+    }
+
+    private MetadataInfo getMetadataFromLocalPath(File path) throws IOException {
+
+        File file = new File(path, "maven-metadata.xml");
+
+        if (!file.isFile()) {
+            return null;
+        }
+
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+            return new MetadataInfo(new MetadataXpp3Reader().read(inputStream), file.lastModified());
+        } catch (XmlPullParserException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    private MetadataInfo getMetadataFromSnapshotVersion(String path) throws IOException {
+
+        if (!path.endsWith("-SNAPSHOT")) {
+            return null;
+        }
+
+        Path artifactPath = root.toPath().resolve(path);
+        if (!Files.exists(artifactPath)) {
+            return null;
+        }
+
+        LinkedList<String> pathItems =
+                new LinkedList<>(Arrays.asList(StringUtils.strip(path, "/").split("/")));
+
+        if (pathItems.size() < 3) {
+            return null;
+        }
+
+        String version = pathItems.pollLast();
+        String baseVersion = StringUtils.removeEnd(version, "-SNAPSHOT");
+        String artifactId = pathItems.pollLast();
+
+        String groupId = String.join(".", pathItems);
+
+        List<String> artifactsList = getArtifactsListFromPath(artifactPath, artifactId, version);
+        if (artifactsList.isEmpty()) {
+            artifactsList = getArtifactsListFromPath(artifactPath, artifactId, baseVersion);
+        }
+
+        if (artifactsList.isEmpty()) {
+            return null;
+        }
+
+        DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.of("UTC"));
+        DateTimeFormatter formatTime = DateTimeFormatter.ofPattern("HHmmss").withZone(ZoneId.of("UTC"));
+        DateTimeFormatter formatDateTime =
+                DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("UTC"));
+
+        Metadata metadata = new Metadata();
+        metadata.setGroupId(groupId);
+        metadata.setArtifactId(artifactId);
+        metadata.setVersion(version);
+
+        List<SnapshotVersion> snapshotVersions = new ArrayList<>();
+
+        int buildNr = -1;
+        Instant dateTime = null;
+
+        // first collect items and discover the latest timestamps
+        for (String artifact : artifactsList) {
+            Pattern pattern = Pattern.compile("\\Q" + artifactId + "\\E-\\Q" + baseVersion + "\\E-"
+                    + "(SNAPSHOT|(\\d{8})\\.(\\d{6})-(\\d+))(?:-([^.]+))?\\.(.+)");
+
+            Matcher matcher = pattern.matcher(artifact);
+            if (matcher.find()) {
+                SnapshotVersion snapshotVersion = new SnapshotVersion();
+                if ("SNAPSHOT".equals(matcher.group(1))) {
+                    buildNr = 9999;
+                    Instant aDateTime = Files.getLastModifiedTime(artifactPath.resolve(artifact))
+                            .toInstant();
+                    if (dateTime == null || dateTime.isBefore(aDateTime)) {
+                        dateTime = aDateTime;
+                    }
+                } else {
+                    buildNr = Integer.parseInt(matcher.group(4));
+                    dateTime = formatDateTime.parse(matcher.group(2) + matcher.group(3), Instant::from);
+                }
+                if (matcher.group(5) != null) {
+                    snapshotVersion.setClassifier(matcher.group(5));
+                }
+                snapshotVersion.setExtension(matcher.group(6));
+                snapshotVersions.add(snapshotVersion);
+            }
+        }
+
+        if (snapshotVersions.isEmpty()) {
+            // no items in directory
+            return null;
+        }
+
+        String snapshotVersionText =
+                baseVersion + "-" + formatDate.format(dateTime) + "." + formatTime.format(dateTime) + "-" + buildNr;
+        String snapshotVersionUpdated = formatDateTime.format(dateTime);
+
+        // next populate version and update time
+        snapshotVersions.forEach(snapshotVersion -> {
+            snapshotVersion.setVersion(snapshotVersionText);
+            snapshotVersion.setUpdated(snapshotVersionUpdated);
+        });
+
+        Versioning versioning = new Versioning();
+        versioning.setLastUpdated(formatDateTime.format(dateTime));
+
+        versioning.setSnapshotVersions(snapshotVersions);
+
+        Snapshot snapshot = new Snapshot();
+        snapshot.setTimestamp(formatDate.format(dateTime) + "." + formatTime.format(dateTime));
+        snapshot.setBuildNumber(buildNr);
+        versioning.setSnapshot(snapshot);
+
+        metadata.setVersioning(versioning);
+        return new MetadataInfo(metadata, System.currentTimeMillis());
+    }
+
+    private List<String> getArtifactsListFromPath(Path artifactPath, String artifactId, String version)
+            throws IOException {
+
+        List<String> artifactsList;
+        try (Stream<Path> pathStream = Files.walk(artifactPath, 1)) {
+            String artifactVersion = artifactId + "-" + version;
+            artifactsList = pathStream
+                    .map(p -> p.getFileName().toString())
+                    .filter(name -> name.startsWith(artifactVersion))
+                    .filter(name -> !name.endsWith(".lastUpdated"))
+                    .collect(Collectors.toList());
+        }
+
+        return artifactsList;
+    }
+
+    private static class MetadataInfo {
+
+        private final Metadata metadata;
+        private final long lastModified;
+
+        private MetadataInfo(Metadata metadata, long lastModified) {
+            this.metadata = metadata;
+            this.lastModified = lastModified;
+        }
     }
 }
