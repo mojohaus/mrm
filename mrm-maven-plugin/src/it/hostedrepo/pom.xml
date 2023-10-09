@@ -68,9 +68,9 @@
             </goals>
             <configuration>
               <repositories>
-                <mockRepo>
-                  <source>${project.build.directory}/mock-repo</source>
-                </mockRepo>
+                <localRepo>
+                  <source>${project.basedir}/src/mrm-local-repo</source>
+                </localRepo>
                 <proxyRepo/>
               </repositories>
             </configuration>

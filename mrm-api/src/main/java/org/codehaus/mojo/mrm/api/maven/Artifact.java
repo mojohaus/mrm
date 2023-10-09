@@ -16,11 +16,15 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Represents a specific artifact in a Maven repository. Implements {@link Comparable} to sort based on
@@ -81,13 +85,6 @@ public final class Artifact implements Comparable<Artifact> {
      * @since 1.0
      */
     private final Integer buildNumber;
-
-    /**
-     * The lazy idempotent cache of the artifact's name.
-     *
-     * @since 1.0
-     */
-    private String name;
 
     /**
      * The lazy idempotent cache of the artifact's timestamp version string (which will be equal to the {@link #version}
@@ -199,13 +196,17 @@ public final class Artifact implements Comparable<Artifact> {
      * @since 1.0
      */
     public String getName() {
-        if (name == null) {
-            name = MessageFormat.format(
-                    "{0}-{1}{2}.{3}",
-                    new Object[] {artifactId, getTimestampVersion(), (classifier == null ? "" : "-" + classifier), type
-                    });
-        }
-        return name;
+        return artifactId + "-" + getTimestampVersion() + (classifier == null ? "" : "-" + classifier) + "." + type;
+    }
+
+    /**
+     * Returns the name of the artifact.
+     *
+     * @return the name of the artifact.
+     * @since 1.0
+     */
+    public String getBaseVersionName() {
+        return artifactId + "-" + version + (classifier == null ? "" : "-" + classifier) + "." + type;
     }
 
     /**
@@ -312,15 +313,13 @@ public final class Artifact implements Comparable<Artifact> {
         if (timestampVersion == null) {
             if (timestamp != null) {
                 assert isSnapshot();
-                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss");
-                fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-                timestampVersion = MessageFormat.format(
-                        "{0}-{1}-{2}",
-                        new Object[] {
-                            this.version.substring(0, this.version.length() - "-SNAPSHOT".length()),
-                            fmt.format(new Date(timestamp.longValue())),
-                            buildNumber
-                        });
+
+                DateTimeFormatter timestampFormatter =
+                        DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss").withZone(ZoneId.of("UTC"));
+
+                timestampVersion = StringUtils.removeEnd(version, "-SNAPSHOT")
+                        + "-" + timestampFormatter.format(Instant.ofEpochMilli(timestamp))
+                        + "-" + buildNumber;
             } else {
                 timestampVersion = version;
             }
