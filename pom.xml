@@ -25,7 +25,7 @@
 
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>mrm</artifactId>
-  <version>1.6.0</version>
+  <version>1.6.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager :: Project</name>
@@ -79,7 +79,7 @@
   <scm>
     <connection>scm:git:https://github.com/mojohaus/mrm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mojohaus/mrm.git</developerConnection>
-    <tag>1.6.0</tag>
+    <tag>1.5.0</tag>
     <url>https://github.com/mojohaus/mrm/tree/master</url>
   </scm>
   <issueManagement>
@@ -98,7 +98,7 @@
     <recommendedJavaBuildVersion>11</recommendedJavaBuildVersion>
     <jetty.version>9.4.53.v20231009</jetty.version>
     <checkstyle.violation.ignore>MagicNumber</checkstyle.violation.ignore>
-    <project.build.outputTimestamp>2023-11-02T22:52:33Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-11-02T22:53:14Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
