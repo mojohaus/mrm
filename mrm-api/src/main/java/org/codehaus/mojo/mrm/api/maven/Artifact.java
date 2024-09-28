@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a specific artifact in a Maven repository. Implements {@link Comparable} to sort based on

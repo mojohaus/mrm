@@ -328,12 +328,12 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     @Override
     public ArchetypeCatalog getArchetypeCatalog() {
-        return archetypeManager.getLocalCatalog(session.getProjectBuildingRequest());
+        return archetypeManager.getLocalCatalog(session.getRepositorySession());
     }
 
     @Override
     public long getArchetypeCatalogLastModified() throws ArchetypeCatalogNotFoundException {
-        if (archetypeManager.getLocalCatalog(session.getProjectBuildingRequest()) != null) {
+        if (archetypeManager.getLocalCatalog(session.getRepositorySession()) != null) {
             return System.currentTimeMillis();
         } else {
             throw new ArchetypeCatalogNotFoundException();
