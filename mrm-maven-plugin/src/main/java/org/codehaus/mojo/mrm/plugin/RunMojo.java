@@ -17,7 +17,6 @@ package org.codehaus.mojo.mrm.plugin;
  */
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -37,11 +36,10 @@ public class RunMojo extends AbstractStartMojo {
     /**
      * Creates a new instance
      * @param factoryHelper injected {@link FactoryHelper} instance
-     * @param proxyRepo injected proxyRepo
      */
     @Inject
-    public RunMojo(FactoryHelper factoryHelper, @Named("proxyRepo") ArtifactStoreFactory proxyRepo) {
-        super(factoryHelper, proxyRepo);
+    public RunMojo(FactoryHelper factoryHelper) {
+        super(factoryHelper);
     }
 
     @Override

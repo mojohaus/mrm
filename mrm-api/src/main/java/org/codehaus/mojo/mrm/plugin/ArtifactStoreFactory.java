@@ -16,8 +16,6 @@
 
 package org.codehaus.mojo.mrm.plugin;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 
 /**
@@ -30,18 +28,15 @@ public interface ArtifactStoreFactory {
      * Creates a new {@link ArtifactStore} instance, note that implementations are free to create a singleton and always
      * return that instance.
      *
-     * @param session {@link MavenSession} instance
-     * @param log {@link Log} instance
-     *
+     * @param factoryHelper {@link FactoryHelper} instance
      * @return the {@link ArtifactStore} instance.
      * @since 1.0
      */
-    ArtifactStore newInstance(MavenSession session, Log log);
+    default ArtifactStore newInstance(FactoryHelper factoryHelper) {
+        return newInstance();
+    }
 
-    /**
-     * Sets the {@link FactoryHelper} instance where the object is not injected by dependency injection
-     *
-     * @param factoryHelper {@link FactoryHelper} instance
-     */
-    void setFactoryHelper(FactoryHelper factoryHelper);
+    default ArtifactStore newInstance() {
+        throw new UnsupportedOperationException("method newInstance() not implemented");
+    }
 }

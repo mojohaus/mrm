@@ -53,7 +53,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
@@ -65,6 +64,8 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An artifact store that keeps all its artifacts in memory.
@@ -73,7 +74,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  */
 public class MockArtifactStore extends BaseArtifactStore {
 
-    private final Log log;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MockArtifactStore.class);
 
     private final boolean lazyArchiver;
 
@@ -100,29 +101,16 @@ public class MockArtifactStore extends BaseArtifactStore {
      * @since 1.0
      */
     public MockArtifactStore(File root) {
-        this(null, root);
+        this(root, true);
     }
 
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
      * @param root the root to search for POMs within.
-     * @param log  the {@link Log} to log to.
      * @since 1.0
      */
-    public MockArtifactStore(Log log, File root) {
-        this(log, root, true);
-    }
-
-    /**
-     * Create a mock artifact store by scanning for POMs within the specified root.
-     *
-     * @param root the root to search for POMs within.
-     * @param log  the {@link Log} to log to.
-     * @since 1.0
-     */
-    public MockArtifactStore(Log log, File root, boolean lazyArchiver) {
-        this.log = log;
+    public MockArtifactStore(File root, boolean lazyArchiver) {
         this.lazyArchiver = lazyArchiver;
 
         if (root.isDirectory()) {
@@ -178,12 +166,12 @@ public class MockArtifactStore extends BaseArtifactStore {
                         set(new Artifact(groupId, model.getArtifactId(), version, classifier, type), content);
                     }
                 } catch (IOException e) {
-                    if (log != null) {
-                        log.warn("Could not read from " + file, e);
+                    if (LOGGER != null) {
+                        LOGGER.warn("Could not read from " + file, e);
                     }
                 } catch (XmlPullParserException e) {
-                    if (log != null) {
-                        log.warn("Could not parse " + file, e);
+                    if (LOGGER != null) {
+                        LOGGER.warn("Could not parse " + file, e);
                     }
                 }
             }
@@ -570,13 +558,13 @@ public class MockArtifactStore extends BaseArtifactStore {
             try {
                 return reader.read(archetypeCatalog.getInputStream());
             } catch (IOException e) {
-                if (log != null) {
-                    log.warn("Could not read from archetype-catalog.xml", e);
+                if (LOGGER != null) {
+                    LOGGER.warn("Could not read from archetype-catalog.xml", e);
                 }
             } catch (XmlPullParserException e) {
 
-                if (log != null) {
-                    log.warn("Could not parse archetype-catalog.xml", e);
+                if (LOGGER != null) {
+                    LOGGER.warn("Could not parse archetype-catalog.xml", e);
                 }
             }
         }

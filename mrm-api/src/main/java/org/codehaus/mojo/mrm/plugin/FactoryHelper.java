@@ -17,6 +17,7 @@
 package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.archetype.ArchetypeManager;
+import org.apache.maven.execution.MavenSession;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -35,4 +36,9 @@ public interface FactoryHelper {
      * @since 1.0
      */
     ArchetypeManager getArchetypeManager();
+
+    /**
+     * @return returns the current {@link MavenSession} instance
+     */
+    MavenSession getMavenSession();
 }
