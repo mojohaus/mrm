@@ -5,8 +5,6 @@ updates:
     schedule:
       interval: "daily"
     ignore:
-      # Ignore Maven Core updates
-      - dependency-name: "org.apache.maven:*"
       # Jetty >=10 requires Java 11+
       - dependency-name: "org.eclipse.jetty:*"
         versions: [">= 10.0"]
