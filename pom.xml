@@ -95,7 +95,6 @@
     <mavenVersion>3.9.11</mavenVersion>
     <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
     <mojo.java.target>8</mojo.java.target>
-    <recommendedJavaBuildVersion>11</recommendedJavaBuildVersion>
     <jetty.version>9.4.58.v20250814</jetty.version>
     <project.build.outputTimestamp>2023-11-02T22:53:14Z</project.build.outputTimestamp>
   </properties>
@@ -159,14 +158,6 @@
         <version>3.4.0</version>
         <exclusions>
           <!-- exclude some unneeded staff -->
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-resolver-provider</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-component-annotations</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
@@ -244,11 +235,34 @@
         <version>4.11.0</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.36</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dependency-analyze</id>
+            <goals>
+              <goal>analyze-exclusions</goal>
+              <goal>analyze-only</goal>
+            </goals>
+            <phase>verify</phase>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+              <exclusionFail>true</exclusionFail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>sisu-maven-plugin</artifactId>
