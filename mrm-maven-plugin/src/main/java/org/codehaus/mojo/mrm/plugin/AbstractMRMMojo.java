@@ -24,7 +24,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
 
 /**
  * Base class for all the Mock Repository Manager's Mojos.
@@ -32,8 +31,6 @@ import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
  * @since 1.0
  */
 public abstract class AbstractMRMMojo extends AbstractMojo {
-    protected final ArtifactStoreFactory proxyRepo;
-
     /**
      * The Maven project.
      */
@@ -65,14 +62,6 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
     protected boolean skip;
 
     /**
-     * Creates a new instance
-     * @param proxyRepo injected proxyRepo
-     */
-    protected AbstractMRMMojo(ArtifactStoreFactory proxyRepo) {
-        this.proxyRepo = proxyRepo;
-    }
-
-    /**
      * Executes the plugin goal (if the plugin is not skipped)
      *
      * @throws MojoExecutionException If there is an exception occuring during the execution of the plugin.
@@ -102,15 +91,4 @@ public abstract class AbstractMRMMojo extends AbstractMojo {
      * @throws MojoFailureException If there is an exception occuring during the execution of the plugin.
      */
     protected abstract void doExecute() throws MojoExecutionException, MojoFailureException;
-
-    /**
-     * Creates an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
-     * Maven itself.
-     *
-     * @return an {@link org.codehaus.mojo.mrm.api.maven.ArtifactStore} that fetches from the repositories available to
-     *         Maven itself.
-     */
-    protected ProxyArtifactStore createProxyArtifactStore() {
-        return (ProxyArtifactStore) proxyRepo.newInstance(session, getLog());
-    }
 }

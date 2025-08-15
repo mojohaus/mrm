@@ -2,9 +2,11 @@ package org.codehaus.mojo.mrm.plugin;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.maven.archetype.ArchetypeManager;
+import org.apache.maven.execution.MavenSession;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -19,10 +21,16 @@ public class DefaultFactoryHelper implements FactoryHelper {
 
     private ArchetypeManager archetypeManager;
 
+    private final Provider<MavenSession> mavenSessionProvider;
+
     @Inject
-    public DefaultFactoryHelper(RepositorySystem repositorySystem, ArchetypeManager archetypeManager) {
+    public DefaultFactoryHelper(
+            RepositorySystem repositorySystem,
+            ArchetypeManager archetypeManager,
+            Provider<MavenSession> mavenSessionProvider) {
         this.repositorySystem = repositorySystem;
         this.archetypeManager = archetypeManager;
+        this.mavenSessionProvider = mavenSessionProvider;
     }
 
     @Override
@@ -33,5 +41,10 @@ public class DefaultFactoryHelper implements FactoryHelper {
     @Override
     public ArchetypeManager getArchetypeManager() {
         return archetypeManager;
+    }
+
+    @Override
+    public MavenSession getMavenSession() {
+        return mavenSessionProvider.get();
     }
 }

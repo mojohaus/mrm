@@ -38,8 +38,6 @@ import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.ResolverUtils;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
@@ -54,6 +52,8 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.MetadataRequest;
 import org.eclipse.aether.resolution.MetadataResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Optional.ofNullable;
 
@@ -62,12 +62,9 @@ import static java.util.Optional.ofNullable;
  */
 public class ProxyArtifactStore extends BaseArtifactStore {
 
-    private final List<RemoteRepository> remoteRepositories;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyArtifactStore.class);
 
-    /**
-     * The {@link Log} to log to.
-     */
-    private final Log log;
+    private final List<RemoteRepository> remoteRepositories;
 
     /**
      * A cache of what artifacts are present.
@@ -84,14 +81,11 @@ public class ProxyArtifactStore extends BaseArtifactStore {
      * Creates a new instance.
      *
      * @param factoryHelper injected {@link FactoryHelper} instance
-     * @param session {@link MavenSession} instance from Maven execution
-     * @param log {@link Log} instance from {@link AbstractMojo}
      */
-    public ProxyArtifactStore(FactoryHelper factoryHelper, MavenSession session, Log log) {
+    public ProxyArtifactStore(FactoryHelper factoryHelper) {
         this.repositorySystem = Objects.requireNonNull(factoryHelper.getRepositorySystem());
         this.archetypeManager = Objects.requireNonNull(factoryHelper.getArchetypeManager());
-        this.log = log;
-        this.session = Objects.requireNonNull(session);
+        this.session = Objects.requireNonNull(factoryHelper.getMavenSession());
 
         remoteRepositories = Stream.concat(
                         session.getCurrentProject().getRemoteProjectRepositories().stream(),
@@ -200,7 +194,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
                         }
                     })
                     .orElseThrow(() -> new ArtifactNotFoundException(artifact));
-            log.debug("resolveArtifactFile(" + artifact + ") = " + file.getAbsolutePath());
+            LOGGER.debug("resolveArtifactFile({}) = {}", artifact, file.getAbsolutePath());
             return file;
         } catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
             throw new ArtifactNotFoundException(artifact, e);
@@ -296,7 +290,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
         try (InputStream in = Files.newInputStream(file.toPath())) {
             return new MetadataXpp3Reader().read(in);
         } catch (IOException | XmlPullParserException e) {
-            log.warn("Error reading metadata from file: " + file, e);
+            LOGGER.warn("Error reading metadata from file: {}", file, e);
         }
         return null;
     }

@@ -18,7 +18,6 @@ package org.codehaus.mojo.mrm.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -78,10 +77,8 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
     /**
      * Creates a new instance
      * @param factoryHelper injected {@link FactoryHelper} instance
-     * @param proxyRepo injected proxyHelper instance
      */
-    protected AbstractStartMojo(FactoryHelper factoryHelper, ArtifactStoreFactory proxyRepo) {
-        super(proxyRepo);
+    protected AbstractStartMojo(FactoryHelper factoryHelper) {
         this.factoryHelper = factoryHelper;
     }
 
@@ -107,23 +104,18 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
      * @throws org.apache.maven.plugin.MojoExecutionException if the configuration is invalid.
      */
     protected ArtifactStore createArtifactStore() throws MojoExecutionException {
-        Objects.requireNonNull(proxyRepo);
-        if (repositories == null) {
-            getLog().info("Configuring Mock Repository Manager to proxy through this Maven instance");
-            return createProxyArtifactStore();
-        }
         getLog().info("Configuring Mock Repository Manager...");
         List<ArtifactStore> stores = new ArrayList<>();
         if (repositories == null || repositories.length == 0) {
-            repositories = new ArtifactStoreFactory[] {proxyRepo};
+            getLog().info("Configuring Mock Repository Manager to proxy through this Maven instance");
+            repositories = new ArtifactStoreFactory[] {new ProxyRepo()};
         }
+
         for (ArtifactStoreFactory artifactStoreFactory : repositories) {
             getLog().info("  " + artifactStoreFactory.toString());
-            if (artifactStoreFactory != proxyRepo) {
-                artifactStoreFactory.setFactoryHelper(factoryHelper);
-            }
-            stores.add(artifactStoreFactory.newInstance(session, getLog()));
+            stores.add(artifactStoreFactory.newInstance(factoryHelper));
         }
+
         ArtifactStore[] artifactStores = stores.toArray(new ArtifactStore[0]);
         return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore(artifactStores);
     }

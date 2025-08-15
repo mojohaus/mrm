@@ -1,16 +1,9 @@
 package org.codehaus.mojo.mrm.plugin;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.logging.Log;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
 
@@ -19,12 +12,7 @@ import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
  *
  * @since 1.0
  */
-@Named("mockRepo")
-@Singleton
 public class MockRepo implements ArtifactStoreFactory {
-
-    @Inject
-    private FactoryHelper factoryHelper;
 
     /**
      * Our source.
@@ -56,9 +44,7 @@ public class MockRepo implements ArtifactStoreFactory {
     private boolean lazyArchiver;
 
     @Override
-    public ArtifactStore newInstance(MavenSession session, Log log) {
-        Objects.requireNonNull(factoryHelper, "FactoryHelper has not been set");
-
+    public ArtifactStore newInstance() {
         if (source == null) {
             throw new IllegalStateException("Must provide the 'source' of the mock repository");
         }
@@ -81,12 +67,7 @@ public class MockRepo implements ArtifactStoreFactory {
             }
         }
 
-        return new MockArtifactStore(log, root, lazyArchiver);
-    }
-
-    @Override
-    public void setFactoryHelper(FactoryHelper factoryHelper) {
-        this.factoryHelper = factoryHelper;
+        return new MockArtifactStore(root, lazyArchiver);
     }
 
     /**

@@ -17,7 +17,6 @@ package org.codehaus.mojo.mrm.plugin;
  */
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import java.util.Map;
 
@@ -46,8 +45,8 @@ public class StartMojo extends AbstractStartMojo {
     private String propertyName;
 
     @Inject
-    public StartMojo(FactoryHelper factoryHelper, @Named("proxyRepo") ArtifactStoreFactory proxyRepo) {
-        super(factoryHelper, proxyRepo);
+    public StartMojo(FactoryHelper factoryHelper) {
+        super(factoryHelper);
     }
 
     @Override
