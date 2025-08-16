@@ -95,7 +95,7 @@ public final class Artifact implements Comparable<Artifact> {
     private String timestampVersion;
 
     /**
-     * Common internal constructor.
+     * A classified and timestamped snapshot artifact.
      *
      * @param groupId     The groupId.
      * @param artifactId  The artifactId.
@@ -107,7 +107,7 @@ public final class Artifact implements Comparable<Artifact> {
      *                    <code>timestamp!=null</code>)
      * @since 1.0
      */
-    private Artifact(
+    public Artifact(
             String groupId,
             String artifactId,
             String version,
@@ -122,44 +122,6 @@ public final class Artifact implements Comparable<Artifact> {
         this.classifier = classifier;
         this.timestamp = isSnapshot() ? timestamp : null;
         this.buildNumber = isSnapshot() ? buildNumber : null;
-    }
-
-    /**
-     * A timestamped classified snapshot artifact.
-     *
-     * @param groupId     The groupId.
-     * @param artifactId  The artifactId.
-     * @param version     The version.
-     * @param classifier  The classifier (or <code>null</code>).
-     * @param type        The type.
-     * @param timestamp   The timestamp.
-     * @param buildNumber The build number.
-     * @since 1.0
-     */
-    public Artifact(
-            String groupId,
-            String artifactId,
-            String version,
-            String classifier,
-            String type,
-            long timestamp,
-            int buildNumber) {
-        this(groupId, artifactId, version, classifier, type, Long.valueOf(timestamp), Integer.valueOf(buildNumber));
-    }
-
-    /**
-     * A timestamped snapshot artifact.
-     *
-     * @param groupId     The groupId.
-     * @param artifactId  The artifactId.
-     * @param version     The version.
-     * @param type        The type.
-     * @param timestamp   The timestamp.
-     * @param buildNumber The build number.
-     * @since 1.0
-     */
-    public Artifact(String groupId, String artifactId, String version, String type, long timestamp, int buildNumber) {
-        this(groupId, artifactId, version, null, type, new Long(timestamp), new Integer(buildNumber));
     }
 
     /**
@@ -293,7 +255,7 @@ public final class Artifact implements Comparable<Artifact> {
         } else {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd.HHmmss");
             fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return fmt.format(new Date(timestamp.longValue()));
+            return fmt.format(new Date(timestamp));
         }
     }
 

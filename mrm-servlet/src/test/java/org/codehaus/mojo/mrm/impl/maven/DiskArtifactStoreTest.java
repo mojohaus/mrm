@@ -49,8 +49,8 @@ class DiskArtifactStoreTest extends AbstractTestSupport {
     void sizeShouldBeGreaterThanZeroForSnapshotTimeStamped() throws Exception {
         DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/local-repo-unit"));
 
-        long size = artifactStore.getSize(
-                new Artifact("org.group2", "artifact2", "1.0.0-SNAPSHOT", "pom", System.currentTimeMillis(), 9999));
+        long size = artifactStore.getSize(new Artifact(
+                "org.group2", "artifact2", "1.0.0-SNAPSHOT", null, "pom", System.currentTimeMillis(), 9999));
         assertTrue(size > 0);
     }
 

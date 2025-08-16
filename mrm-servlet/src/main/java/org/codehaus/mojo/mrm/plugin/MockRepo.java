@@ -44,7 +44,7 @@ public class MockRepo implements ArtifactStoreFactory {
     private boolean lazyArchiver;
 
     @Override
-    public ArtifactStore newInstance() {
+    public ArtifactStore newInstance(FactoryHelper factoryHelper) {
         if (source == null) {
             throw new IllegalStateException("Must provide the 'source' of the mock repository");
         }
@@ -67,7 +67,7 @@ public class MockRepo implements ArtifactStoreFactory {
             }
         }
 
-        return new MockArtifactStore(root, lazyArchiver);
+        return new MockArtifactStore(factoryHelper.getArchiverManager(), root, lazyArchiver);
     }
 
     /**
