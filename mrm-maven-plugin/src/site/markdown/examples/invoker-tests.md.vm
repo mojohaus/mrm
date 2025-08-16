@@ -39,7 +39,7 @@ First we need to modify the `pom.xml` to reference both `mrm-maven-plugin` and t
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-invoker-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>$context.get("maven-invoker-plugin.version")</version>
         <executions>
           <execution>
             <goals>
@@ -114,10 +114,12 @@ Additionally, when `mrm:start` is invoked, it will bind to an available port and
 will be based on the `mockRepo` content generated from the following files in `src/it/mrm/repository`:
 
 * `**/*.pom`
-* `**/*-\{classifier\}.{type}` as file, which will use the GAV of the corresponding `pom` -file (e.g. `mojo-parent-10.pom` with `mojo-parent-10-site.xml` )
-* `**/*.jar` as directory, which will use the GAV of the corresponding `pom` -file. MRM will create an archive of this directory.
-* `**/*-\{classifier\}.jar` as directory, which will use the GAV of the corresponding `pom` -file. MRM will create an archive of this directory.
+* `**/*-{classifier}.{type}` as file, which will use the GAV of the corresponding `pom` - file (e.g. `mojo-parent-10.pom` with `mojo-parent-10-site.xml` )
+* `**/*.{archiver extension}` as directory, which will use the GAV of the corresponding `pom` - file. MRM will create an archive of this directory.
+* `**/*-{classifier}.{archiver extension}` as directory, which will use the GAV of the corresponding `pom` - file. MRM will create an archive of this directory.
 * `archetype-catalog.xml`
+
+* `{archiver extension}` can be one of supported by [plexus archiver](https://codehaus-plexus.github.io/plexus-archiver/), e.g. `jar`, `zip`, `tar.gz`, `tgz`, `tar.xz`, etc.
 
 In additional content install by `maven-invoker-plugin:install` will be available by _localRepo_
 

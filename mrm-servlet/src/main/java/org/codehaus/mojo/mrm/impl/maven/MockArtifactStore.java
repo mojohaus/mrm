@@ -59,8 +59,11 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.impl.Utils;
+import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -75,8 +78,6 @@ import org.slf4j.LoggerFactory;
 public class MockArtifactStore extends BaseArtifactStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MockArtifactStore.class);
-
-    private final boolean lazyArchiver;
 
     /**
      * The extensions to search for when looking for POMs to mock.
@@ -100,86 +101,87 @@ public class MockArtifactStore extends BaseArtifactStore {
      * @param root the root to search for POMs within.
      * @since 1.0
      */
-    public MockArtifactStore(File root) {
-        this(root, true);
+    public MockArtifactStore(ArchiverManager archiverManager, File root) {
+        this(archiverManager, root, true);
     }
 
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
      * @param root the root to search for POMs within.
+     * @param archiverManager
      * @since 1.0
      */
-    public MockArtifactStore(File root, boolean lazyArchiver) {
-        this.lazyArchiver = lazyArchiver;
+    public MockArtifactStore(ArchiverManager archiverManager, File root, boolean lazyArchiver) {
 
-        if (root.isDirectory()) {
-            MavenXpp3Reader pomReader = new MavenXpp3Reader();
-            Collection<File> poms = FileUtils.listFiles(root, POM_EXTENSIONS, true);
-            for (File file : poms) {
-                try (FileReader fileReader = new FileReader(file)) {
-                    Model model = pomReader.read(fileReader);
-                    String groupId = model.getGroupId() != null
-                            ? model.getGroupId()
-                            : model.getParent().getGroupId();
-                    String version = model.getVersion() != null
-                            ? model.getVersion()
-                            : model.getParent().getVersion();
-                    set(new Artifact(groupId, model.getArtifactId(), version, "pom"), new FileContent(file));
+        if (!root.isDirectory()) {
+            throw new IllegalArgumentException("The specified root must be a directory: " + root);
+        }
 
-                    final String basename = FilenameUtils.getBaseName(file.getName());
+        MavenXpp3Reader pomReader = new MavenXpp3Reader();
+        Collection<File> poms = FileUtils.listFiles(root, POM_EXTENSIONS, true);
+        for (File file : poms) {
+            try (FileReader fileReader = new FileReader(file)) {
+                Model model = pomReader.read(fileReader);
+                String groupId = model.getGroupId() != null
+                        ? model.getGroupId()
+                        : model.getParent().getGroupId();
+                String version = model.getVersion() != null
+                        ? model.getVersion()
+                        : model.getParent().getVersion();
+                set(new Artifact(groupId, model.getArtifactId(), version, "pom"), new FileContent(file));
 
-                    if (StringUtils.isEmpty(model.getPackaging()) || "jar".equals(model.getPackaging())) {
-                        File mainFile = new File(file.getParentFile(), basename + ".jar");
+                final String basename = FilenameUtils.getBaseName(file.getName());
 
-                        Content content;
-                        if (mainFile.isDirectory()) {
-                            content = new DirectoryContent(mainFile, lazyArchiver);
-                        } else {
-                            content = new BytesContent(Utils.newEmptyJarContent());
-                        }
+                if (StringUtils.isEmpty(model.getPackaging()) || "jar".equals(model.getPackaging())) {
+                    File mainFile = new File(file.getParentFile(), basename + ".jar");
 
-                        set(new Artifact(groupId, model.getArtifactId(), version, "jar"), content);
-                    } else if ("maven-plugin".equals(model.getPackaging())) {
-                        set(
-                                new Artifact(groupId, model.getArtifactId(), version, "jar"),
-                                new BytesContent(
-                                        Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(), version)));
+                    Content content;
+                    if (mainFile.isDirectory()) {
+                        content = new DirectoryContent(archiverManager, mainFile, lazyArchiver);
+                    } else {
+                        content = new BytesContent(Utils.newEmptyJarContent());
                     }
 
-                    File[] classifiedFiles = file.getParentFile()
-                            .listFiles((dir, name) ->
-                                    FilenameUtils.getBaseName(name).startsWith(basename + '-'));
+                    set(new Artifact(groupId, model.getArtifactId(), version, "jar"), content);
+                } else if ("maven-plugin".equals(model.getPackaging())) {
+                    set(
+                            new Artifact(groupId, model.getArtifactId(), version, "jar"),
+                            new BytesContent(
+                                    Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(), version)));
+                }
 
-                    for (File classifiedFile : classifiedFiles) {
-                        String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
-                        String classifier = FilenameUtils.getBaseName(classifiedFile.getName())
-                                .substring(basename.length() + 1);
+                File[] classifiedFiles = file.getParentFile().listFiles((dir, name) -> FilenameUtils.getBaseName(name)
+                        .startsWith(basename + '-'));
 
-                        Content content;
-                        if (classifiedFile.isDirectory()) {
-                            content = new DirectoryContent(classifiedFile, lazyArchiver);
-                        } else {
-                            content = new FileContent(classifiedFile);
-                        }
+                for (File classifiedFile : classifiedFiles) {
+                    String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
+                    String classifier =
+                            FilenameUtils.getBaseName(classifiedFile.getName()).substring(basename.length() + 1);
 
-                        set(new Artifact(groupId, model.getArtifactId(), version, classifier, type), content);
+                    Content content;
+                    if (classifiedFile.isDirectory()) {
+                        content = new DirectoryContent(archiverManager, classifiedFile, lazyArchiver);
+                    } else {
+                        content = new FileContent(classifiedFile);
                     }
-                } catch (IOException e) {
-                    if (LOGGER != null) {
-                        LOGGER.warn("Could not read from " + file, e);
-                    }
-                } catch (XmlPullParserException e) {
-                    if (LOGGER != null) {
-                        LOGGER.warn("Could not parse " + file, e);
-                    }
+
+                    set(new Artifact(groupId, model.getArtifactId(), version, classifier, type), content);
+                }
+            } catch (IOException e) {
+                if (LOGGER != null) {
+                    LOGGER.warn("Could not read from " + file, e);
+                }
+            } catch (XmlPullParserException e) {
+                if (LOGGER != null) {
+                    LOGGER.warn("Could not parse " + file, e);
                 }
             }
+        }
 
-            File archetypeCatalogFile = new File(root, "archetype-catalog.xml");
-            if (archetypeCatalogFile.isFile()) {
-                archetypeCatalog = new FileContent(archetypeCatalogFile);
-            }
+        File archetypeCatalogFile = new File(root, "archetype-catalog.xml");
+        if (archetypeCatalogFile.isFile()) {
+            archetypeCatalog = new FileContent(archetypeCatalogFile);
         }
     }
 
@@ -320,7 +322,7 @@ public class MockArtifactStore extends BaseArtifactStore {
      * Sets the content for a specified artifact.
      *
      * @param artifact the artifact.
-     * @param content  the content.
+     * @param content the content.
      * @since 1.0
      */
     private synchronized void set(Artifact artifact, Content content) {
@@ -738,7 +740,10 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     private static class DirectoryContent implements Content {
+
         private final File directory;
+
+        private final Archiver archiver;
 
         private File archivedFile;
 
@@ -746,8 +751,17 @@ public class MockArtifactStore extends BaseArtifactStore {
          * @param directory the directory to archive
          * @param lazy      {@code false} if the archive should be created immediately
          */
-        private DirectoryContent(File directory, boolean lazy) {
+        private DirectoryContent(ArchiverManager archiverManager, File directory, boolean lazy) {
+
             this.directory = directory;
+            try {
+                this.archiver = archiverManager.getArchiver(directory);
+            } catch (NoSuchArchiverException e) {
+                throw new IllegalStateException(
+                        "Could not find archiver for directory: " + directory + " available archivers: "
+                                + archiverManager.getAvailableArchivers(),
+                        e);
+            }
 
             if (!lazy) {
                 createArchive();
@@ -755,10 +769,9 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         private void createArchive() {
-            JarArchiver archiver = new JarArchiver();
             archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
             archiver.setDestFile(archivedFile);
-            archiver.addDirectory(directory);
+            archiver.addFileSet(DefaultFileSet.fileSet(directory));
 
             try {
                 archiver.createArchive();

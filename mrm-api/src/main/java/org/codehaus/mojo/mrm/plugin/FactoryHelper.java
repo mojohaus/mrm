@@ -18,6 +18,7 @@ package org.codehaus.mojo.mrm.plugin;
 
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.execution.MavenSession;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.eclipse.aether.RepositorySystem;
 
 /**
@@ -41,4 +42,6 @@ public interface FactoryHelper {
      * @return returns the current {@link MavenSession} instance
      */
     MavenSession getMavenSession();
+
+    ArchiverManager getArchiverManager();
 }

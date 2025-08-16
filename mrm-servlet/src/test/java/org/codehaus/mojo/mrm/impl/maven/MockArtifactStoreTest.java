@@ -1,5 +1,7 @@
 package org.codehaus.mojo.mrm.impl.maven;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -12,13 +14,18 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -28,7 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@PlexusTest
 class MockArtifactStoreTest extends AbstractTestSupport {
+
+    @Inject
+    private ArchiverManager archiverManager;
 
     @TempDir
     Path temporaryFolder;
@@ -37,14 +48,14 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     @Test
     void testInheritGavFromParent() throws Exception {
         // don't fail
-        MockArtifactStore mockArtifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-3"));
+        MockArtifactStore mockArtifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-3"));
         assertEquals(2, mockArtifactStore.getArtifactIds("localhost").size());
     }
 
     // MMOCKRM-6
     @Test
     void testClassifiers() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-7"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-7"));
 
         Artifact pomArtifact = new Artifact("localhost", "mmockrm-7", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -62,7 +73,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     // MMOCKRM-10
     @Test
     void testArchetypeCatalog() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mmockrm-10"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);
         assertEquals(1, catalog.getArchetypes().size());
@@ -76,7 +87,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void testDirectoryContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mrm-15"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-15"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -109,7 +120,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void testEmptyJarContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-empty-jar", "1.0", "pom");
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
@@ -141,7 +152,8 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void testEmptyPluginJarContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-plugin-jar"));
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/empty-plugin-jar"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-empty-plugin-jar", "1.0", "pom");
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
@@ -173,8 +185,35 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
+    void testDirectoryContentWithTgzArchiver() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/tgz-archiver"));
+        assertNotNull(artifactStore);
+
+        Artifact tgzArtifact = new Artifact("localhost", "tgz-archiver", "1.0", "bin", "tgz");
+        InputStream inputStream = artifactStore.get(tgzArtifact);
+        assertNotNull(inputStream);
+
+        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new GZIPInputStream(inputStream))) {
+            TarArchiveEntry nextEntry = tarIn.getNextEntry();
+            assertNotNull(nextEntry);
+            assertEquals("README.txt", nextEntry.getName());
+
+            nextEntry = tarIn.getNextEntry();
+            assertNull(nextEntry);
+        }
+    }
+
+    @Test
+    void testDirectoryContentWithUnknownArchiver() throws Exception {
+        IllegalStateException exception = assertThrowsExactly(
+                IllegalStateException.class,
+                () -> new MockArtifactStore(archiverManager, getResourceAsFile("/unknown-archiver")));
+        assertTrue(exception.getMessage().contains("Could not find archiver for directory"));
+    }
+
+    @Test
     void testDirectoryWithClassifierContent() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/mrm-xx"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-xx"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-xx", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
@@ -188,14 +227,15 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void groupMetaDataShouldNotExistForNoPlugins() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 
         assertThrowsExactly(MetadataNotFoundException.class, () -> artifactStore.getMetadata("localhost"));
     }
 
     @Test
     void groupMetaDataShouldExistPlugins() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-plugin-jar"));
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/empty-plugin-jar"));
 
         Metadata metadata = artifactStore.getMetadata("localhost");
 
@@ -222,7 +262,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void artifactMetaDataShouldExist() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 
         Metadata metadata = artifactStore.getMetadata("localhost/mrm-empty-jar");
 
@@ -241,7 +281,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void artifactVersionMetaDataShouldNotExistForReleaseVersion() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar"));
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 
         assertThrowsExactly(
                 MetadataNotFoundException.class, () -> artifactStore.getMetadata("localhost/mrm-empty-jar/1.0"));
@@ -249,7 +289,8 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     @Test
     void artifactVersionMetaDataShouldExist() throws Exception {
-        MockArtifactStore artifactStore = new MockArtifactStore(getResourceAsFile("/empty-jar-snapshot"));
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar-snapshot"));
 
         Metadata metadata = artifactStore.getMetadata("localhost/mrm-empty-jar/1.0-SNAPSHOT");
 
