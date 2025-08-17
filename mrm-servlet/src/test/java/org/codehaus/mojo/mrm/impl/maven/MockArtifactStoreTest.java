@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -29,6 +32,7 @@ import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -201,6 +205,159 @@ class MockArtifactStoreTest extends AbstractTestSupport {
             nextEntry = tarIn.getNextEntry();
             assertNull(nextEntry);
         }
+    }
+
+    @Test
+    void testsnapshotartifctswithtimestamp() throws Exception {
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
+        assertNotNull(artifactStore);
+
+        Artifact pomArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "jar");
+        Artifact tgzArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "bin", "tgz");
+        Artifact zipArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "bin", "zip");
+
+        assertDoesNotThrow(() -> artifactStore.get(pomArtifact).close());
+        assertDoesNotThrow(() -> artifactStore.get(jarArtifact).close());
+        assertDoesNotThrow(() -> artifactStore.get(tgzArtifact).close());
+        assertDoesNotThrow(() -> artifactStore.get(zipArtifact).close());
+
+        Metadata metadata = artifactStore.getMetadata("localhost/timestamp/1.0-SNAPSHOT");
+        assertNotNull(metadata);
+        assertEquals("20250816121314", metadata.getVersioning().getLastUpdated());
+        assertEquals("20250816.121314", metadata.getVersioning().getSnapshot().getTimestamp());
+        assertEquals(1, metadata.getVersioning().getSnapshot().getBuildNumber());
+        assertEquals(4, metadata.getVersioning().getSnapshotVersions().size());
+        for (SnapshotVersion version : metadata.getVersioning().getSnapshotVersions()) {
+            assertEquals("1.0-20250816.121314-1", version.getVersion());
+            assertEquals("20250816121314", version.getUpdated());
+        }
+    }
+
+    @Test
+    void testsnapshotartifctswithtimestampEmptyJar() throws Exception {
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
+        assertNotNull(artifactStore);
+
+        Artifact pomArtifactEmptyJar = new Artifact("localhost", "timestamp-empty-jar", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifactEmptyJar = new Artifact("localhost", "timestamp-empty-jar", "1.0-SNAPSHOT", "jar");
+
+        assertDoesNotThrow(() -> artifactStore.get(pomArtifactEmptyJar).close());
+        assertDoesNotThrow(() -> artifactStore.get(jarArtifactEmptyJar).close());
+
+        Metadata metadata = artifactStore.getMetadata("localhost/timestamp-empty-jar/1.0-SNAPSHOT");
+        assertNotNull(metadata);
+        assertEquals("20250816222324", metadata.getVersioning().getLastUpdated());
+        assertEquals("20250816.222324", metadata.getVersioning().getSnapshot().getTimestamp());
+        assertEquals(1, metadata.getVersioning().getSnapshot().getBuildNumber());
+        assertEquals(2, metadata.getVersioning().getSnapshotVersions().size());
+        for (SnapshotVersion version : metadata.getVersioning().getSnapshotVersions()) {
+            assertEquals("1.0-20250816.222324-1", version.getVersion());
+            assertEquals("20250816222324", version.getUpdated());
+        }
+    }
+
+    @Test
+    void testsnapshotartifctswithtimestampPlugin() throws Exception {
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
+        assertNotNull(artifactStore);
+        Artifact pomArtifactPlugin = new Artifact("localhost", "timestamp-maven-plugin", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifactPlugin = new Artifact("localhost", "timestamp-maven-plugin", "1.0-SNAPSHOT", "jar");
+
+        assertDoesNotThrow(() -> artifactStore.get(pomArtifactPlugin).close());
+        assertDoesNotThrow(() -> artifactStore.get(jarArtifactPlugin).close());
+
+        Metadata metadata = artifactStore.getMetadata("localhost/timestamp-maven-plugin/1.0-SNAPSHOT");
+        assertNotNull(metadata);
+        assertEquals("20250816232425", metadata.getVersioning().getLastUpdated());
+        assertEquals("20250816.232425", metadata.getVersioning().getSnapshot().getTimestamp());
+        assertEquals(1, metadata.getVersioning().getSnapshot().getBuildNumber());
+        assertEquals(2, metadata.getVersioning().getSnapshotVersions().size());
+        for (SnapshotVersion version : metadata.getVersioning().getSnapshotVersions()) {
+            assertEquals("1.0-20250816.232425-1", version.getVersion());
+            assertEquals("20250816232425", version.getUpdated());
+        }
+
+        metadata = artifactStore.getMetadata("localhost");
+        assertNotNull(metadata);
+        assertNotNull(metadata.getPlugins());
+        assertEquals(1, metadata.getPlugins().size());
+        assertEquals("timestamp-maven-plugin", metadata.getPlugins().get(0).getArtifactId());
+        assertEquals("timestamp", metadata.getPlugins().get(0).getPrefix());
+    }
+
+    @Test
+    void testLastModifiedWithTimestampSnapshot() throws Exception {
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
+        assertNotNull(artifactStore);
+
+        Artifact pomArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "jar");
+        Artifact tgzArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "bin", "tgz");
+        Artifact zipArtifact = new Artifact("localhost", "timestamp", "1.0-SNAPSHOT", "bin", "zip");
+
+        long expected = LocalDateTime.of(2025, 8, 16, 12, 13, 14)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+
+        assertEquals(expected, artifactStore.getLastModified(pomArtifact));
+        assertEquals(expected, artifactStore.getLastModified(jarArtifact));
+        assertEquals(expected, artifactStore.getLastModified(tgzArtifact));
+        assertEquals(expected, artifactStore.getLastModified(zipArtifact));
+
+        Artifact pomArtifactEmptyJar = new Artifact("localhost", "timestamp-empty-jar", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifactEmptyJar = new Artifact("localhost", "timestamp-empty-jar", "1.0-SNAPSHOT", "jar");
+
+        expected = LocalDateTime.of(2025, 8, 16, 22, 23, 24)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+
+        assertEquals(expected, artifactStore.getLastModified(pomArtifactEmptyJar));
+        assertEquals(expected, artifactStore.getLastModified(jarArtifactEmptyJar));
+
+        Artifact pomArtifactPlugin = new Artifact("localhost", "timestamp-maven-plugin", "1.0-SNAPSHOT", "pom");
+        Artifact jarArtifactPlugin = new Artifact("localhost", "timestamp-maven-plugin", "1.0-SNAPSHOT", "jar");
+
+        expected = LocalDateTime.of(2025, 8, 16, 23, 24, 25)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+
+        assertEquals(expected, artifactStore.getLastModified(pomArtifactPlugin));
+        assertEquals(expected, artifactStore.getLastModified(jarArtifactPlugin));
+    }
+
+    @Test
+    void testLastModifiedWithTimestampSnapshotMetadata() throws Exception {
+        MockArtifactStore artifactStore =
+                new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
+        assertNotNull(artifactStore);
+
+        long expected = LocalDateTime.of(2025, 8, 16, 23, 24, 25)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost"));
+
+        expected = LocalDateTime.of(2025, 8, 16, 12, 13, 14)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp"));
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp/1.0-SNAPSHOT"));
+
+        expected = LocalDateTime.of(2025, 8, 16, 22, 23, 24)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp-empty-jar"));
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp-empty-jar/1.0-SNAPSHOT"));
+
+        expected = LocalDateTime.of(2025, 8, 16, 23, 24, 25)
+                .toInstant(ZoneOffset.UTC)
+                .toEpochMilli();
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp-maven-plugin"));
+        assertEquals(expected, artifactStore.getMetadataLastModified("localhost/timestamp-maven-plugin/1.0-SNAPSHOT"));
     }
 
     @Test

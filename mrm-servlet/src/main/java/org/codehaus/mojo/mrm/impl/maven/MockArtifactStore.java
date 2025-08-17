@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,10 +39,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
@@ -79,6 +83,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MockArtifactStore.class);
 
+    private static final Pattern POM_TIMESTAMP_PATTERN = Pattern.compile("^.*(\\d{8})\\.(\\d{6})-(\\d+)$");
     /**
      * The extensions to search for when looking for POMs to mock.
      *
@@ -126,47 +131,78 @@ public class MockArtifactStore extends BaseArtifactStore {
                 String groupId = model.getGroupId() != null
                         ? model.getGroupId()
                         : model.getParent().getGroupId();
+                String artifactId = model.getArtifactId();
                 String version = model.getVersion() != null
                         ? model.getVersion()
                         : model.getParent().getVersion();
-                set(new Artifact(groupId, model.getArtifactId(), version, "pom"), new FileContent(file));
 
-                final String basename = FilenameUtils.getBaseName(file.getName());
+                Artifact pomArtifact = createPomArtifact(groupId, artifactId, version, file);
+                set(pomArtifact, new FileContent(file, pomArtifact.getTimestamp()));
+
+                final String pomBasename = FilenameUtils.getBaseName(file.getName());
 
                 if (StringUtils.isEmpty(model.getPackaging()) || "jar".equals(model.getPackaging())) {
-                    File mainFile = new File(file.getParentFile(), basename + ".jar");
+                    File mainFile = new File(file.getParentFile(), pomBasename + ".jar");
 
                     Content content;
                     if (mainFile.isDirectory()) {
-                        content = new DirectoryContent(archiverManager, mainFile, lazyArchiver);
+                        content = new DirectoryContent(
+                                archiverManager, mainFile, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
-                        content = new BytesContent(Utils.newEmptyJarContent());
+                        content = new BytesContent(Utils.newEmptyJarContent(), pomArtifact.getTimestamp());
                     }
 
-                    set(new Artifact(groupId, model.getArtifactId(), version, "jar"), content);
+                    set(
+                            new Artifact(
+                                    groupId,
+                                    model.getArtifactId(),
+                                    version,
+                                    null,
+                                    "jar",
+                                    pomArtifact.getTimestamp(),
+                                    pomArtifact.getBuildNumber()),
+                            content);
                 } else if ("maven-plugin".equals(model.getPackaging())) {
                     set(
-                            new Artifact(groupId, model.getArtifactId(), version, "jar"),
+                            new Artifact(
+                                    groupId,
+                                    model.getArtifactId(),
+                                    version,
+                                    null,
+                                    "jar",
+                                    pomArtifact.getTimestamp(),
+                                    pomArtifact.getBuildNumber()),
                             new BytesContent(
-                                    Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(), version)));
+                                    Utils.newEmptyMavenPluginJarContent(groupId, model.getArtifactId(), version),
+                                    pomArtifact.getTimestamp()));
                 }
 
                 File[] classifiedFiles = file.getParentFile().listFiles((dir, name) -> FilenameUtils.getBaseName(name)
-                        .startsWith(basename + '-'));
+                        .startsWith(pomBasename + '-'));
 
                 for (File classifiedFile : classifiedFiles) {
                     String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
                     String classifier =
-                            FilenameUtils.getBaseName(classifiedFile.getName()).substring(basename.length() + 1);
+                            FilenameUtils.getBaseName(classifiedFile.getName()).substring(pomBasename.length() + 1);
 
                     Content content;
                     if (classifiedFile.isDirectory()) {
-                        content = new DirectoryContent(archiverManager, classifiedFile, lazyArchiver);
+                        content = new DirectoryContent(
+                                archiverManager, classifiedFile, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
-                        content = new FileContent(classifiedFile);
+                        content = new FileContent(classifiedFile, pomArtifact.getTimestamp());
                     }
 
-                    set(new Artifact(groupId, model.getArtifactId(), version, classifier, type), content);
+                    set(
+                            new Artifact(
+                                    groupId,
+                                    model.getArtifactId(),
+                                    version,
+                                    classifier,
+                                    type,
+                                    pomArtifact.getTimestamp(),
+                                    pomArtifact.getBuildNumber()),
+                            content);
                 }
             } catch (IOException e) {
                 if (LOGGER != null) {
@@ -181,8 +217,29 @@ public class MockArtifactStore extends BaseArtifactStore {
 
         File archetypeCatalogFile = new File(root, "archetype-catalog.xml");
         if (archetypeCatalogFile.isFile()) {
-            archetypeCatalog = new FileContent(archetypeCatalogFile);
+            archetypeCatalog = new FileContent(archetypeCatalogFile, null);
         }
+    }
+
+    private Artifact createPomArtifact(String groupId, String artifactId, String version, File file) {
+
+        Integer buildNumber = null;
+        Long timestamp = null;
+
+        if (version.endsWith("-SNAPSHOT")) {
+            String basename = FilenameUtils.getBaseName(file.getName());
+            Matcher matcher = POM_TIMESTAMP_PATTERN.matcher(basename);
+            if (matcher.matches()) {
+                String dateString = matcher.group(1);
+                String timeString = matcher.group(2);
+                buildNumber = Integer.parseInt(matcher.group(3));
+                timestamp = LocalDateTime.parse(
+                                dateString + "-" + timeString, DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+                        .toInstant(ZoneOffset.UTC)
+                        .toEpochMilli();
+            }
+        }
+        return new Artifact(groupId, artifactId, version, null, "pom", timestamp, buildNumber);
     }
 
     @Override
@@ -307,15 +364,6 @@ public class MockArtifactStore extends BaseArtifactStore {
             }
         }
         return content.getInputStream();
-    }
-
-    @Override
-    public synchronized void set(Artifact artifact, InputStream content) throws IOException {
-        try {
-            set(artifact, new BytesContent(IOUtils.toByteArray(content)));
-        } finally {
-            IOUtils.closeQuietly(content);
-        }
     }
 
     /**
@@ -449,14 +497,7 @@ public class MockArtifactStore extends BaseArtifactStore {
                 for (final Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
                     final Artifact artifact = entry.getKey();
                     final Content content = entry.getValue();
-                    SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
-                    fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    String lastUpdatedTime = fmt.format(new Date(content.getLastModified()));
-                    try {
-                        Maven3.addSnapshotVersion(snapshotVersions, artifact, lastUpdatedTime);
-                    } catch (LinkageError e) {
-                        // Maven 2
-                    }
+                    addSnapshotVersion(snapshotVersions, artifact, content.getLastModified());
                     if ("pom".equals(artifact.getType())) {
                         if (artifact.getBuildNumber() != null && maxBuildNumber < artifact.getBuildNumber()) {
                             maxBuildNumber = artifact.getBuildNumber();
@@ -477,11 +518,7 @@ public class MockArtifactStore extends BaseArtifactStore {
                     metadata.setGroupId(groupId);
                     metadata.setArtifactId(artifactId);
                     metadata.setVersion(version);
-                    try {
-                        Maven3.addSnapshotVersions(versioning, snapshotVersions);
-                    } catch (LinkageError e) {
-                        // Maven 2
-                    }
+                    addSnapshotVersions(versioning, snapshotVersions);
                     if (maxBuildNumber > 0) {
                         Snapshot snapshot = new Snapshot();
                         snapshot.setBuildNumber(maxBuildNumber);
@@ -557,14 +594,13 @@ public class MockArtifactStore extends BaseArtifactStore {
     public ArchetypeCatalog getArchetypeCatalog() throws IOException, ArchetypeCatalogNotFoundException {
         if (archetypeCatalog != null) {
             ArchetypeCatalogXpp3Reader reader = new ArchetypeCatalogXpp3Reader();
-            try {
-                return reader.read(archetypeCatalog.getInputStream());
+            try (InputStream inputStream = archetypeCatalog.getInputStream()) {
+                return reader.read(inputStream);
             } catch (IOException e) {
                 if (LOGGER != null) {
                     LOGGER.warn("Could not read from archetype-catalog.xml", e);
                 }
             } catch (XmlPullParserException e) {
-
                 if (LOGGER != null) {
                     LOGGER.warn("Could not parse archetype-catalog.xml", e);
                 }
@@ -676,10 +712,11 @@ public class MockArtifactStore extends BaseArtifactStore {
          * Creates a new instance from the specified content.
          *
          * @param bytes the content.
+         * @param lastModified the last modified timestamp, or {@code null} to use the current time.
          * @since 1.0
          */
-        private BytesContent(byte[] bytes) {
-            this.lastModified = System.currentTimeMillis();
+        private BytesContent(byte[] bytes, Long lastModified) {
+            this.lastModified = lastModified != null ? lastModified : System.currentTimeMillis();
             this.bytes = bytes;
         }
 
@@ -713,19 +750,23 @@ public class MockArtifactStore extends BaseArtifactStore {
          */
         private final File file;
 
+        private final Long lastModified;
+
         /**
          * Creates a new instance.
          *
          * @param file the backing file.
+         * @param lastModified the last modified timestamp, or {@code null} to use the file's last modified time.
          * @since 1.0
          */
-        private FileContent(File file) {
+        private FileContent(File file, Long lastModified) {
             this.file = file;
+            this.lastModified = lastModified != null ? lastModified : file.lastModified();
         }
 
         @Override
         public long getLastModified() {
-            return file.lastModified();
+            return lastModified;
         }
 
         @Override
@@ -743,17 +784,24 @@ public class MockArtifactStore extends BaseArtifactStore {
 
         private final File directory;
 
+        private final Long lastModified;
+
         private final Archiver archiver;
 
         private File archivedFile;
 
         /**
+         * @param archiverManager the archiver manager to use for creating the archive
          * @param directory the directory to archive
          * @param lazy      {@code false} if the archive should be created immediately
+         * @param lastModified the last modified timestamp, or {@code null} to use the directory's last modified time
+         * @since 1.0
          */
-        private DirectoryContent(ArchiverManager archiverManager, File directory, boolean lazy) {
+        private DirectoryContent(ArchiverManager archiverManager, File directory, boolean lazy, Long lastModified) {
 
             this.directory = directory;
+            this.lastModified = lastModified != null ? lastModified : directory.lastModified();
+
             try {
                 this.archiver = archiverManager.getArchiver(directory);
             } catch (NoSuchArchiverException e) {
@@ -782,10 +830,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
         @Override
         public long getLastModified() {
-            if (archivedFile == null) {
-                createArchive();
-            }
-            return archivedFile.lastModified();
+            return lastModified;
         }
 
         @Override
@@ -806,50 +851,37 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     /**
-     * In order to allow the use of Maven 3 methods from a plugin running in Maven 2, we need to encapsulate all the
-     * Maven 3 method signatures in a separate class so that we can catch the {@link LinkageError} that will be thrown
-     * when the class is attempted to load. If we didn't do it this way then our class could not load either.
+     * Adds a snapshot version to the list of snapshot versions.
      *
+     * @param snapshotVersions the list of snapshot versions.
+     * @param artifact         the artifact to add details of.
+     * @param lastUpdatedTime  the time to flag for last updated.
      * @since 1.0
      */
-    private static class Maven3 {
-        /**
-         * Adds a snapshot version to the list of snapshot versions.
-         *
-         * @param snapshotVersions the list of snapshot versions.
-         * @param artifact         the artifact to add details of.
-         * @param lastUpdatedTime  the time to flag for last updated.
-         * @since 1.0
-         */
-        private static void addSnapshotVersion(
-                List<SnapshotVersion> snapshotVersions, Artifact artifact, String lastUpdatedTime) {
-            try {
-                SnapshotVersion snapshotVersion = new SnapshotVersion();
-                snapshotVersion.setExtension(artifact.getType());
-                snapshotVersion.setClassifier(artifact.getClassifier() == null ? "" : artifact.getClassifier());
-                snapshotVersion.setVersion(artifact.getTimestampVersion());
-                snapshotVersion.setUpdated(lastUpdatedTime);
-                snapshotVersions.add(snapshotVersion);
-            } catch (NoClassDefFoundError e) {
-                // Maven 2
-            }
-        }
+    private static void addSnapshotVersion(
+            List<SnapshotVersion> snapshotVersions, Artifact artifact, long lastUpdatedTime) {
 
-        /**
-         * Add the list of {@link SnapshotVersion}s to the {@link Versioning}.
-         *
-         * @param versioning       the versionioning to add to.
-         * @param snapshotVersions the snapshot versions to add.
-         * @since 1.0
-         */
-        private static void addSnapshotVersions(Versioning versioning, List<SnapshotVersion> snapshotVersions) {
-            try {
-                for (SnapshotVersion snapshotVersion : snapshotVersions) {
-                    versioning.addSnapshotVersion(snapshotVersion);
-                }
-            } catch (NoClassDefFoundError e) {
-                // Maven 2
-            }
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
+        fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        SnapshotVersion snapshotVersion = new SnapshotVersion();
+        snapshotVersion.setExtension(artifact.getType());
+        snapshotVersion.setClassifier(artifact.getClassifier() == null ? "" : artifact.getClassifier());
+        snapshotVersion.setVersion(artifact.getTimestampVersion());
+        snapshotVersion.setUpdated(fmt.format(new Date(lastUpdatedTime)));
+        snapshotVersions.add(snapshotVersion);
+    }
+
+    /**
+     * Add the list of {@link SnapshotVersion}s to the {@link Versioning}.
+     *
+     * @param versioning       the versionioning to add to.
+     * @param snapshotVersions the snapshot versions to add.
+     * @since 1.0
+     */
+    private static void addSnapshotVersions(Versioning versioning, List<SnapshotVersion> snapshotVersions) {
+        for (SnapshotVersion snapshotVersion : snapshotVersions) {
+            versioning.addSnapshotVersion(snapshotVersion);
         }
     }
 }
