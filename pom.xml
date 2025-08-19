@@ -160,7 +160,7 @@
           <!-- exclude some unneeded staff -->
           <exclusion>
             <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
+            <artifactId>*</artifactId>
           </exclusion>
           <exclusion>
             <groupId>org.apache.ivy</groupId>
