@@ -47,7 +47,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 /**
  * A {@link org.codehaus.mojo.mrm.api.FileSystem} that delegates to a {@link ArtifactStore}.
  *
- * @see FileSystemArtifactStore for the oposite.
  * @since 1.0
  */
 public class ArtifactStoreFileSystem extends BaseFileSystem {
