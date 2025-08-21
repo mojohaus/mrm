@@ -4,6 +4,7 @@ import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
+import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +53,40 @@ class DiskArtifactStoreTest extends AbstractTestSupport {
         long size = artifactStore.getSize(new Artifact(
                 "org.group2", "artifact2", "1.0.0-SNAPSHOT", null, "pom", System.currentTimeMillis(), 9999));
         assertTrue(size > 0);
+    }
+
+    @Test
+    void testSha1Checksum() throws Exception {
+        DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/local-repo-unit"));
+
+        String sha1Checksum1 = artifactStore.getSha1Checksum(new Artifact("org.group1", "artifact1", "1.0.0", "pom"));
+        assertNotNull(sha1Checksum1);
+
+        String sha1Checksum2 = artifactStore.getSha1Checksum(new Artifact("org.group1", "artifact1", "2.0.0", "pom"));
+        assertEquals("unit-test-ca766ba229dd04820042c13d24ef9fc76ceb2914", sha1Checksum2);
+    }
+
+    @Test
+    void testArtifactNotFound() throws Exception {
+        DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/local-repo-unit"));
+
+        Artifact artifact = new Artifact("org.groupXXXX", "artifactXXX", "1.0.0", "pom");
+
+        String message = assertThrowsExactly(ArtifactNotFoundException.class, () -> artifactStore.get(artifact))
+                .getMessage();
+        assertEquals("Artifact{org.groupXXXX:artifactXXX:1.0.0:pom}", message);
+
+        message = assertThrowsExactly(ArtifactNotFoundException.class, () -> artifactStore.getLastModified(artifact))
+                .getMessage();
+        assertEquals("Artifact{org.groupXXXX:artifactXXX:1.0.0:pom}", message);
+
+        message = assertThrowsExactly(ArtifactNotFoundException.class, () -> artifactStore.getSize(artifact))
+                .getMessage();
+        assertEquals("Artifact{org.groupXXXX:artifactXXX:1.0.0:pom}", message);
+
+        message = assertThrowsExactly(ArtifactNotFoundException.class, () -> artifactStore.getSha1Checksum(artifact))
+                .getMessage();
+        assertEquals("Artifact{org.groupXXXX:artifactXXX:1.0.0:pom}", message);
     }
 
     @Test

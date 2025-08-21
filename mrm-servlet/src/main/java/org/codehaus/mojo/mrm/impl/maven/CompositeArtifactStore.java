@@ -140,6 +140,18 @@ public class CompositeArtifactStore extends BaseArtifactStore {
     }
 
     @Override
+    public String getSha1Checksum(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        for (ArtifactStore store : stores) {
+            try {
+                return store.getSha1Checksum(artifact);
+            } catch (ArtifactNotFoundException e) {
+                // ignore
+            }
+        }
+        throw new ArtifactNotFoundException(artifact);
+    }
+
+    @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         throw new IOException("Read-only store");
     }

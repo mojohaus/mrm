@@ -17,11 +17,11 @@
 package org.codehaus.mojo.mrm.impl.maven;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
@@ -219,28 +220,32 @@ public class DiskArtifactStore extends BaseArtifactStore {
     @Override
     public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFileByBasename(artifact);
-        if (!file.isFile()) {
-            throw new ArtifactNotFoundException(artifact);
-        }
         return file.lastModified();
     }
 
     @Override
     public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFileByBasename(artifact);
-        if (!file.isFile()) {
-            throw new ArtifactNotFoundException(artifact);
-        }
         return file.length();
+    }
+
+    @Override
+    public String getSha1Checksum(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        File file = getFileByBasename(artifact);
+        File sha1File = new File(file.getPath() + ".sha1");
+        if (sha1File.isFile()) {
+            return new String(Files.readAllBytes(sha1File.toPath()), StandardCharsets.US_ASCII);
+        } else {
+            try (InputStream is = Files.newInputStream(file.toPath())) {
+                return DigestUtils.sha1Hex(is);
+            }
+        }
     }
 
     @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         File file = getFileByBasename(artifact);
-        if (!file.isFile()) {
-            throw new ArtifactNotFoundException(artifact);
-        }
-        return new FileInputStream(file);
+        return Files.newInputStream(file.toPath());
     }
 
     @Override
@@ -325,13 +330,16 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return file.lastModified();
     }
 
-    private File getFileByBasename(Artifact artifact) {
+    private File getFileByBasename(Artifact artifact) throws ArtifactNotFoundException {
         File groupDir = new File(root, artifact.getGroupId().replace('.', '/'));
         File artifactDir = new File(groupDir, artifact.getArtifactId());
         File versionDir = new File(artifactDir, artifact.getVersion());
         File file = new File(versionDir, artifact.getName());
         if (!file.exists()) {
             file = new File(versionDir, artifact.getBaseVersionName());
+        }
+        if (!file.isFile()) {
+            throw new ArtifactNotFoundException(artifact);
         }
         return file;
     }

@@ -383,6 +383,22 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
+    void testSha1Checksum() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-15"));
+
+        Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");
+        assertNotNull(artifactStore.getSha1Checksum(pomArtifact));
+
+        Artifact mainArtifact = new Artifact("localhost", "mrm-15", "1.0", "jar");
+        String sha1Jar1 = artifactStore.getSha1Checksum(mainArtifact);
+
+        artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-15"));
+        String sha1Jar2 = artifactStore.getSha1Checksum(mainArtifact);
+
+        assertEquals(sha1Jar1, sha1Jar2);
+    }
+
+    @Test
     void groupMetaDataShouldNotExistForNoPlugins() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 

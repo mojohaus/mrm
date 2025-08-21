@@ -14,13 +14,6 @@ import org.apache.maven.artifact.repository.metadata.Metadata;
  */
 public abstract class BaseArtifactStore implements ArtifactStore {
 
-    /**
-     * Ensure consistent serialization.
-     *
-     * @since 1.0
-     */
-    private static final long serialVersionUID = 1L;
-
     @Override
     public void set(Artifact artifact, InputStream content) throws IOException {
         throw new UnsupportedOperationException("Read-only artifact store");

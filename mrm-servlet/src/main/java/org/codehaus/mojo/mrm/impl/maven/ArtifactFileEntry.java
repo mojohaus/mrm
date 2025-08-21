@@ -90,4 +90,13 @@ public class ArtifactFileEntry extends BaseFileEntry {
             throw new IOException("Artifact does not exist", e);
         }
     }
+
+    @Override
+    public String getSha1Checksum() throws IOException {
+        try {
+            return store.getSha1Checksum(artifact);
+        } catch (ArtifactNotFoundException e) {
+            throw new IOException("Artifact does not exist", e);
+        }
+    }
 }

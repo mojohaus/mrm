@@ -16,6 +16,8 @@
 
 package org.codehaus.mojo.mrm.api;
 
+import java.io.IOException;
+
 /**
  * Base implementation of {@link FileEntry} that all implementations should extend from.
  *
@@ -33,5 +35,10 @@ public abstract class BaseFileEntry extends AbstractEntry implements FileEntry {
      */
     protected BaseFileEntry(FileSystem fileSystem, DirectoryEntry parent, String name) {
         super(fileSystem, parent, name);
+    }
+
+    @Override
+    public String getSha1Checksum() throws IOException {
+        return null;
     }
 }
