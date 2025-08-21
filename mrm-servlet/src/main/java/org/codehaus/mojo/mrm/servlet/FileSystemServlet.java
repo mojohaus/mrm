@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +86,9 @@ public class FileSystemServlet extends HttpServlet {
             String formattedLastModifiedDate =
                     lastModifiedDate.atZone(ZoneId.of("UTC")).format(DateTimeFormatter.RFC_1123_DATE_TIME);
             resp.addHeader("Last-Modified", formattedLastModifiedDate);
+
+            Optional.ofNullable(fileEntry.getSha1Checksum())
+                    .ifPresent(sha1Checksum -> resp.addHeader("x-checksum-sha1", sha1Checksum));
 
             try (InputStream source = fileEntry.getInputStream()) {
                 IOUtils.copy(source, resp.getOutputStream());

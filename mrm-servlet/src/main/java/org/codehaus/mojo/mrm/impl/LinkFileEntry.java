@@ -80,4 +80,9 @@ public class LinkFileEntry extends BaseFileEntry {
     public InputStream getInputStream() throws IOException {
         return entry.getInputStream();
     }
+
+    @Override
+    public String getSha1Checksum() throws IOException {
+        return entry.getSha1Checksum();
+    }
 }

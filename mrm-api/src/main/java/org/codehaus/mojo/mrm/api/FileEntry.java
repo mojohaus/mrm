@@ -42,4 +42,13 @@ public interface FileEntry extends Entry {
      * @since 1.0
      */
     InputStream getInputStream() throws IOException;
+
+    /**
+     * Returns the SHA-1 checksum of the entry.
+     *
+     * @return the SHA-1 checksum of the entry as a hex string, or <code>null</code> if the checksum cannot be computed.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.7.0
+     */
+    String getSha1Checksum() throws IOException;
 }

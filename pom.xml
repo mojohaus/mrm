@@ -96,6 +96,7 @@
     <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
     <mojo.java.target>8</mojo.java.target>
     <jetty.version>9.4.58.v20250814</jetty.version>
+    <mockito.version>4.11.0</mockito.version>
     <project.build.outputTimestamp>2023-11-02T22:53:14Z</project.build.outputTimestamp>
   </properties>
 
@@ -198,6 +199,11 @@
 
       <!-- commons -->
       <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.19.0</version>
+      </dependency>
+      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.20.0</version>
@@ -232,7 +238,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>4.11.0</version>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

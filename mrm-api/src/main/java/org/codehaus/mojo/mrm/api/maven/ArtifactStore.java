@@ -163,6 +163,17 @@ public interface ArtifactStore {
     void set(Artifact artifact, InputStream content) throws IOException;
 
     /**
+     * Returns the SHA-1 checksum of the artifact.
+     *
+     * @param artifact the artifact
+     * @return the SHA-1 checksum of the entry as a hex string, or <code>null</code> if the checksum cannot be computed.
+     * @throws IOException               if the artifact could not be retrieved.
+     * @throws ArtifactNotFoundException if the artifact does not exist.
+     * @since 1.7.0
+     */
+    String getSha1Checksum(Artifact artifact) throws IOException, ArtifactNotFoundException;
+
+    /**
      * Returns the specified metadata.
      *
      * @param path of the metadata (should not include the <code>maven-metadata.xml</code>.

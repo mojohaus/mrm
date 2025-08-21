@@ -19,6 +19,7 @@ package org.codehaus.mojo.mrm.maven;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,6 +215,16 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     @Override
     public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
         return Files.newInputStream(resolveArtifactFile(artifact).toPath());
+    }
+
+    @Override
+    public String getSha1Checksum(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        File sha1File = new File(resolveArtifactFile(artifact).getPath() + ".sha1");
+        if (sha1File.isFile()) {
+            return new String(Files.readAllBytes(sha1File.toPath()), StandardCharsets.US_ASCII);
+        } else {
+            return null;
+        }
     }
 
     @Override

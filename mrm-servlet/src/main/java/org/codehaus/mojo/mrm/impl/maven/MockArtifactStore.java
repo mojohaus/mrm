@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -243,7 +245,7 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     @Override
-    public synchronized Set<String> getGroupIds(String parentGroupId) {
+    public Set<String> getGroupIds(String parentGroupId) {
         TreeSet<String> result = new TreeSet<>();
         if (StringUtils.isEmpty(parentGroupId)) {
             for (String groupId : contents.keySet()) {
@@ -264,20 +266,20 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     @Override
-    public synchronized Set<String> getArtifactIds(String groupId) {
+    public Set<String> getArtifactIds(String groupId) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         return artifactMap == null ? Collections.emptySet() : new TreeSet<>(artifactMap.keySet());
     }
 
     @Override
-    public synchronized Set<String> getVersions(String groupId, String artifactId) {
+    public Set<String> getVersions(String groupId, String artifactId) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
         return versionMap == null ? Collections.emptySet() : new TreeSet<>(versionMap.keySet());
     }
 
     @Override
-    public synchronized Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
+    public Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
         Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
         Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
@@ -286,61 +288,26 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     @Override
-    public synchronized long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
-        Map<String, Map<Artifact, Content>> versionMap =
-                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
-        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
-        Content content = (filesMap == null ? null : filesMap.get(artifact));
-        if (content == null) {
-            if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
-                Artifact best = null;
-                for (Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
-                    Artifact a = entry.getKey();
-                    if (artifact.equalSnapshots(a) && (best == null || best.compareTo(a) < 0)) {
-                        best = a;
-                        content = entry.getValue();
-                    }
-                }
-                if (content == null) {
-                    throw new ArtifactNotFoundException(artifact);
-                }
-            } else {
-                throw new ArtifactNotFoundException(artifact);
-            }
-        }
-        return content.getLastModified();
+    public long getLastModified(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        return getContent(artifact).getLastModified();
     }
 
     @Override
-    public synchronized long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
-        Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
-        Map<String, Map<Artifact, Content>> versionMap =
-                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
-        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
-        Content content = (filesMap == null ? null : filesMap.get(artifact));
-        if (content == null) {
-            if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
-                Artifact best = null;
-                for (Map.Entry<Artifact, Content> entry : filesMap.entrySet()) {
-                    Artifact a = entry.getKey();
-                    if (artifact.equalSnapshots(a) && (best == null || best.compareTo(a) < 0)) {
-                        best = a;
-                        content = entry.getValue();
-                    }
-                }
-                if (content == null) {
-                    throw new ArtifactNotFoundException(artifact);
-                }
-            } else {
-                throw new ArtifactNotFoundException(artifact);
-            }
-        }
-        return content.getLength();
+    public long getSize(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        return getContent(artifact).getSize();
     }
 
     @Override
-    public synchronized InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
+    public InputStream get(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        return getContent(artifact).getInputStream();
+    }
+
+    @Override
+    public String getSha1Checksum(Artifact artifact) throws IOException, ArtifactNotFoundException {
+        return getContent(artifact).getSha1Checksum();
+    }
+
+    private Content getContent(Artifact artifact) throws ArtifactNotFoundException {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
                 (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
@@ -363,7 +330,7 @@ public class MockArtifactStore extends BaseArtifactStore {
                 throw new ArtifactNotFoundException(artifact);
             }
         }
-        return content.getInputStream();
+        return content;
     }
 
     /**
@@ -680,11 +647,16 @@ public class MockArtifactStore extends BaseArtifactStore {
         InputStream getInputStream() throws IOException;
 
         /**
-         * Returns the length of the content.
+         * Returns the size of the content.
          *
-         * @return the length of the content.
+         * @return the size of the content.
          */
-        long getLength();
+        long getSize();
+
+        /**
+         * Returns the SHA-1 checksum of the content, if available.
+         */
+        String getSha1Checksum();
     }
 
     /**
@@ -708,6 +680,8 @@ public class MockArtifactStore extends BaseArtifactStore {
          */
         private final byte[] bytes;
 
+        private final String sha1Checksum;
+
         /**
          * Creates a new instance from the specified content.
          *
@@ -718,6 +692,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         private BytesContent(byte[] bytes, Long lastModified) {
             this.lastModified = lastModified != null ? lastModified : System.currentTimeMillis();
             this.bytes = bytes;
+            this.sha1Checksum = DigestUtils.sha1Hex(bytes);
         }
 
         @Override
@@ -731,8 +706,13 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         @Override
-        public long getLength() {
+        public long getSize() {
             return bytes.length;
+        }
+
+        @Override
+        public String getSha1Checksum() {
+            return sha1Checksum;
         }
     }
 
@@ -752,6 +732,8 @@ public class MockArtifactStore extends BaseArtifactStore {
 
         private final Long lastModified;
 
+        private final String sha1Checksum;
+
         /**
          * Creates a new instance.
          *
@@ -762,6 +744,11 @@ public class MockArtifactStore extends BaseArtifactStore {
         private FileContent(File file, Long lastModified) {
             this.file = file;
             this.lastModified = lastModified != null ? lastModified : file.lastModified();
+            try (InputStream in = getInputStream()) {
+                this.sha1Checksum = DigestUtils.sha1Hex(in);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
 
         @Override
@@ -775,8 +762,13 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         @Override
-        public long getLength() {
+        public long getSize() {
             return file.length();
+        }
+
+        @Override
+        public String getSha1Checksum() {
+            return sha1Checksum;
         }
     }
 
@@ -789,6 +781,8 @@ public class MockArtifactStore extends BaseArtifactStore {
         private final Archiver archiver;
 
         private File archivedFile;
+
+        private String sha1Checksum;
 
         /**
          * @param archiverManager the archiver manager to use for creating the archive
@@ -817,14 +811,17 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         private void createArchive() {
-            archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
-            archiver.setDestFile(archivedFile);
-            archiver.addFileSet(DefaultFileSet.fileSet(directory));
+            synchronized (directory) {
+                archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
+                archiver.setDestFile(archivedFile);
+                archiver.addFileSet(DefaultFileSet.fileSet(directory));
 
-            try {
-                archiver.createArchive();
-            } catch (ArchiverException | IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
+                try {
+                    archiver.setLastModifiedTime(Files.getLastModifiedTime(directory.toPath()));
+                    archiver.createArchive();
+                } catch (ArchiverException | IOException e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
             }
         }
 
@@ -842,11 +839,24 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         @Override
-        public long getLength() {
+        public long getSize() {
             if (archivedFile == null) {
                 createArchive();
             }
             return archivedFile.length();
+        }
+
+        @Override
+        public String getSha1Checksum() {
+            if (sha1Checksum == null) {
+                try (InputStream inputStream = getInputStream()) {
+                    sha1Checksum = DigestUtils.sha1Hex(inputStream);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+
+            return sha1Checksum;
         }
     }
 
