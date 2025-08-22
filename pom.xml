@@ -96,7 +96,7 @@
     <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
     <mojo.java.target>8</mojo.java.target>
     <jetty.version>9.4.58.v20250814</jetty.version>
-    <mockito.version>4.11.0</mockito.version>
+    <mockito.version>5.19.0</mockito.version>
     <project.build.outputTimestamp>2025-08-21T21:21:58Z</project.build.outputTimestamp>
   </properties>
 
