@@ -34,6 +34,7 @@ The Mock Repository Manager Plugin has the following goals.
 ## Usage
 
 General instructions on how to use the Mock Repository Manager Plugin can be found on the [usage page](./usage.html).
+For information about the different repository types and their configuration options, see [Repository Types](./repositories.html).
 Some more specific use cases are described in the examples given below.
 
 In case you still have questions regarding the plugin's usage, please have feel free to contact the [user mailing list](./mailing-lists.html). The posts to the mailing list are archived and could
