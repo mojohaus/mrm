@@ -60,6 +60,19 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
      * The repositories to serve. When more than one repository is specified, a merged repository view
      * of those will be used. If none specified then a proxy of the invoking Maven's repositories will
      * be served.
+     * <p>
+     * Available repository types:
+     * <ul>
+     * <li><b>mockRepo</b> - Mock repository serving content from a local directory with specific file patterns</li>
+     * <li><b>localRepo</b> - Local repository serving content from a standard Maven repository layout</li>
+     * <li><b>proxyRepo</b> - Proxy repository forwarding requests to the current Maven session's repositories</li>
+     * <li><b>hostedRepo</b> - Hosted repository accepting uploaded artifacts (writable)</li>
+     * </ul>
+     * <p>
+     * For detailed documentation including parameters and examples for each repository type,
+     * see <a href="https://www.mojohaus.org/mrm/mrm-maven-plugin/repositories.html">Repository Types</a>.
+     *
+     * @since 1.0
      */
     @Parameter
     private ArtifactStoreFactory[] repositories;
