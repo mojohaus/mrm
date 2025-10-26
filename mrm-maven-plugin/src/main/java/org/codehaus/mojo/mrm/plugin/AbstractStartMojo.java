@@ -70,7 +70,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
      * </ul>
      * <p>
      * For detailed documentation including parameters and examples for each repository type,
-     * see <a href="https://www.mojohaus.org/mrm/mrm-maven-plugin/repositories.html">Repository Types</a>.
+     * see <a href="repositories.html">Repository Types</a>.
      *
      * @since 1.0
      */
