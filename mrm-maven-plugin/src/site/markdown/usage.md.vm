@@ -87,8 +87,8 @@ the same parameters).
 </project>
 ```
 
-Enable Basic Authentication
-----------------------------
+Enabling Basic Authentication
+------------------------------
 
 To enable basic authentication on the mock repository manager, you can configure the `username` and `password` 
 parameters. This is useful when testing Maven configurations that require authenticated repository access.
@@ -120,7 +120,9 @@ parameters. This is useful when testing Maven configurations that require authen
 
 You can also configure authentication from the command line:
 
-  mvn mrm:run -Dmrm.username=testuser -Dmrm.password=testpass
+```
+mvn mrm:run -Dmrm.username=testuser -Dmrm.password=testpass
+```
 
 When authentication is enabled, Maven clients will need to configure the server credentials in their `settings.xml`:
 
