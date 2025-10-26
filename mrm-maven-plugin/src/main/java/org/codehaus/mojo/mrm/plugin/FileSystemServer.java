@@ -19,12 +19,19 @@ package org.codehaus.mojo.mrm.plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Credential;
 
 /**
  * A file system server.
@@ -105,6 +112,16 @@ public class FileSystemServer {
     private final boolean debugServer;
 
     /**
+     * Username for basic authentication (optional)
+     */
+    private final String username;
+
+    /**
+     * Password for basic authentication (optional)
+     */
+    private final String password;
+
+    /**
      * Creates a new file system server that will serve a {@link FileSystem} over HTTP on the specified port.
      *
      * @param name        The name of the file system server thread.
@@ -112,13 +129,40 @@ public class FileSystemServer {
      * @param contextPath The root context path for server
      * @param fileSystem  the file system to serve.
      * @param debugServer the server debug mode
+     * @param username    the username for basic authentication (null to disable authentication)
+     * @param password    the password for basic authentication
      */
-    public FileSystemServer(String name, int port, String contextPath, FileSystem fileSystem, boolean debugServer) {
+    public FileSystemServer(
+            String name,
+            int port,
+            String contextPath,
+            FileSystem fileSystem,
+            boolean debugServer,
+            String username,
+            String password) {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
         this.contextPath = sanitizeContextPath(contextPath);
         this.debugServer = debugServer;
+        this.username = username;
+        this.password = password;
+    }
+
+    /**
+     * Creates a new file system server that will serve a {@link FileSystem} over HTTP on the specified port
+     * without authentication.
+     *
+     * @param name        The name of the file system server thread.
+     * @param port        The port to server on or <code>0</code> to pick a random, but available, port.
+     * @param contextPath The root context path for server
+     * @param fileSystem  the file system to serve.
+     * @param debugServer the server debug mode
+     * @deprecated Use {@link #FileSystemServer(String, int, String, FileSystem, boolean, String, String)} instead
+     */
+    @Deprecated
+    public FileSystemServer(String name, int port, String contextPath, FileSystem fileSystem, boolean debugServer) {
+        this(name, port, contextPath, fileSystem, debugServer, null, null);
     }
 
     /**
@@ -257,6 +301,37 @@ public class FileSystemServer {
                     ServletContextHandler context = new ServletContextHandler();
                     context.setContextPath(contextPath);
                     context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem)), "/*");
+
+                    // Configure authentication if username is provided
+                    if (username != null && !username.isEmpty()) {
+                        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+
+                        // Create constraint
+                        Constraint constraint = new Constraint();
+                        constraint.setName(Constraint.__BASIC_AUTH);
+                        constraint.setRoles(new String[] {"user"});
+                        constraint.setAuthenticate(true);
+
+                        // Map constraint to all paths
+                        ConstraintMapping mapping = new ConstraintMapping();
+                        mapping.setConstraint(constraint);
+                        mapping.setPathSpec("/*");
+
+                        // Create login service with user store
+                        HashLoginService loginService = new HashLoginService("Mock Repository Manager");
+                        UserStore userStore = new UserStore();
+                        userStore.addUser(username, Credential.getCredential(password), new String[] {"user"});
+                        loginService.setUserStore(userStore);
+
+                        // Configure security handler
+                        securityHandler.setConstraintMappings(new ConstraintMapping[] {mapping});
+                        securityHandler.setAuthenticator(new BasicAuthenticator());
+                        securityHandler.setLoginService(loginService);
+
+                        // Set the security handler on the context
+                        context.setSecurityHandler(securityHandler);
+                    }
+
                     server.setHandler(context);
                     server.start();
                     synchronized (lock) {
