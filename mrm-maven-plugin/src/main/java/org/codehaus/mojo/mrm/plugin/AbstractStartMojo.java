@@ -88,6 +88,22 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
     private boolean debugServer;
 
     /**
+     * Username for basic authentication. If not specified, authentication is disabled.
+     *
+     * @since 1.7.1
+     */
+    @Parameter(property = "mrm.username")
+    private String username;
+
+    /**
+     * Password for basic authentication. Only used if username is specified.
+     *
+     * @since 1.7.1
+     */
+    @Parameter(property = "mrm.password")
+    private String password;
+
+    /**
      * Creates a new instance
      * @param factoryHelper injected {@link FactoryHelper} instance
      */
@@ -107,7 +123,9 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
                 Math.max(0, Math.min(port, 65535)),
                 basePath,
                 new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
-                debugServer);
+                debugServer,
+                username,
+                password);
     }
 
     /**
