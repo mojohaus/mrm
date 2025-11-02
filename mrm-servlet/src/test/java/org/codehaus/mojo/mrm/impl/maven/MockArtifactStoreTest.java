@@ -50,7 +50,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     // MMOCKRM-3
     @Test
-    void testInheritGavFromParent() throws Exception {
+    void inheritGavFromParent() throws Exception {
         // don't fail
         MockArtifactStore mockArtifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-3"));
         assertEquals(2, mockArtifactStore.getArtifactIds("localhost").size());
@@ -58,7 +58,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     // MMOCKRM-6
     @Test
-    void testClassifiers() throws Exception {
+    void classifiers() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-7"));
 
         Artifact pomArtifact = new Artifact("localhost", "mmockrm-7", "1.0", "pom");
@@ -76,7 +76,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
 
     // MMOCKRM-10
     @Test
-    void testArchetypeCatalog() throws Exception {
+    void archetypeCatalog() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);
@@ -90,7 +90,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testDirectoryContent() throws Exception {
+    void directoryContent() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-15"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");
@@ -123,7 +123,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testEmptyJarContent() throws Exception {
+    void emptyJarContent() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/empty-jar"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-empty-jar", "1.0", "pom");
@@ -155,7 +155,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testEmptyPluginJarContent() throws Exception {
+    void emptyPluginJarContent() throws Exception {
         MockArtifactStore artifactStore =
                 new MockArtifactStore(archiverManager, getResourceAsFile("/empty-plugin-jar"));
 
@@ -189,7 +189,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testDirectoryContentWithTgzArchiver() throws Exception {
+    void directoryContentWithTgzArchiver() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/tgz-archiver"));
         assertNotNull(artifactStore);
 
@@ -290,7 +290,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testLastModifiedWithTimestampSnapshot() throws Exception {
+    void lastModifiedWithTimestampSnapshot() throws Exception {
         MockArtifactStore artifactStore =
                 new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
         assertNotNull(artifactStore);
@@ -331,7 +331,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testLastModifiedWithTimestampSnapshotMetadata() throws Exception {
+    void lastModifiedWithTimestampSnapshotMetadata() throws Exception {
         MockArtifactStore artifactStore =
                 new MockArtifactStore(archiverManager, getResourceAsFile("/timestamp-snapshot"));
         assertNotNull(artifactStore);
@@ -361,7 +361,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testDirectoryContentWithUnknownArchiver() throws Exception {
+    void directoryContentWithUnknownArchiver() throws Exception {
         IllegalStateException exception = assertThrowsExactly(
                 IllegalStateException.class,
                 () -> new MockArtifactStore(archiverManager, getResourceAsFile("/unknown-archiver")));
@@ -369,7 +369,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testDirectoryWithClassifierContent() throws Exception {
+    void directoryWithClassifierContent() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-xx"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-xx", "1.0", "pom");
@@ -383,7 +383,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testSha1Checksum() throws Exception {
+    void sha1Checksum() throws Exception {
         MockArtifactStore artifactStore = new MockArtifactStore(archiverManager, getResourceAsFile("/mrm-15"));
 
         Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");

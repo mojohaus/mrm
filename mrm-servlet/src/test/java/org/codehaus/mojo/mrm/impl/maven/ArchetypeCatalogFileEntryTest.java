@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 class ArchetypeCatalogFileEntryTest {
 
     @Test
-    void testCleanArchetypeCatalogFileEntry() throws Exception {
+    void cleanArchetypeCatalogFileEntry() throws Exception {
         ArchetypeCatalogFileEntry entry = new ArchetypeCatalogFileEntry(null, null, null);
         assertNull(entry.getFileSystem());
         assertNull(entry.getParent());
@@ -24,7 +24,7 @@ class ArchetypeCatalogFileEntryTest {
     }
 
     @Test
-    void testFileSystem() throws Exception {
+    void fileSystem() throws Exception {
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry root = mock(DirectoryEntry.class);
         when(fileSystem.getRoot()).thenReturn(root);
@@ -36,7 +36,7 @@ class ArchetypeCatalogFileEntryTest {
     }
 
     @Test
-    void testParent() throws Exception {
+    void parent() throws Exception {
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry parent = mock(DirectoryEntry.class);
         when(fileSystem.getRoot()).thenReturn(parent);
@@ -48,7 +48,7 @@ class ArchetypeCatalogFileEntryTest {
     }
 
     @Test
-    void testArtifactStore() throws Exception {
+    void artifactStore() throws Exception {
         final long lastModified = System.currentTimeMillis();
         FileSystem fileSystem = mock(FileSystem.class);
         DirectoryEntry parent = mock(DirectoryEntry.class);
