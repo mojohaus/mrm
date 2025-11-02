@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 class ArtifactStoreFileSystemTest {
 
     @Test
-    void testGroupMetadataRegex() {
+    void groupMetadataRegex() {
         Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher("/commons/maven-metadata.xml");
         assertTrue(matcher.matches());
         assertEquals("commons/", matcher.group(1));
@@ -52,7 +52,7 @@ class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    void testArtifactRegex() {
+    void artifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/commons/maven-metadata.xml");
         assertFalse(matcher.matches());
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
@@ -103,7 +103,7 @@ class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    void testSnapshotArtifactRegex() {
+    void snapshotArtifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/commons/maven-metadata.xml");
         assertFalse(matcher.matches());
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
@@ -148,7 +148,7 @@ class ArtifactStoreFileSystemTest {
 
     // MMOCKRM-5
     @Test
-    void testSiteXmlReleaseVersion() throws Exception {
+    void siteXmlReleaseVersion() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getSize(isA(Artifact.class))).thenThrow(ArtifactNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -157,7 +157,7 @@ class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    void testSiteXmlSnapshotVersion() throws Exception {
+    void siteXmlSnapshotVersion() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getSize(isA(Artifact.class))).thenThrow(ArtifactNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -167,7 +167,7 @@ class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    void testArchetypeCatalogNotFound() throws Exception {
+    void archetypeCatalogNotFound() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getArchetypeCatalogLastModified()).thenThrow(ArchetypeCatalogNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
@@ -176,7 +176,7 @@ class ArtifactStoreFileSystemTest {
     }
 
     @Test
-    void testArchetypeCatalog() throws Exception {
+    void archetypeCatalog() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getArchetypeCatalog()).thenReturn(new ArchetypeCatalog());
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);

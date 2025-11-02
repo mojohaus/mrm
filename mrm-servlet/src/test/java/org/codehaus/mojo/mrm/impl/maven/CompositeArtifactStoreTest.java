@@ -1,6 +1,5 @@
 package org.codehaus.mojo.mrm.impl.maven;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
@@ -9,7 +8,6 @@ import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
-import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,7 +18,7 @@ import static org.mockito.Mockito.when;
 class CompositeArtifactStoreTest {
 
     @Test
-    void testGetArchetypeCatalog() throws Exception {
+    void getArchetypeCatalog() throws Exception {
         ArtifactStore store = mock(ArtifactStore.class);
         when(store.getArchetypeCatalog()).thenReturn(new ArchetypeCatalog());
         ArtifactStore[] stores = new ArtifactStore[] {store};
@@ -32,7 +30,7 @@ class CompositeArtifactStoreTest {
     }
 
     @Test
-    void metadataForSnapshotShouldBeMerged() throws MetadataNotFoundException, IOException {
+    void metadataForSnapshotShouldBeMerged() throws Exception {
 
         Metadata metadata1 = new Metadata();
         metadata1.setArtifactId("artifactId");

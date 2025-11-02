@@ -17,7 +17,7 @@ class DiskArtifactStoreTest extends AbstractTestSupport {
 
     // MMOCKRM-10
     @Test
-    void testArchetypeCatalog() throws Exception {
+    void archetypeCatalog() throws Exception {
         DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/mmockrm-10"));
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
         assertNotNull(catalog);
@@ -56,7 +56,7 @@ class DiskArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testSha1Checksum() throws Exception {
+    void sha1Checksum() throws Exception {
         DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/local-repo-unit"));
 
         String sha1Checksum1 = artifactStore.getSha1Checksum(new Artifact("org.group1", "artifact1", "1.0.0", "pom"));
@@ -67,7 +67,7 @@ class DiskArtifactStoreTest extends AbstractTestSupport {
     }
 
     @Test
-    void testArtifactNotFound() throws Exception {
+    void artifactNotFound() throws Exception {
         DiskArtifactStore artifactStore = new DiskArtifactStore(getResourceAsFile("/local-repo-unit"));
 
         Artifact artifact = new Artifact("org.groupXXXX", "artifactXXX", "1.0.0", "pom");

@@ -10,7 +10,7 @@ class AbstractEntryTest {
 
     // MMOCKRM-13
     @Test
-    void testPathForRootEntry() {
+    void pathForRootEntry() {
         FileSystem fileSystem = mock(FileSystem.class);
         DefaultDirectoryEntry entry = new DefaultDirectoryEntry(fileSystem, null, "/favicon.ico");
 

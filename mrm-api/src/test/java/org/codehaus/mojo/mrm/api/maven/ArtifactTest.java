@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ArtifactTest {
 
     @Test
-    void testSmokes() throws Exception {
+    void smokes() throws Exception {
         assertEquals(new Artifact("foo", "bar", "1.0", "jar"), new Artifact("foo", "bar", "1.0", null, "jar"));
     }
 }
