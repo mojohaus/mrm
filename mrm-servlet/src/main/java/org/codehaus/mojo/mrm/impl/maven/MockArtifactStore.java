@@ -179,8 +179,9 @@ public class MockArtifactStore extends BaseArtifactStore {
                                     pomArtifact.getTimestamp()));
                 }
 
-                File[] classifiedFiles = file.getParentFile().listFiles((dir, name) -> FilenameUtils.getBaseName(name)
-                        .startsWith(pomBasename + '-'));
+                File[] classifiedFiles = file.getParentFile()
+                        .listFiles(
+                                (dir, name) -> FilenameUtils.getBaseName(name).startsWith(pomBasename + '-'));
 
                 for (File classifiedFile : classifiedFiles) {
                     String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
