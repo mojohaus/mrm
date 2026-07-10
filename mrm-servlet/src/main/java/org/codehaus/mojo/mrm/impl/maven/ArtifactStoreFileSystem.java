@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
@@ -233,8 +234,9 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                         StringUtils.stripEnd(snapshotArtifact.group(1), "/").replace('/', '.');
                 String artifactId = snapshotArtifact.group(2);
                 String version = snapshotArtifact.group(3) + "-SNAPSHOT";
+                final String str = version;
                 Pattern rule =
-                        Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
+                        Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + Strings.CS.removeEnd(str, "-SNAPSHOT")
                                 + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
                                 + "\\.([^/]*)");
                 Matcher matcher = rule.matcher(name);
@@ -376,10 +378,10 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                     StringUtils.stripEnd(snapshotArtifact.group(1), "/").replace('/', '.');
             String artifactId = snapshotArtifact.group(2);
             String version = snapshotArtifact.group(3) + "-SNAPSHOT";
-            Pattern rule =
-                    Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
-                            + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
-                            + "\\.([^/]*)");
+            final String str = version;
+            Pattern rule = Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + Strings.CS.removeEnd(str, "-SNAPSHOT")
+                    + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
+                    + "\\.([^/]*)");
             Matcher matcher = rule.matcher(name);
             if (!matcher.matches()) {
                 String classifier = snapshotArtifact.group(5);

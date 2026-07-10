@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.codehaus.mojo.mrm.api.BaseFileSystem;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
@@ -144,7 +144,8 @@ public class AutoDigestFileSystem extends BaseFileSystem {
             String name = parts[parts.length - 1];
             for (DigestFileEntryFactory factory : digestFactories.values()) {
                 if (name.endsWith(factory.getType())) {
-                    Entry shadow = backing.get(parent.toPath() + "/" + StringUtils.removeEnd(name, factory.getType()));
+                    final String str = name;
+                    Entry shadow = backing.get(parent.toPath() + "/" + Strings.CS.removeEnd(str, factory.getType()));
                     return factory.create(this, parent, (FileEntry) shadow);
                 }
             }
@@ -169,7 +170,7 @@ public class AutoDigestFileSystem extends BaseFileSystem {
                 for (DigestFileEntryFactory factory : digestFactories.values()) {
                     if (entry.getName().endsWith(factory.getType())) {
                         Entry shadow = backing.get(
-                                parent.toPath() + "/" + StringUtils.removeEnd(entry.getName(), factory.getType()));
+                                parent.toPath() + "/" + Strings.CS.removeEnd(entry.getName(), factory.getType()));
                         return new GenerateOnErrorFileEntry(
                                 this, parent, (FileEntry) entry, factory.create(this, parent, (FileEntry) shadow));
                     }
@@ -179,7 +180,7 @@ public class AutoDigestFileSystem extends BaseFileSystem {
                 for (DigestFileEntryFactory factory : digestFactories.values()) {
                     if (entry.getName().endsWith(factory.getType())) {
                         Entry shadow = backing.get(
-                                parent.toPath() + "/" + StringUtils.removeEnd(entry.getName(), factory.getType()));
+                                parent.toPath() + "/" + Strings.CS.removeEnd(entry.getName(), factory.getType()));
                         return factory.create(this, parent, (FileEntry) shadow);
                     }
                 }

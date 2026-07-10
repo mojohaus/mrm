@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -47,6 +48,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -392,12 +394,13 @@ public class MockArtifactStore extends BaseArtifactStore {
                                     plugin, build.getPluginManagement().getPlugins());
                         }
                         if (!havePrefix && artifactId.startsWith("maven-") && artifactId.endsWith("-plugin")) {
-                            plugin.setPrefix(
-                                    StringUtils.removeStart(StringUtils.removeEnd(artifactId, "-plugin"), "maven-"));
+                            final String str = artifactId;
+                            plugin.setPrefix(Strings.CS.removeStart(Strings.CS.removeEnd(str, "-plugin"), "maven-"));
                             havePrefix = true;
                         }
                         if (!havePrefix && artifactId.endsWith("-maven-plugin")) {
-                            plugin.setPrefix(StringUtils.removeEnd(artifactId, "-maven-plugin"));
+                            final String str = artifactId;
+                            plugin.setPrefix(Strings.CS.removeEnd(str, "-maven-plugin"));
                             havePrefix = true;
                         }
                         if (!havePrefix) {
@@ -589,8 +592,8 @@ public class MockArtifactStore extends BaseArtifactStore {
     private boolean setPluginGoalPrefixFromConfiguration(
             Plugin plugin, List<org.apache.maven.model.Plugin> pluginConfigs) {
         for (org.apache.maven.model.Plugin def : pluginConfigs) {
-            if ((def.getGroupId() == null || StringUtils.equals("org.apache.maven.plugins", def.getGroupId()))
-                    && StringUtils.equals("maven-plugin-plugin", def.getArtifactId())) {
+            if ((def.getGroupId() == null || Objects.equals("org.apache.maven.plugins", def.getGroupId()))
+                    && Objects.equals("maven-plugin-plugin", def.getArtifactId())) {
                 Xpp3Dom configuration = (Xpp3Dom) def.getConfiguration();
                 if (configuration != null) {
                     final Xpp3Dom goalPrefix = configuration.getChild("goalPrefix");
@@ -616,7 +619,6 @@ public class MockArtifactStore extends BaseArtifactStore {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings("unchecked")
         public int compare(String o1, String o2) {
             ArtifactVersion v1 = new DefaultArtifactVersion(o1);
             ArtifactVersion v2 = new DefaultArtifactVersion(o2);

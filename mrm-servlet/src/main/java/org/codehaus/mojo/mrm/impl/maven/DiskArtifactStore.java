@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.catalog.io.xpp3.ArchetypeCatalogXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -155,7 +156,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
 
         final ArtifactFactory factory;
         if (version.endsWith("-SNAPSHOT")) {
-            rule = Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + StringUtils.removeEnd(version, "-SNAPSHOT")
+            rule = Pattern.compile("\\Q" + artifactId + "\\E-(?:\\Q" + Strings.CS.removeEnd(version, "-SNAPSHOT")
                     + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
                     + "\\.([^/]*)");
             factory = new ArtifactFactory() {
@@ -410,7 +411,8 @@ public class DiskArtifactStore extends BaseArtifactStore {
         }
 
         String version = pathItems.pollLast();
-        String baseVersion = StringUtils.removeEnd(version, "-SNAPSHOT");
+        final String str = version;
+        String baseVersion = Strings.CS.removeEnd(str, "-SNAPSHOT");
         String artifactId = pathItems.pollLast();
 
         String groupId = String.join(".", pathItems);

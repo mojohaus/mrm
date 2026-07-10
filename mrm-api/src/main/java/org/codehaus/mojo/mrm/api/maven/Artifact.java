@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * Represents a specific artifact in a Maven repository. Implements {@link Comparable} to sort based on
@@ -279,7 +279,7 @@ public final class Artifact implements Comparable<Artifact> {
                 DateTimeFormatter timestampFormatter =
                         DateTimeFormatter.ofPattern("yyyyMMdd.HHmmss").withZone(ZoneId.of("UTC"));
 
-                timestampVersion = StringUtils.removeEnd(version, "-SNAPSHOT")
+                timestampVersion = Strings.CS.removeEnd(version, "-SNAPSHOT")
                         + "-" + timestampFormatter.format(Instant.ofEpochMilli(timestamp))
                         + "-" + buildNumber;
             } else {
