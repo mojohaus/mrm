@@ -72,6 +72,7 @@
   <modules>
     <module>mrm-api</module>
     <module>mrm-servlet</module>
+    <module>mrm-servlet-jetty</module>
     <module>mrm-maven-plugin</module>
   </modules>
 

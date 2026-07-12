@@ -1,4 +1,4 @@
-package org.codehaus.mojo.mrm.plugin;
+package org.codehaus.mojo.mrm.jetty;
 
 /*
  * Copyright MojoHaus and Contributors
