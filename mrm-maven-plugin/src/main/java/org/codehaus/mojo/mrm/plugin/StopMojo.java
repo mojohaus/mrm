@@ -22,6 +22,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom

@@ -26,6 +26,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
+import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 
 /**
  * Common base class for the mojos that start a repository.

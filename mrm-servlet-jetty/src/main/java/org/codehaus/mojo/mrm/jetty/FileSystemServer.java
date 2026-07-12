@@ -1,4 +1,4 @@
-package org.codehaus.mojo.mrm.plugin;
+package org.codehaus.mojo.mrm.jetty;
 
 /*
  * Copyright 2011 Stephen Connolly
@@ -16,7 +16,6 @@ package org.codehaus.mojo.mrm.plugin;
  * limitations under the License.
  */
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.mrm.api.FileSystem;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
 import org.eclipse.jetty.server.Server;
@@ -145,9 +144,9 @@ public class FileSystemServer {
      * Ensures that the file system server is started (if already starting, will block until started, otherwise starts
      * the file system server and blocks until started)
      *
-     * @throws MojoExecutionException if the file system server could not be started.
+     * @throws FileSystemServerException if the file system server could not be started.
      */
-    public void ensureStarted() throws MojoExecutionException {
+    public void ensureStarted() throws FileSystemServerException {
         synchronized (lock) {
             if (started || starting) {
                 return;
@@ -170,7 +169,7 @@ public class FileSystemServer {
                 }
             }
         } catch (Exception e) {
-            throw new MojoExecutionException(e.getMessage(), e);
+            throw new FileSystemServerException(e.getMessage(), e);
         }
     }
 

@@ -27,6 +27,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.mojo.mrm.jetty.FileSystemServer;
+import org.codehaus.mojo.mrm.jetty.FileSystemServerException;
 
 /**
  * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
@@ -53,7 +55,11 @@ public class StartMojo extends AbstractStartMojo {
     public void doExecute() throws MojoExecutionException, MojoFailureException {
         FileSystemServer mrm = createFileSystemServer(createArtifactStore());
         getLog().info("Starting Mock Repository Manager");
-        mrm.ensureStarted();
+        try {
+            mrm.ensureStarted();
+        } catch (FileSystemServerException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
         String url = mrm.getUrl();
         getLog().info("Mock Repository Manager " + url + " is started.");
         if (!StringUtils.isEmpty(propertyName)) {
