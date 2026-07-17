@@ -141,7 +141,7 @@ public class MockArtifactStore extends BaseArtifactStore {
      * @param archiverManager
      * @param root
      * @param lazyArchiver
-     * @param transformDirectiveSource
+     * @param transformDirectiveSourcFactory
      * @since 2.0
      */
     public MockArtifactStore(
@@ -188,7 +188,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                             InputStreamTransformer streamTransformer =
                                     toInputStreamTransformer(transformDirectiveSource);
-                            fileSet.setStreamTransformer(dtreamTransformer);
+                            fileSet.setStreamTransformer(streamTransformer);
                         }
                         content = new DirectoryContent(
                                 archiverManager, fileSet, lazyArchiver, pomArtifact.getTimestamp());
@@ -243,7 +243,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                             InputStreamTransformer streamTransformer =
                                     toInputStreamTransformer(transformDirectiveSource);
-                            fileSet.setStreamTransformer(dtreamTransformer);
+                            fileSet.setStreamTransformer(streamTransformer);
                         }
 
                         content = new DirectoryContent(
