@@ -177,23 +177,21 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                     Content content;
                     if (mainFile.isDirectory()) {
-                    	DefaultFileSet fileSet = DefaultFileSet.fileSet(mainFile);
-                   	
+                        DefaultFileSet fileSet = DefaultFileSet.fileSet(mainFile);
+
                         if (transformDirectiveSourcFactory != null) {
                             TransformDirectiveSource transformDirectiveSource =
                                     transformDirectiveSourcFactory.newInstance(mainFile.toPath());
 
-                            new FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
+                            FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
                             fileSet.setFileMappers(fileMappers);
-                            
-                            InputStreamTransformer streamTransformer = toInputStreamTransformer(transformDirectiveSource);
+
+                            InputStreamTransformer streamTransformer =
+                                    toInputStreamTransformer(transformDirectiveSource);
                             fileSet.setStreamTransformer(dtreamTransformer);
                         }
                         content = new DirectoryContent(
-                                archiverManager,
-                                fileSet,
-                                lazyArchiver,
-                                pomArtifact.getTimestamp());
+                                archiverManager, fileSet, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
                         content = new BytesContent(Utils.newEmptyJarContent(), pomArtifact.getTimestamp());
                     }
@@ -234,24 +232,22 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                     Content content;
                     if (classifiedFile.isDirectory()) {
-                    	DefaultFileSet fileSet = DefaultFileSet.fileSet(classifiedFile);
-                       	
+                        DefaultFileSet fileSet = DefaultFileSet.fileSet(classifiedFile);
+
                         if (transformDirectiveSourcFactory != null) {
                             TransformDirectiveSource transformDirectiveSource =
                                     transformDirectiveSourcFactory.newInstance(classifiedFile.toPath());
 
-                            new FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
+                            FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
                             fileSet.setFileMappers(fileMappers);
-                            
-                            InputStreamTransformer streamTransformer = toInputStreamTransformer(transformDirectiveSource);
+
+                            InputStreamTransformer streamTransformer =
+                                    toInputStreamTransformer(transformDirectiveSource);
                             fileSet.setStreamTransformer(dtreamTransformer);
                         }
 
                         content = new DirectoryContent(
-                                archiverManager,
-                                fileSet,
-                                lazyArchiver,
-                                pomArtifact.getTimestamp());
+                                archiverManager, fileSet, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
                         content = new FileContent(classifiedFile, pomArtifact.getTimestamp());
                     }
@@ -849,7 +845,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         private final Archiver archiver;
 
         private final FileSet fileSet;
-        
+
         private File archivedFile;
 
         private String sha1Checksum;
@@ -861,14 +857,10 @@ public class MockArtifactStore extends BaseArtifactStore {
          * @param lastModified the last modified timestamp, or {@code null} to use the directory's last modified time
          * @since 1.0
          */
-        private DirectoryContent(
-                ArchiverManager archiverManager,
-                FileSet fileSet,
-                boolean lazy,
-                Long lastModified) {
+        private DirectoryContent(ArchiverManager archiverManager, FileSet fileSet, boolean lazy, Long lastModified) {
             this.fileSet = fileSet;
 
-        	File directory = fileSet.getDirectory();
+            File directory = fileSet.getDirectory();
             this.lastModified = lastModified != null ? lastModified : directory.lastModified();
 
             try {
@@ -886,8 +878,8 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         private void createArchive() {
-        	File directory = fileSet.getDirectory();
-        	
+            File directory = fileSet.getDirectory();
+
             synchronized (directory) {
                 archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
                 archiver.setDestFile(archivedFile);

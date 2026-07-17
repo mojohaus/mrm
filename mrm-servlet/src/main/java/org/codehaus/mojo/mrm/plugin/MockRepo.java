@@ -48,7 +48,7 @@ public class MockRepo implements ArtifactStoreFactory {
 
     /**
      * Define where the transformation directives are coming from. Supported values: metadata.
-     * 
+     *
      * @since 2.0.0
      * @see MetadataTransformDirective
      */
@@ -84,7 +84,8 @@ public class MockRepo implements ArtifactStoreFactory {
         } else {
             tds = switch (transformDirectiveSource) {
                 case "metadata" -> new MetadataTransformDirectiveFactory();
-                default -> throw new IllegalArgumentException("Unknown transformDirectiveSource: " + transformDirectiveSource);
+                default ->
+                    throw new IllegalArgumentException("Unknown transformDirectiveSource: " + transformDirectiveSource);
             };
         }
 
