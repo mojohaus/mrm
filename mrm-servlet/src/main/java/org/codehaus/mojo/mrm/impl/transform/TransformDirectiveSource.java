@@ -15,7 +15,16 @@
  */
 package org.codehaus.mojo.mrm.impl.transform;
 
+/**
+ * Provides a fileTransformationPlan based on the centralized or decentralized sources, as defined by the implementation.
+ *
+ * @since 2.0.0
+ */
 public interface TransformDirectiveSource {
 
+    /**
+     *
+     * @return the plan, never {@code null}
+     */
     FileTransformPlan plan();
 }

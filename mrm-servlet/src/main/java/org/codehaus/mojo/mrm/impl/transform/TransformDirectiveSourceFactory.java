@@ -17,9 +17,25 @@ package org.codehaus.mojo.mrm.impl.transform;
 
 import java.nio.file.Path;
 
+/**
+ * Factory for a named TransformDirectiveSource. Prepared to be used for either CDI or SPI.
+ *
+ * @since 2.0.0
+ */
 public interface TransformDirectiveSourceFactory {
 
+    /**
+     * The name, might be used for lookup.
+     *
+     * @return the name, never {@code null}
+     */
     String name();
 
+    /**
+     * Returns a specific transformationDirectiveSource for a single directory archive.
+     *
+     * @param root the directory archive, never {@code null}
+     * @return the transformDirectiveSource, never {@code null}
+     */
     TransformDirectiveSource newInstance(Path root);
 }

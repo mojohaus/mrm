@@ -20,6 +20,11 @@ import java.nio.file.Path;
 import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
 import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSourceFactory;
 
+/**
+ * The Factory for a MetadataTransformDirective
+ *
+ * @since 2.0.0
+ */
 public final class MetadataTransformDirectiveFactory implements TransformDirectiveSourceFactory {
 
     @Override

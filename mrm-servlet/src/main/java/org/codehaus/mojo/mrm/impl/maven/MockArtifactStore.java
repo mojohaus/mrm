@@ -138,11 +138,11 @@ public class MockArtifactStore extends BaseArtifactStore {
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
-     * @param archiverManager
-     * @param root
-     * @param lazyArchiver
-     * @param transformDirectiveSourcFactory
-     * @since 2.0
+     * @param archiverManager the archivemanager
+     * @param root the root
+     * @param lazyArchiver archive lazily or nor
+     * @param transformDirectiveSourcFactory the transformDirectiveSourcFactory
+     * @since 2.0.0
      */
     public MockArtifactStore(
             ArchiverManager archiverManager,
@@ -286,7 +286,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
     private InputStreamTransformer toInputStreamTransformer(TransformDirectiveSource source) {
         return (resource, inputstream) ->
-                source.plan().inputStream(resource.getName()).apply(inputstream);
+                source.plan().content(resource.getName()).apply(inputstream);
     }
 
     private Artifact createPomArtifact(String groupId, String artifactId, String version, File file) {

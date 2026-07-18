@@ -26,12 +26,29 @@ import java.util.function.UnaryOperator;
 import org.codehaus.mojo.mrm.impl.transform.FileTransformPlan;
 import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
 
+/**
+ * <p>
+ * Provides a plan based on {@code ".mrm-transform.properties"}.
+ * </p>
+ *
+ * Supports:
+ * <dl>
+ *   <dt>[inputName].target=[output]</dt>
+ *   <dd>Transform the filename  from input to output</dd>
+ * </dl>
+ *
+ * @since 2.0.0
+ */
 public final class MetadataTransformDirective implements TransformDirectiveSource {
 
     private final Path metadataFile = Path.of(".mrm-transform.properties");
 
     private final Properties properties;
 
+    /**
+     *
+     * @param root the archive directory
+     */
     public MetadataTransformDirective(Path root) {
         this.properties = new Properties();
 
