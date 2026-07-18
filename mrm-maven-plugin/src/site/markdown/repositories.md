@@ -35,6 +35,7 @@ A mock Maven repository that serves content from a local directory structure wit
 * `cloneTo` (optional) - Clone the source to a specific directory (useful for directory-based archives)
 * `cloneClean` (optional) - Ensure the cloneTo folder is cleaned before every run (default: false)
 * `lazyArchiver` (optional) - Set to `false` to archive directories at startup, or `true` to archive when used (default: false)
+* `transformDirectiveSource` (optional) - Set the name of the mechanism to transform in case of a directory based archive. Possible values: `metadata` (default: null)
 
 **Example:**
 
@@ -45,6 +46,7 @@ A mock Maven repository that serves content from a local directory structure wit
     <cloneTo>target/mock-repo</cloneTo>
     <cloneClean>true</cloneClean>
     <lazyArchiver>false</lazyArchiver>
+    <transformDirectiveSource>metadata</transformDirectiveSource>
   </mockRepo>
 </repositories>
 ```
@@ -60,6 +62,11 @@ The mockRepo recognizes the following file patterns in the source directory:
 * `archetype-catalog.xml` - Archetype catalog
 
 Supported archiver extensions include: `jar`, `zip`, `tar.gz`, `tgz`, `tar.xz`, and other formats supported by [Plexus Archiver](https://codehaus-plexus.github.io/plexus-archiver/).
+
+**Supported TransformDirectiveSource:**
+
+* metadata - Put a file called `.mrm-transform.properties` in the root of an archive directory (e.g. `artifactId-1.0.0.jar/.mrm-transform.properties`). This file supports the following entries
+  * [input].targetName = [output]
 
 ### localRepo
 

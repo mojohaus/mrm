@@ -6,6 +6,9 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.maven.MockArtifactStore;
+import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSourceFactory;
+import org.codehaus.mojo.mrm.impl.transform.metadata.MetadataTransformDirective;
+import org.codehaus.mojo.mrm.impl.transform.metadata.MetadataTransformDirectiveFactory;
 
 /**
  * A mock Maven repository.
@@ -43,6 +46,14 @@ public class MockRepo implements ArtifactStoreFactory {
      */
     private boolean lazyArchiver;
 
+    /**
+     * Define where the transformation directives are coming from. Supported values: metadata.
+     *
+     * @since 2.0.0
+     * @see MetadataTransformDirective
+     */
+    private String transformDirectiveSource;
+
     @Override
     public ArtifactStore newInstance(FactoryHelper factoryHelper) {
         if (source == null) {
@@ -67,7 +78,18 @@ public class MockRepo implements ArtifactStoreFactory {
             }
         }
 
-        return new MockArtifactStore(factoryHelper.getArchiverManager(), root, lazyArchiver);
+        TransformDirectiveSourceFactory tds;
+        if (transformDirectiveSource == null) {
+            tds = null;
+        } else {
+            tds = switch (transformDirectiveSource) {
+                case "metadata" -> new MetadataTransformDirectiveFactory();
+                default ->
+                    throw new IllegalArgumentException("Unknown transformDirectiveSource: " + transformDirectiveSource);
+            };
+        }
+
+        return new MockArtifactStore(factoryHelper.getArchiverManager(), root, lazyArchiver, tds);
     }
 
     /**
