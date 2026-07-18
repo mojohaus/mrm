@@ -67,11 +67,16 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.impl.Utils;
+import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
+import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSourceFactory;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.FileSet;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.util.DefaultFileSet;
+import org.codehaus.plexus.components.io.filemappers.FileMapper;
+import org.codehaus.plexus.components.io.functions.InputStreamTransformer;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -114,6 +119,11 @@ public class MockArtifactStore extends BaseArtifactStore {
         this(archiverManager, root, true);
     }
 
+    public MockArtifactStore(
+            ArchiverManager archiverManager, File root, TransformDirectiveSourceFactory transformDirectiveSource) {
+        this(archiverManager, root, true, transformDirectiveSource);
+    }
+
     /**
      * Create a mock artifact store by scanning for POMs within the specified root.
      *
@@ -122,6 +132,23 @@ public class MockArtifactStore extends BaseArtifactStore {
      * @since 1.0
      */
     public MockArtifactStore(ArchiverManager archiverManager, File root, boolean lazyArchiver) {
+        this(archiverManager, root, lazyArchiver, null);
+    }
+
+    /**
+     * Create a mock artifact store by scanning for POMs within the specified root.
+     *
+     * @param archiverManager the archivemanager
+     * @param root the root
+     * @param lazyArchiver archive lazily or nor
+     * @param transformDirectiveSourcFactory the transformDirectiveSourcFactory
+     * @since 2.0.0
+     */
+    public MockArtifactStore(
+            ArchiverManager archiverManager,
+            File root,
+            boolean lazyArchiver,
+            TransformDirectiveSourceFactory transformDirectiveSourcFactory) {
 
         if (!root.isDirectory()) {
             throw new IllegalArgumentException("The specified root must be a directory: " + root);
@@ -150,8 +177,21 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                     Content content;
                     if (mainFile.isDirectory()) {
+                        DefaultFileSet fileSet = DefaultFileSet.fileSet(mainFile);
+
+                        if (transformDirectiveSourcFactory != null) {
+                            TransformDirectiveSource transformDirectiveSource =
+                                    transformDirectiveSourcFactory.newInstance(mainFile.toPath());
+
+                            FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
+                            fileSet.setFileMappers(fileMappers);
+
+                            InputStreamTransformer streamTransformer =
+                                    toInputStreamTransformer(transformDirectiveSource);
+                            fileSet.setStreamTransformer(streamTransformer);
+                        }
                         content = new DirectoryContent(
-                                archiverManager, mainFile, lazyArchiver, pomArtifact.getTimestamp());
+                                archiverManager, fileSet, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
                         content = new BytesContent(Utils.newEmptyJarContent(), pomArtifact.getTimestamp());
                     }
@@ -192,8 +232,22 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                     Content content;
                     if (classifiedFile.isDirectory()) {
+                        DefaultFileSet fileSet = DefaultFileSet.fileSet(classifiedFile);
+
+                        if (transformDirectiveSourcFactory != null) {
+                            TransformDirectiveSource transformDirectiveSource =
+                                    transformDirectiveSourcFactory.newInstance(classifiedFile.toPath());
+
+                            FileMapper[] fileMappers = new FileMapper[] {toFileMapper(transformDirectiveSource)};
+                            fileSet.setFileMappers(fileMappers);
+
+                            InputStreamTransformer streamTransformer =
+                                    toInputStreamTransformer(transformDirectiveSource);
+                            fileSet.setStreamTransformer(streamTransformer);
+                        }
+
                         content = new DirectoryContent(
-                                archiverManager, classifiedFile, lazyArchiver, pomArtifact.getTimestamp());
+                                archiverManager, fileSet, lazyArchiver, pomArtifact.getTimestamp());
                     } else {
                         content = new FileContent(classifiedFile, pomArtifact.getTimestamp());
                     }
@@ -224,6 +278,15 @@ public class MockArtifactStore extends BaseArtifactStore {
         if (archetypeCatalogFile.isFile()) {
             archetypeCatalog = new FileContent(archetypeCatalogFile, null);
         }
+    }
+
+    private FileMapper toFileMapper(TransformDirectiveSource source) {
+        return oldName -> source.plan().filename().apply(oldName);
+    }
+
+    private InputStreamTransformer toInputStreamTransformer(TransformDirectiveSource source) {
+        return (resource, inputstream) ->
+                source.plan().content(resource.getName()).apply(inputstream);
     }
 
     private Artifact createPomArtifact(String groupId, String artifactId, String version, File file) {
@@ -777,11 +840,11 @@ public class MockArtifactStore extends BaseArtifactStore {
 
     private static class DirectoryContent implements Content {
 
-        private final File directory;
-
         private final Long lastModified;
 
         private final Archiver archiver;
+
+        private final FileSet fileSet;
 
         private File archivedFile;
 
@@ -794,9 +857,10 @@ public class MockArtifactStore extends BaseArtifactStore {
          * @param lastModified the last modified timestamp, or {@code null} to use the directory's last modified time
          * @since 1.0
          */
-        private DirectoryContent(ArchiverManager archiverManager, File directory, boolean lazy, Long lastModified) {
+        private DirectoryContent(ArchiverManager archiverManager, FileSet fileSet, boolean lazy, Long lastModified) {
+            this.fileSet = fileSet;
 
-            this.directory = directory;
+            File directory = fileSet.getDirectory();
             this.lastModified = lastModified != null ? lastModified : directory.lastModified();
 
             try {
@@ -814,10 +878,12 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
 
         private void createArchive() {
+            File directory = fileSet.getDirectory();
+
             synchronized (directory) {
                 archivedFile = new File(directory.getParentFile(), "_" + directory.getName());
                 archiver.setDestFile(archivedFile);
-                archiver.addFileSet(DefaultFileSet.fileSet(directory));
+                archiver.addFileSet(fileSet);
 
                 try {
                     archiver.setLastModifiedTime(Files.getLastModifiedTime(directory.toPath()));

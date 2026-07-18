@@ -27,6 +27,7 @@ import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotVersion;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
+import org.codehaus.mojo.mrm.impl.transform.metadata.MetadataTransformDirectiveFactory;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -490,5 +492,31 @@ class MockArtifactStoreTest extends AbstractTestSupport {
                 .filter(v -> "jar".equals(v.getExtension()))
                 .filter(v -> !v.getUpdated().isEmpty())
                 .anyMatch(v -> "1.0-SNAPSHOT".equals(v.getVersion())));
+    }
+
+    @Test
+    void directoryTransform() throws Exception {
+        MockArtifactStore artifactStore = new MockArtifactStore(
+                archiverManager, getResourceAsFile("/directory-transform"), new MetadataTransformDirectiveFactory());
+
+        Artifact mainArtifact = new Artifact("localhost", "directory-transform", "1.0", "jar");
+        InputStream inputStreamJar = artifactStore.get(mainArtifact);
+        assertNotNull(inputStreamJar);
+
+        List<String> names = new ArrayList<>();
+
+        File jarFile = Files.createTempFile(temporaryFolder, "test", ".jar").toFile();
+        Files.copy(inputStreamJar, jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        try (JarFile jar = new JarFile(jarFile)) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                names.add(entry.getName());
+            }
+        }
+
+        assertTrue(names.contains("module-info.class"));
+        assertFalse(names.contains("module-info.java"));
     }
 }
