@@ -10,11 +10,14 @@ import java.util.regex.Pattern;
 
 /**
  * A lightweight parser based on Scanner
+ *
+ * @since 2.0.0
  */
 class ScannerModuleDescriptorParser implements ModuleDescriptorParser {
 
     private static final Pattern delimiter = Pattern.compile("\\s+|(?<=[{};])|(?=[{};])");
 
+    @Override
     public ModuleDescriptor parse(InputStream input) {
         ModuleDescriptor.Builder builder = null;
         try (Scanner scanner = new Scanner(input)) {

@@ -12,7 +12,12 @@ import io.smallrye.classfile.attribute.ModuleAttribute;
 import io.smallrye.classfile.extras.constant.ModuleDesc;
 import io.smallrye.classfile.extras.reflect.AccessFlag;
 
-class ClassFileApiModuleDescriptorGenerator implements ModuleDescriptorGenerator {
+/**
+ * Transforms a ModuleDescriptor to its binary form using the smallrye backport of the classfile-api
+ *
+ * @since 2.0.0
+ */
+final class ClassFileApiModuleDescriptorGenerator implements ModuleDescriptorGenerator {
 
     @Override
     public InputStream generate(ModuleDescriptor descriptor) {

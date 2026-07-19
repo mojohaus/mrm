@@ -5,18 +5,29 @@ import java.lang.module.ModuleDescriptor;
 
 import org.codehaus.mojo.mrm.impl.transform.content.InputStreamTransformer;
 
+/**
+ * This transformer can be used to go from a Java source file to a Java class file
+ *
+ * @since 2.0.0
+ */
 public final class JavaFileTransformer implements InputStreamTransformer {
 
     private ModuleDescriptorParser moduleDescriptorParser;
     private ModuleDescriptorGenerator moduleDescriptorGenerator;
 
+    /**
+     * Default constructor
+     */
     public JavaFileTransformer() {
         // currently only 1 implementation available for both
         this.moduleDescriptorParser = new ScannerModuleDescriptorParser();
         this.moduleDescriptorGenerator = new ClassFileApiModuleDescriptorGenerator();
     }
 
-    public String name() {
+    /**
+     * @return the name to locate this transformer
+     */
+    public final String name() {
         return "javaToClass";
     }
 
@@ -29,7 +40,7 @@ public final class JavaFileTransformer implements InputStreamTransformer {
         }
     }
 
-    public InputStream transformModuleDescriptor(InputStream inputStream, String filename) {
+    private InputStream transformModuleDescriptor(InputStream inputStream, String filename) {
         try {
             ModuleDescriptor descriptor = moduleDescriptorParser.parse(inputStream);
 
