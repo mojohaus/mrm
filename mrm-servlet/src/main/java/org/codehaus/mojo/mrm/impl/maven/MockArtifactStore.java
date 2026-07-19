@@ -67,6 +67,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.BaseArtifactStore;
 import org.codehaus.mojo.mrm.api.maven.MetadataNotFoundException;
 import org.codehaus.mojo.mrm.impl.Utils;
+import org.codehaus.mojo.mrm.impl.transform.FileTransformPlan;
 import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
 import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSourceFactory;
 import org.codehaus.plexus.archiver.Archiver;
@@ -285,8 +286,11 @@ public class MockArtifactStore extends BaseArtifactStore {
     }
 
     private InputStreamTransformer toInputStreamTransformer(TransformDirectiveSource source) {
-        return (resource, inputstream) ->
-                source.plan().content(resource.getName()).apply(inputstream);
+        return (resource, inputstream) -> {
+            FileTransformPlan plan = source.plan();
+            String input = plan.originalFilename(resource.getName());
+            return plan.content(input).apply(inputstream);
+        };
     }
 
     private Artifact createPomArtifact(String groupId, String artifactId, String version, File file) {

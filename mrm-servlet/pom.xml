@@ -95,6 +95,11 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.smallrye.classfile</groupId>
+      <artifactId>jdk-classfile-backport</artifactId>
+    </dependency>
+
     <!-- testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
