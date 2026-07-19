@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.module.ModuleDescriptor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +14,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -508,15 +510,27 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         File jarFile = Files.createTempFile(temporaryFolder, "test", ".jar").toFile();
         Files.copy(inputStreamJar, jarFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+        ModuleDescriptor descriptor;
         try (JarFile jar = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 names.add(entry.getName());
             }
+
+            JarEntry modInfo = jar.getJarEntry("module-info.class");
+            try (InputStream in = jar.getInputStream(modInfo)) {
+                descriptor = ModuleDescriptor.read(in);
+            }
         }
 
-        assertTrue(names.contains("module-info.class"));
+        assertEquals("localhost.directory.transform", descriptor.name());
+        assertTrue(descriptor.requires().stream()
+                .anyMatch(r -> "localhost.lib".equals(r.name()) && r.modifiers().isEmpty()));
+        assertTrue(descriptor.requires().stream()
+                .anyMatch(r -> "localhost.log.api".equals(r.name())
+                        && r.modifiers().equals(Set.of(ModuleDescriptor.Requires.Modifier.STATIC))));
+
         assertFalse(names.contains("module-info.java"));
     }
 }

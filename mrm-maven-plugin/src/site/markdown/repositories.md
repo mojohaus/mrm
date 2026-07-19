@@ -67,6 +67,9 @@ Supported archiver extensions include: `jar`, `zip`, `tar.gz`, `tgz`, `tar.xz`, 
 
 * metadata - Put a file called `.mrm-transform.properties` in the root of an archive directory (e.g. `artifactId-1.0.0.jar/.mrm-transform.properties`). This file supports the following entries
   * [input].targetName = [output]
+  * [input].contentTransformers = javaToClass
+
+  The `javaToClass` currently supports transforming `module-info.java`, only including `[open]* module MODULENAME` and `requires [static|transitive]* MODULENAME`.
 
 ### localRepo
 

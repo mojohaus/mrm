@@ -240,6 +240,12 @@
         <version>3.6.0</version>
       </dependency>
 
+      <dependency>
+        <groupId>io.smallrye.classfile</groupId>
+        <artifactId>jdk-classfile-backport</artifactId>
+        <version>27</version>
+      </dependency>
+
       <!-- testing -->
       <dependency>
         <groupId>org.mockito</groupId>
