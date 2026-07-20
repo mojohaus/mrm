@@ -97,7 +97,6 @@
     <minimalMavenBuildVersion>3.9.6</minimalMavenBuildVersion>
     <mojo.java.target>17</mojo.java.target>
     <jetty.version>9.4.58.v20250814</jetty.version>
-    <mockito.version>4.11.0</mockito.version>
     <project.build.outputTimestamp>2026-07-10T10:08:48Z</project.build.outputTimestamp>
   </properties>
 
@@ -248,16 +247,18 @@
 
       <!-- testing -->
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>6.1.1</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-junit-jupiter</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
+        <artifactId>mockito-bom</artifactId>
+        <version>5.23.0</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
