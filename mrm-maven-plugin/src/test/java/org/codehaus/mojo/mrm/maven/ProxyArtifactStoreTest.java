@@ -26,6 +26,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.impl.maven.ProxyArtifactStore;
 import org.codehaus.mojo.mrm.plugin.DefaultFactoryHelper;
 import org.codehaus.mojo.mrm.plugin.FactoryHelper;
 import org.eclipse.aether.DefaultRepositorySystemSession;

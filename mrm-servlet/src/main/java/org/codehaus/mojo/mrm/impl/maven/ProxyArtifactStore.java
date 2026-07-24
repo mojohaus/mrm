@@ -1,4 +1,4 @@
-package org.codehaus.mojo.mrm.maven;
+package org.codehaus.mojo.mrm.impl.maven;
 
 /*
  * Copyright 2011 Stephen Connolly
@@ -37,7 +37,6 @@ import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.codehaus.mojo.mrm.api.ResolverUtils;
 import org.codehaus.mojo.mrm.api.maven.ArchetypeCatalogNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;

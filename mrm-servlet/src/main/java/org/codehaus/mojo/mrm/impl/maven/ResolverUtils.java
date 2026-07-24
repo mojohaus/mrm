@@ -1,4 +1,4 @@
-package org.codehaus.mojo.mrm.api;
+package org.codehaus.mojo.mrm.impl.maven;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Miscellaneous utilities for manipulating Resolver entities
  */
-public class ResolverUtils {
+final class ResolverUtils {
 
     private ResolverUtils() {
         // utility class
@@ -26,13 +26,14 @@ public class ResolverUtils {
      * @param artifact object to read the data from, may not be {@code null}
      * @return new {@link org.eclipse.aether.artifact.Artifact} instance
      */
-    public static org.eclipse.aether.artifact.Artifact createArtifact(RepositorySystemSession repositorySystemSession, Artifact artifact) {
+    static org.eclipse.aether.artifact.Artifact createArtifact(
+            RepositorySystemSession repositorySystemSession, Artifact artifact) {
         String groupId = artifact.getGroupId();
         String artifactId = artifact.getArtifactId();
         String version = artifact.getTimestampVersion();
 
-        Optional<ArtifactType> artifactType = ofNullable(artifact.getType())
-                .map(repositorySystemSession.getArtifactTypeRegistry()::get);
+        Optional<ArtifactType> artifactType =
+                ofNullable(artifact.getType()).map(repositorySystemSession.getArtifactTypeRegistry()::get);
         return new org.eclipse.aether.artifact.DefaultArtifact(
                 groupId,
                 artifactId,

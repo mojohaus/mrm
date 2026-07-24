@@ -19,7 +19,7 @@ package org.codehaus.mojo.mrm.plugin;
 import java.util.Objects;
 
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
-import org.codehaus.mojo.mrm.maven.ProxyArtifactStore;
+import org.codehaus.mojo.mrm.impl.maven.ProxyArtifactStore;
 
 /**
  * A proxy repository serving the content from the current Maven session.
