@@ -26,6 +26,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.mrm.api.maven.Artifact;
 import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
+import org.codehaus.mojo.mrm.plugin.DefaultFactoryHelper;
 import org.codehaus.mojo.mrm.plugin.FactoryHelper;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -60,10 +61,9 @@ class ProxyArtifactStoreTest {
     void verifyArtifactNotFoundExceptionOnGet() throws Exception {
         RepositorySystem repositorySystem = mock(RepositorySystem.class);
         doThrow(ArtifactResolutionException.class).when(repositorySystem).resolveArtifact(any(), any());
-        FactoryHelper factoryHelper = mock(FactoryHelper.class);
-        when(factoryHelper.getRepositorySystem()).thenReturn(repositorySystem);
-        when(factoryHelper.getArchetypeManager()).then(i -> mock(ArchetypeManager.class));
-        when(factoryHelper.getMavenSession()).thenReturn(mavenSession);
+
+        FactoryHelper factoryHelper =
+                new DefaultFactoryHelper(repositorySystem, mock(ArchetypeManager.class), () -> mavenSession, null);
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
@@ -76,10 +76,9 @@ class ProxyArtifactStoreTest {
     void verifyArtifactResolutionExceptionOnGet() throws Exception {
         RepositorySystem repositorySystem = mock(RepositorySystem.class);
         doThrow(new RuntimeException("test123")).when(repositorySystem).resolveArtifact(any(), any());
-        FactoryHelper factoryHelper = mock(FactoryHelper.class);
-        when(factoryHelper.getRepositorySystem()).thenReturn(repositorySystem);
-        when(factoryHelper.getArchetypeManager()).then(i -> mock(ArchetypeManager.class));
-        when(factoryHelper.getMavenSession()).thenReturn(mavenSession);
+
+        FactoryHelper factoryHelper =
+                new DefaultFactoryHelper(repositorySystem, mock(ArchetypeManager.class), () -> mavenSession, null);
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
@@ -92,10 +91,10 @@ class ProxyArtifactStoreTest {
     void verifyArchetypeCatalogNotFoundException() {
         ArchetypeManager archetypeManager = mock(ArchetypeManager.class);
         doThrow(new RuntimeException("test123")).when(archetypeManager).getLocalCatalog(any());
-        FactoryHelper factoryHelper = mock(FactoryHelper.class);
-        when(factoryHelper.getRepositorySystem()).then(i -> mock(RepositorySystem.class));
-        when(factoryHelper.getArchetypeManager()).thenReturn(archetypeManager);
-        when(factoryHelper.getMavenSession()).thenReturn(mavenSession);
+
+        FactoryHelper factoryHelper =
+                new DefaultFactoryHelper(mock(RepositorySystem.class), archetypeManager, () -> mavenSession, null);
+
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
         RuntimeException exception = assertThrowsExactly(RuntimeException.class, store::getArchetypeCatalog);

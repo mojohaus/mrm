@@ -16,13 +16,16 @@
 
 package org.codehaus.mojo.mrm.plugin;
 
+import java.util.List;
+
 import org.apache.maven.archetype.ArchetypeManager;
-import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
- * Helper interface that exposes the Maven components that may be required.
+ * Helper interface that exposes the Artifact Resolver components that may be required.
  *
  * @since 1.0
  */
@@ -32,16 +35,15 @@ public interface FactoryHelper {
      */
     RepositorySystem getRepositorySystem();
 
+    RepositorySystemSession getRepositorySystemSession();
+
+    List<RemoteRepository> getRemoteRepositories();
+
     /**
      * @return returns the {@link ArchetypeManager} instance
      * @since 1.0
      */
     ArchetypeManager getArchetypeManager();
-
-    /**
-     * @return returns the current {@link MavenSession} instance
-     */
-    MavenSession getMavenSession();
 
     ArchiverManager getArchiverManager();
 }

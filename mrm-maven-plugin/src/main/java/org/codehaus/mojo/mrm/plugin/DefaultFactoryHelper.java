@@ -5,10 +5,17 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * Our implementation of {@link FactoryHelper}.
@@ -49,12 +56,23 @@ public class DefaultFactoryHelper implements FactoryHelper {
     }
 
     @Override
-    public MavenSession getMavenSession() {
-        return mavenSessionProvider.get();
+    public ArchiverManager getArchiverManager() {
+        return archiverManager;
     }
 
     @Override
-    public ArchiverManager getArchiverManager() {
-        return archiverManager;
+    public RepositorySystemSession getRepositorySystemSession() {
+        return mavenSessionProvider.get().getRepositorySession();
+    }
+
+    @Override
+    public List<RemoteRepository> getRemoteRepositories() {
+        MavenProject currentProject = mavenSessionProvider.get().getCurrentProject();
+
+        return Stream.concat(
+                        currentProject.getRemoteProjectRepositories().stream(),
+                        currentProject.getRemotePluginRepositories().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
