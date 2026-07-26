@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +75,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     private final RepositorySystemSession repositorySystemSession;
 
-    private final ArchetypeManager archetypeManager;
+    private final Supplier<ArchetypeManager> archetypeManager;
 
     /**
      * Creates a new instance.
@@ -83,7 +84,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
      */
     public ProxyArtifactStore(FactoryHelper factoryHelper) {
         this.repositorySystem = Objects.requireNonNull(factoryHelper.getRepositorySystem());
-        this.archetypeManager = Objects.requireNonNull(factoryHelper.getArchetypeManager());
+        this.archetypeManager = () -> factoryHelper.getArchetypeManager();
         this.repositorySystemSession = Objects.requireNonNull(factoryHelper.getRepositorySystemSession());
         this.remoteRepositories = factoryHelper.getRemoteRepositories();
     }
@@ -325,12 +326,12 @@ public class ProxyArtifactStore extends BaseArtifactStore {
 
     @Override
     public ArchetypeCatalog getArchetypeCatalog() {
-        return archetypeManager.getLocalCatalog(repositorySystemSession);
+        return archetypeManager.get().getLocalCatalog(repositorySystemSession);
     }
 
     @Override
     public long getArchetypeCatalogLastModified() throws ArchetypeCatalogNotFoundException {
-        if (archetypeManager.getLocalCatalog(repositorySystemSession) != null) {
+        if (archetypeManager.get().getLocalCatalog(repositorySystemSession) != null) {
             return System.currentTimeMillis();
         } else {
             throw new ArchetypeCatalogNotFoundException();

@@ -74,6 +74,7 @@
     <module>mrm-servlet</module>
     <module>mrm-servlet-jetty</module>
     <module>mrm-maven-plugin</module>
+    <module>mrm-jupiter-extension</module>
   </modules>
 
   <scm>
@@ -107,12 +108,6 @@
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.resolver</groupId>
-        <artifactId>maven-resolver-api</artifactId>
-        <version>1.9.27</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -150,6 +145,38 @@
         <artifactId>maven-settings</artifactId>
         <version>${mavenVersion}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-resolver-provider</artifactId>
+        <version>${mavenVersion}</version>
+      </dependency>
+
+      <!-- maven artifact resolver -->
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>1.9.27</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-spi</artifactId>
+        <version>1.9.27</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-impl</artifactId>
+        <version>1.9.27</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-connector-basic</artifactId>
+        <version>1.9.27</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-http</artifactId>
+        <version>1.9.27</version>
       </dependency>
 
       <!-- Archetype -->
@@ -296,7 +323,12 @@
               <exclusionFail>true</exclusionFail>
               <ignoredUnusedDeclaredDependencies>
                 <dependency>org.slf4j:slf4j-simple</dependency>
+                <dependency>org.junit.jupiter:junit-jupiter</dependency>
               </ignoredUnusedDeclaredDependencies>
+              <ignoredUsedUndeclaredDependencies>
+                <dependency>org.junit.jupiter:junit-jupiter-api</dependency>
+                <!-- loaded via org.junit.jupiter:junit-jupiter -->
+              </ignoredUsedUndeclaredDependencies>
             </configuration>
           </execution>
         </executions>
