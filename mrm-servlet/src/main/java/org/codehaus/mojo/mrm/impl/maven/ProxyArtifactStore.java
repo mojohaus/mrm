@@ -175,7 +175,8 @@ public class ProxyArtifactStore extends BaseArtifactStore {
                             .resolveArtifact(
                                     repositorySystemSession,
                                     new ArtifactRequest(
-                                            ResolverUtils.createArtifact(repositorySystemSession, artifact),
+                                            ResolverUtils.createArtifact(
+                                                    repositorySystemSession.getArtifactTypeRegistry(), artifact),
                                             remoteRepositories,
                                             getClass().getSimpleName()))
                             .getArtifact())
