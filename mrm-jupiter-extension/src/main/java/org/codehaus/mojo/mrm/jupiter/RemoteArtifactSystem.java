@@ -21,11 +21,15 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * This is the equivalent of the ProxyRepo as available for the maven-plugin.
+ * The maven-plugin has direct access to the pom, hence to all configured remote repositories.
+ * This extension has no access to build-information, so use this annotation to provide that.
+ *
  * @since 2.0.0
  */
 @Retention(RUNTIME)
 @Target({})
-public @interface RemoteRepositories {
+public @interface RemoteArtifactSystem {
 
     /**
      * The cache directory for all remote repositories

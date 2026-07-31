@@ -1,20 +1,16 @@
-package org.codehaus.mojo.mrm.jupiter.mockrepo;
+package org.codehaus.mojo.mrm.jupiter;
 
 import io.restassured.RestAssured;
-import org.codehaus.mojo.mrm.jupiter.Directory;
-import org.codehaus.mojo.mrm.jupiter.LocalRepo;
-import org.codehaus.mojo.mrm.jupiter.MockRepositoryManager;
-import org.codehaus.mojo.mrm.jupiter.MockRepositoryManagerServer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MockRepositoryManager(localRepos = @LocalRepo(source = @Directory("src/it/resources/local-repo/repositories")))
-public class LocalRepoDefaults {
+public class LocalRepoIT {
 
     @Test
-    void defaults(MockRepositoryManagerServer server) {
-        final String mainArtifactUrl = server.getUrl("dev.groupid", "artifactid", "4.2", "txt");
+    void mainArtifact(MockRepositoryManagerServer server) {
+        final String mainArtifactUrl = server.getArtifactUrl("dev.groupid", "artifactid", "4.2", "txt");
 
         String mainContent = RestAssured.get(mainArtifactUrl)
                 .then()
@@ -23,8 +19,12 @@ public class LocalRepoDefaults {
                 .asString();
 
         assertEquals("Downloaded artifactid-4.2.txt successfully", mainContent);
+    }
 
-        final String classifierArtifactUrl = server.getUrl("dev.groupid", "artifactid", "4.2", "properties", "meta");
+    @Test
+    void classifiedArtifact(MockRepositoryManagerServer server) {
+        final String classifierArtifactUrl =
+                server.getArtifactUrl("dev.groupid", "artifactid", "4.2", "properties", "meta");
 
         String classifiedContent = RestAssured.get(classifierArtifactUrl)
                 .then()

@@ -73,14 +73,14 @@ public @interface MockRepositoryManager {
     HostedRepo[] hostedRepos() default {};
 
     /**
-     * The remote repositories for downloading artifacts. Within the Maven context these are
+     * The system for handling downloading artifacts from remote repositories. Within the Maven context these are
      * the repositories defined in the pom.xml, having central defined as the default.
      *
      * @return the local repository configurations
      * @see LocalRepo
      */
-    RemoteRepositories remoteRepositories() default
-            @RemoteRepositories(
+    RemoteArtifactSystem remoteArtifactSystem() default
+            @RemoteArtifactSystem(
                     cacheDirectory = @Directory(value = ""),
                     repositories = {});
 }

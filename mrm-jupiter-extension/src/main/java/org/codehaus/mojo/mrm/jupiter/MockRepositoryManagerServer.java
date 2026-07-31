@@ -62,7 +62,7 @@ public class MockRepositoryManagerServer {
      * @param fileExtension the file extension
      * @return the url to access this artifact
      */
-    public String getUrl(String groupId, String artifactId, String version, String fileExtension) {
+    public String getArtifactUrl(String groupId, String artifactId, String version, String fileExtension) {
         return url
                 + '/'
                 + groupId.replace('.', '/')
@@ -88,7 +88,8 @@ public class MockRepositoryManagerServer {
      * @param classifier the classifier
      * @return the url to access this artifact
      */
-    public String getUrl(String groupId, String artifactId, String version, String fileExtension, String classifier) {
+    public String getArtifactUrl(
+            String groupId, String artifactId, String version, String fileExtension, String classifier) {
         return url
                 + '/'
                 + groupId.replace('.', '/')
@@ -104,6 +105,14 @@ public class MockRepositoryManagerServer {
                 + classifier
                 + '.'
                 + fileExtension;
+    }
+
+    public String getMetadataUrl(String groupId, String file) {
+        return url + '/' + groupId.replace('.', '/') + '/' + file;
+    }
+
+    public String getMetadataUrl(String groupId, String artifactId, String file) {
+        return url + '/' + groupId.replace('.', '/') + '/' + artifactId + '/' + file;
     }
 
     /**

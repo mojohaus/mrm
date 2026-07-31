@@ -1,0 +1,61 @@
+title: Usage
+author: Robert Scholte
+date: 2026-07-27
+
+<!---
+Copyright 2026 Robert Scholte
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+Usage
+=====
+
+The jupiter extension offers annotations for hosting a mock repository manager as part of a Jupiter Test Lifecycle.
+
+```xml
+<project>
+  ...
+  <dependencies>
+    ...
+      <dependency>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>mrm-jupiter-extension</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+    ...
+  </dependencies>
+  ...
+</project>
+```
+
+Basic Usage
+-----------
+
+Write your unit test as usual and annotate the class with @MockRepositoryManager.
+Tests that depend on the mock repository manager should add the MockRepositoryManagerServer parameter to their method.
+
+
+To make use of of it, start writing a unit test as follows:
+
+
+```java
+@MockRepositoryManager
+class ExampleTest {
+
+  @Test
+  void example(MockRepositoryManagerServer server) {
+  
+  }
+}

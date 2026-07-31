@@ -40,11 +40,11 @@ public class DirectoryTransformIT {
 
     @Test
     void moduleDescriptor(MockRepositoryManagerServer server) throws Exception {
-        final String artifactPomUrl = server.getUrl("localhost", "directory-transform", "1.0", "pom");
+        final String artifactPomUrl = server.getArtifactUrl("localhost", "directory-transform", "1.0", "pom");
 
         RestAssured.get(artifactPomUrl).then().statusCode(200);
 
-        final String artifactJarUrl = server.getUrl("localhost", "directory-transform", "1.0", "jar");
+        final String artifactJarUrl = server.getArtifactUrl("localhost", "directory-transform", "1.0", "jar");
 
         InputStream jarInputStream = RestAssured.get(artifactJarUrl)
                 .then()

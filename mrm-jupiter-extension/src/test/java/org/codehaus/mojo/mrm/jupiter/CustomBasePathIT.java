@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MockRepositoryManager(
         basePath = "/foo/bar",
-        remoteRepositories =
-                @RemoteRepositories(
+        remoteArtifactSystem =
+                @RemoteArtifactSystem(
                         cacheDirectory = @Directory(value = ".m2", baseBathResolver = UserHomePathResolver.class),
                         repositories =
                                 @RemoteRepo(
@@ -43,7 +43,7 @@ public class CustomBasePathIT {
         /* Make sure the repo ends with the base path we have set in mrm-maven-plugin/src/it/custom-base-path/pom.xml */
         Assertions.assertThat(mrmUri).endsWith("foo/bar");
 
-        String artifactUrl = server.getUrl("org.apache.commons", "commons-lang3", "3.12.0", "pom");
+        String artifactUrl = server.getArtifactUrl("org.apache.commons", "commons-lang3", "3.12.0", "pom");
 
         /* Try to download something and make sure the content is as expected */
         String body = RestAssured.get(artifactUrl)

@@ -193,7 +193,7 @@ class MockRepositoryManagerExtension implements BeforeAllCallback, AfterAllCallb
             stores.add(new DiskArtifactStore(targetDirectory.toFile()).canWrite(true));
         }
 
-        RemoteRepositories remoteRepositories = annotation.remoteRepositories();
+        RemoteArtifactSystem remoteRepositories = annotation.remoteArtifactSystem();
 
         if (remoteRepositories.repositories().length > 0) {
             List<RemoteRepository> remoteRepos = Arrays.stream(remoteRepositories.repositories())
