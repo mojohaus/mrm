@@ -32,6 +32,6 @@ public class LocalRepoIT {
                 .extract()
                 .asString();
 
-        assertEquals("downdload.artifactid-4.2-meta.properties=success", classifiedContent);
+        assertEquals("download.artifactid-4.2-meta.properties=success", classifiedContent);
     }
 }
