@@ -48,6 +48,36 @@ Before you start it is best to add `mrm-maven-plugin` as a plugin in your pom.
 </project>
 ```
 
+Security
+--------
+
+By default the Mock Repository Manager is not secured, meaning that every for every http call you don't need to be authorized or even authenticated.
+Every existing resource will be served.
+
+By adding users to the configuration of the plugin annotation, every http call must contain a basic authorization header to access the resources.
+
+
+```
+  <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>mrm-maven-plugin</artifactId>
+    <version>${project.version}</version>
+    <configuration>
+      ...
+      <users>
+        <user>
+          <username>john.doe</username>
+          <password>s3cr3t</password>
+        </user>
+      </users>
+    </configuration>
+  </plugin>
+
+
+```
+
+
+
 Start up a test Mock Repository Manager
 ---------------------------------------
 
