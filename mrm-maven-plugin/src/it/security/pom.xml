@@ -26,7 +26,6 @@
           <localRepositoryPath>${project.build.directory}/local-repo-it</localRepositoryPath>
           <projectsDirectory>src/it</projectsDirectory>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <settingsFile>src/it/settings.xml</settingsFile>
           <filterProperties>
             <mrm.distribution.url>${mrm.distribution.url}</mrm.distribution.url>
             <mrm.repository.url>${mrm.repository.url}</mrm.repository.url>

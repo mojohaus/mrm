@@ -72,11 +72,7 @@ By adding users to the configuration of the plugin annotation, every http call m
       </users>
     </configuration>
   </plugin>
-
-
 ```
-
-
 
 Start up a test Mock Repository Manager
 ---------------------------------------
