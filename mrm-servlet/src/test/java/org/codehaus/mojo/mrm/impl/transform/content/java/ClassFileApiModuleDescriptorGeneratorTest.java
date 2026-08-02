@@ -7,7 +7,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ClassFileApiModuleDescriptorGeneratorTest {
 
@@ -24,7 +24,7 @@ class ClassFileApiModuleDescriptorGeneratorTest {
 
         ModuleDescriptor out = ModuleDescriptor.read(generator.generate(in));
 
-        assertEquals(in, out);
+        assertThat(out).isEqualTo(in);
     }
 
     @Test
@@ -34,7 +34,7 @@ class ClassFileApiModuleDescriptorGeneratorTest {
 
         ModuleDescriptor out = ModuleDescriptor.read(generator.generate(in));
 
-        assertEquals(in, out);
+        assertThat(out).isEqualTo(in);
     }
 
     @Test
@@ -45,12 +45,10 @@ class ClassFileApiModuleDescriptorGeneratorTest {
                 .requires(Set.of(Requires.Modifier.TRANSITIVE), "com.foo.bax")
                 .build();
 
-        // not testing here with 2 modifiers as this will result in a flaky test.
-        // most likely cause: java.lang.module.ModuleDescriptor.modsHashCode()
-        // this ignores that order of Sets is irrelevant for equals.
+        // Not testing here with 2 modifiers due to https://bugs.openjdk.org/browse/JDK-8290041 (fixed with OpenJDK 20)
 
         ModuleDescriptor out = ModuleDescriptor.read(generator.generate(in));
 
-        assertEquals(out, in);
+        assertThat(out).isEqualTo(in);
     }
 }

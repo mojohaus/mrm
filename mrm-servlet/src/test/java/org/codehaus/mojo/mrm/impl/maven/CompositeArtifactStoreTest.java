@@ -10,7 +10,7 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,7 +26,7 @@ class CompositeArtifactStoreTest {
         CompositeArtifactStore artifactStore = new CompositeArtifactStore(stores);
         ArchetypeCatalog catalog = artifactStore.getArchetypeCatalog();
 
-        assertNotNull(catalog);
+        assertThat(catalog).isNotNull();
     }
 
     @Test
@@ -55,7 +55,7 @@ class CompositeArtifactStoreTest {
 
         Metadata metadata = artifactStore.getMetadata("path");
 
-        assertNotNull(metadata);
+        assertThat(metadata).isNotNull();
     }
 
     private Versioning aVersioning(String timeStampDate, String timeStampTime, int buildNr) {

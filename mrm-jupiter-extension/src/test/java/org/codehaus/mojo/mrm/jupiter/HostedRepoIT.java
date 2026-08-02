@@ -7,10 +7,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @MockRepositoryManager(hostedRepos = @HostedRepo(target = @Directory("target/hosted-repo")))
-public class HostedRepoIT {
+class HostedRepoIT {
 
     @Test
     void mainArtifact(MockRepositoryManagerServer server) throws Exception {
@@ -26,7 +26,7 @@ public class HostedRepoIT {
         String mainContent =
                 Files.readString(Path.of("target/hosted-repo/dev/groupid/artifactid/4.2/artifactid-4.2.txt"));
 
-        assertEquals("Downloaded artifactid-4.2.txt successfully", mainContent);
+        assertThat(mainContent).isEqualTo("Downloaded artifactid-4.2.txt successfully");
     }
 
     @Test
@@ -44,6 +44,6 @@ public class HostedRepoIT {
         String classifiedContent = Files.readString(
                 Path.of("target/hosted-repo/dev/groupid/artifactid/4.2/artifactid-4.2-meta.properties"));
 
-        assertEquals("download.artifactid-4.2-meta.properties=success", classifiedContent);
+        assertThat(classifiedContent).isEqualTo("download.artifactid-4.2-meta.properties=success");
     }
 }

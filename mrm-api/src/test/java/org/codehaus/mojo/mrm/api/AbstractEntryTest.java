@@ -2,7 +2,7 @@ package org.codehaus.mojo.mrm.api;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +16,6 @@ class AbstractEntryTest {
 
         when(fileSystem.getRoot()).thenReturn(entry);
 
-        assertEquals("/favicon.ico", entry.toPath());
+        assertThat(entry.toPath()).isEqualTo("/favicon.ico");
     }
 }

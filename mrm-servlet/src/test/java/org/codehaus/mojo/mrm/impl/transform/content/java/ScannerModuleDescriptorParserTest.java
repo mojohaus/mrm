@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ScannerModuleDescriptorParserTest {
 
@@ -31,9 +31,9 @@ class ScannerModuleDescriptorParserTest {
     			""";
 
         ModuleDescriptor descriptor = parse(content);
-        assertEquals("mrm.test.lib.closed", descriptor.name());
-        assertFalse(descriptor.isOpen());
-        assertFalse(descriptor.isAutomatic());
+        assertThat(descriptor.name()).isEqualTo("mrm.test.lib.closed");
+        assertThat(descriptor.isOpen()).isFalse();
+        assertThat(descriptor.isAutomatic()).isFalse();
     }
 
     @Test
@@ -43,9 +43,9 @@ class ScannerModuleDescriptorParserTest {
     			""";
 
         ModuleDescriptor descriptor = parse(content);
-        assertEquals("mrm.test.lib.open", descriptor.name());
-        assertTrue(descriptor.isOpen());
-        assertFalse(descriptor.isAutomatic());
+        assertThat(descriptor.name()).isEqualTo("mrm.test.lib.open");
+        assertThat(descriptor.isOpen()).isTrue();
+        assertThat(descriptor.isAutomatic()).isFalse();
     }
 
     @Test
@@ -63,19 +63,19 @@ class ScannerModuleDescriptorParserTest {
         Map<String, Requires> reqMap = descriptor.requires().stream().collect(Collectors.toMap(r -> r.name(), r -> r));
 
         Requires req1 = reqMap.get("com.foo.bar");
-        assertNotNull(req1);
-        assertEquals(Set.of(), req1.modifiers());
+        assertThat(req1).isNotNull();
+        assertThat(req1.modifiers()).isEqualTo(Set.of());
         Requires req2 = reqMap.get("com.foo.baz");
-        assertNotNull(req2);
-        assertEquals(Set.of(ModuleDescriptor.Requires.Modifier.STATIC), req2.modifiers());
+        assertThat(req2).isNotNull();
+        assertThat(req2.modifiers()).isEqualTo(Set.of(ModuleDescriptor.Requires.Modifier.STATIC));
         Requires req3 = reqMap.get("com.foo.bax");
-        assertNotNull(req3);
-        assertEquals(Set.of(ModuleDescriptor.Requires.Modifier.TRANSITIVE), req3.modifiers());
+        assertThat(req3).isNotNull();
+        assertThat(req3.modifiers()).isEqualTo(Set.of(ModuleDescriptor.Requires.Modifier.TRANSITIVE));
         Requires req4 = reqMap.get("com.foo.bay");
-        assertNotNull(req4);
-        assertEquals(
-                Set.of(ModuleDescriptor.Requires.Modifier.TRANSITIVE, ModuleDescriptor.Requires.Modifier.STATIC),
-                req4.modifiers());
+        assertThat(req4).isNotNull();
+        assertThat(req4.modifiers())
+                .isEqualTo(Set.of(
+                        ModuleDescriptor.Requires.Modifier.TRANSITIVE, ModuleDescriptor.Requires.Modifier.STATIC));
     }
 
     private ModuleDescriptor parse(String content) throws IOException {

@@ -35,8 +35,7 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -68,9 +67,8 @@ class ProxyArtifactStoreTest {
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
-        assertThrowsExactly(
-                ArtifactNotFoundException.class,
-                () -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")));
+        assertThatThrownBy(() -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")))
+                .isExactlyInstanceOf(ArtifactNotFoundException.class);
     }
 
     @Test
@@ -83,9 +81,9 @@ class ProxyArtifactStoreTest {
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
-        RuntimeException exception = assertThrowsExactly(
-                RuntimeException.class, () -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")));
-        assertEquals("test123", exception.getMessage());
+        assertThatThrownBy(() -> store.get(new Artifact("localhost", "test", "1.0-SNAPSHOT", "pom")))
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasMessage("test123");
     }
 
     @Test
@@ -98,7 +96,8 @@ class ProxyArtifactStoreTest {
 
         ProxyArtifactStore store = new ProxyArtifactStore(factoryHelper);
 
-        RuntimeException exception = assertThrowsExactly(RuntimeException.class, store::getArchetypeCatalog);
-        assertEquals("test123", exception.getMessage());
+        assertThatThrownBy(store::getArchetypeCatalog)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasMessage("test123");
     }
 }

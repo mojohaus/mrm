@@ -3,10 +3,10 @@ package org.codehaus.mojo.mrm.jupiter;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @MockRepositoryManager(localRepos = @LocalRepo(source = @Directory("src/it/resources/local-repo/repositories")))
-public class LocalRepoIT {
+class LocalRepoIT {
 
     @Test
     void mainArtifact(MockRepositoryManagerServer server) {
@@ -18,7 +18,7 @@ public class LocalRepoIT {
                 .extract()
                 .asString();
 
-        assertEquals("Downloaded artifactid-4.2.txt successfully", mainContent);
+        assertThat(mainContent).isEqualTo("Downloaded artifactid-4.2.txt successfully");
     }
 
     @Test
@@ -32,6 +32,6 @@ public class LocalRepoIT {
                 .extract()
                 .asString();
 
-        assertEquals("download.artifactid-4.2-meta.properties=success", classifiedContent);
+        assertThat(classifiedContent).isEqualTo("download.artifactid-4.2-meta.properties=success");
     }
 }

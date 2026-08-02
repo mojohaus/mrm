@@ -27,8 +27,7 @@ import org.codehaus.mojo.mrm.jupiter.MockRepositoryManager;
 import org.codehaus.mojo.mrm.jupiter.MockRepositoryManagerServer;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @MockRepositoryManager(
         mockRepos =
@@ -36,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                         source = @Directory("src/it/resources/mock-repo/directory-transform"),
                         cloneTo = @Directory("target/it/mock-repo/directory-transform"),
                         transformDirectiveSource = MetadataTransformDirectiveFactory.class))
-public class DirectoryTransformIT {
+class DirectoryTransformIT {
 
     @Test
     void moduleDescriptor(MockRepositoryManagerServer server) throws Exception {
@@ -69,8 +68,12 @@ public class DirectoryTransformIT {
                 }
             }
 
-            assertFalse(hasJava, "module-info.java not expected to be in the jar file");
-            assertTrue(hasClass, "module-info.class expected to be in the jar file");
+            assertThat(hasJava)
+                    .as("module-info.java not expected to be in the jar file")
+                    .isFalse();
+            assertThat(hasClass)
+                    .as("module-info.class expected to be in the jar file")
+                    .isTrue();
         }
     }
 }

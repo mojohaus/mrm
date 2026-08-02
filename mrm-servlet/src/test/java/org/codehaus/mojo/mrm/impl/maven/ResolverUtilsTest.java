@@ -5,7 +5,7 @@ import org.eclipse.aether.artifact.ArtifactType;
 import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ResolverUtilsTest {
 
@@ -15,11 +15,11 @@ class ResolverUtilsTest {
 
         org.eclipse.aether.artifact.Artifact arArtifact = ResolverUtils.createArtifact(t -> null, mrmArtifact);
 
-        assertEquals("groupId", arArtifact.getGroupId());
-        assertEquals("artifactId", arArtifact.getArtifactId());
-        assertEquals("version", arArtifact.getVersion());
-        assertEquals("classifier", arArtifact.getClassifier());
-        assertEquals("type", arArtifact.getExtension());
+        assertThat(arArtifact.getGroupId()).isEqualTo("groupId");
+        assertThat(arArtifact.getArtifactId()).isEqualTo("artifactId");
+        assertThat(arArtifact.getVersion()).isEqualTo("version");
+        assertThat(arArtifact.getClassifier()).isEqualTo("classifier");
+        assertThat(arArtifact.getExtension()).isEqualTo("type");
     }
 
     /**
@@ -32,11 +32,11 @@ class ResolverUtilsTest {
 
         org.eclipse.aether.artifact.Artifact arArtifact = ResolverUtils.createArtifact(t -> type, mrmArtifact);
 
-        assertEquals("groupId", arArtifact.getGroupId());
-        assertEquals("artifactId", arArtifact.getArtifactId());
-        assertEquals("version", arArtifact.getVersion());
-        assertEquals("", arArtifact.getClassifier());
-        assertEquals("jar", arArtifact.getExtension());
+        assertThat(arArtifact.getGroupId()).isEqualTo("groupId");
+        assertThat(arArtifact.getArtifactId()).isEqualTo("artifactId");
+        assertThat(arArtifact.getVersion()).isEqualTo("version");
+        assertThat(arArtifact.getClassifier()).isEmpty();
+        assertThat(arArtifact.getExtension()).isEqualTo("jar");
     }
 
     /**
@@ -49,10 +49,10 @@ class ResolverUtilsTest {
 
         org.eclipse.aether.artifact.Artifact arArtifact = ResolverUtils.createArtifact(t -> type, mrmArtifact);
 
-        assertEquals("groupId", arArtifact.getGroupId());
-        assertEquals("artifactId", arArtifact.getArtifactId());
-        assertEquals("version", arArtifact.getVersion());
-        assertEquals("sources", arArtifact.getClassifier());
-        assertEquals("jar", arArtifact.getExtension());
+        assertThat(arArtifact.getGroupId()).isEqualTo("groupId");
+        assertThat(arArtifact.getArtifactId()).isEqualTo("artifactId");
+        assertThat(arArtifact.getVersion()).isEqualTo("version");
+        assertThat(arArtifact.getClassifier()).isEqualTo("sources");
+        assertThat(arArtifact.getExtension()).isEqualTo("jar");
     }
 }

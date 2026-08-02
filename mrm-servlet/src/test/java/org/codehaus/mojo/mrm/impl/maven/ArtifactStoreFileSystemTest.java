@@ -27,10 +27,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactNotFoundException;
 import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,110 +37,110 @@ class ArtifactStoreFileSystemTest {
     @Test
     void groupMetadataRegex() {
         Matcher matcher = ArtifactStoreFileSystem.METADATA.matcher("/commons/maven-metadata.xml");
-        assertTrue(matcher.matches());
-        assertEquals("commons/", matcher.group(1));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("commons/");
         matcher = ArtifactStoreFileSystem.METADATA.matcher("/org/apache/maven/maven-metadata.xml");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
         matcher = ArtifactStoreFileSystem.METADATA.matcher("/commons/commons/1.0/commons-1.0.pom");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.METADATA.matcher("/org/apache/maven/pom/1.0/pom-1.0.pom");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
     }
 
     @Test
     void artifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/commons/maven-metadata.xml");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/commons/commons/1.0/commons-1.0.pom");
-        assertTrue(matcher.matches());
-        assertEquals("commons/", matcher.group(1));
-        assertEquals("commons", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("commons-1.0.pom", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("commons/");
+        assertThat(matcher.group(2)).isEqualTo("commons");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("commons-1.0.pom");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/pom/1.0/pom-1.0.pom");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0.pom", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0.pom");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-SNAPSHOT.pom");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0-SNAPSHOT", matcher.group(3));
-        assertEquals("pom-1.0-SNAPSHOT.pom", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0-SNAPSHOT");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-SNAPSHOT.pom");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-20110101.123456-56.pom");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/commons/commons/1.0/commons-1.0-tests.jar");
-        assertTrue(matcher.matches());
-        assertEquals("commons/", matcher.group(1));
-        assertEquals("commons", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("commons-1.0-tests.jar", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("commons/");
+        assertThat(matcher.group(2)).isEqualTo("commons");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("commons-1.0-tests.jar");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher("/org/apache/maven/pom/1.0/pom-1.0-tests.jar");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0-tests.jar", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-tests.jar");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-SNAPSHOT-tests.jar");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0-SNAPSHOT", matcher.group(3));
-        assertEquals("pom-1.0-SNAPSHOT-tests.jar", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0-SNAPSHOT");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-SNAPSHOT-tests.jar");
         matcher = ArtifactStoreFileSystem.ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-20110101.123456-56-tests.jar");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
     }
 
     @Test
     void snapshotArtifactRegex() {
         Matcher matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/commons/maven-metadata.xml");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/org/apache/maven/maven-metadata.xml");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/commons/commons/1.0/commons-1.0.pom");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/org/apache/maven/pom/1.0/pom-1.0.pom");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-SNAPSHOT.pom");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0-SNAPSHOT.pom", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-SNAPSHOT.pom");
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-20110101.123456-56.pom");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0-20110101.123456-56.pom", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-20110101.123456-56.pom");
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/commons/commons/1.0/commons-1.0-tests.jar");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher("/org/apache/maven/pom/1.0/pom-1.0-tests.jar");
-        assertFalse(matcher.matches());
+        assertThat(matcher.matches()).isFalse();
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-SNAPSHOT-tests.jar");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0-SNAPSHOT-tests.jar", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-SNAPSHOT-tests.jar");
         matcher = ArtifactStoreFileSystem.SNAPSHOT_ARTIFACT.matcher(
                 "/org/apache/maven/pom/1.0-SNAPSHOT/pom-1.0-20110101.123456-56-tests.jar");
-        assertTrue(matcher.matches());
-        assertEquals("org/apache/maven/", matcher.group(1));
-        assertEquals("pom", matcher.group(2));
-        assertEquals("1.0", matcher.group(3));
-        assertEquals("pom-1.0-20110101.123456-56-tests.jar", matcher.group(4));
+        assertThat(matcher.matches()).isTrue();
+        assertThat(matcher.group(1)).isEqualTo("org/apache/maven/");
+        assertThat(matcher.group(2)).isEqualTo("pom");
+        assertThat(matcher.group(3)).isEqualTo("1.0");
+        assertThat(matcher.group(4)).isEqualTo("pom-1.0-20110101.123456-56-tests.jar");
     }
 
     // MMOCKRM-5
@@ -153,7 +150,7 @@ class ArtifactStoreFileSystemTest {
         when(store.getSize(isA(Artifact.class))).thenThrow(ArtifactNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
         FileEntry entry = (FileEntry) system.get("/localhost/mmockrm-5/1/mmockrm-5-1-site_en.xml");
-        assertNull(entry);
+        assertThat(entry).isNull();
     }
 
     @Test
@@ -163,7 +160,7 @@ class ArtifactStoreFileSystemTest {
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
         FileEntry entry =
                 (FileEntry) system.get("/localhost/mmockrm-5/1.0-SNAPSHOT/mmockrm-5-1.0-SNAPSHOT-site_en.xml");
-        assertNull(entry);
+        assertThat(entry).isNull();
     }
 
     @Test
@@ -172,7 +169,7 @@ class ArtifactStoreFileSystemTest {
         when(store.getArchetypeCatalogLastModified()).thenThrow(ArchetypeCatalogNotFoundException.class);
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
         Entry entry = system.get("/archetype-catalog.xml");
-        assertNull(entry);
+        assertThat(entry).isNull();
     }
 
     @Test
@@ -181,6 +178,6 @@ class ArtifactStoreFileSystemTest {
         when(store.getArchetypeCatalog()).thenReturn(new ArchetypeCatalog());
         ArtifactStoreFileSystem system = new ArtifactStoreFileSystem(store);
         FileEntry entry = (FileEntry) system.get("archetype-catalog.xml");
-        assertEquals("archetype-catalog.xml", entry.getName());
+        assertThat(entry.getName()).isEqualTo("archetype-catalog.xml");
     }
 }

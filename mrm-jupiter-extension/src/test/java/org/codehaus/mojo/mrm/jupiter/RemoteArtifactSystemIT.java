@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @MockRepositoryManager(
         remoteArtifactSystem =
@@ -30,6 +30,6 @@ class RemoteArtifactSystemIT {
         String mainArtifact = server.getArtifactUrl("org.codehaus.mojo", "mrm", "1.7.1", "pom");
         RestAssured.get(mainArtifact).then().statusCode(200);
 
-        assertTrue(Files.exists(artifactPath));
+        assertThat(artifactPath).exists();
     }
 }
