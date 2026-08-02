@@ -16,6 +16,8 @@
 
 package org.codehaus.mojo.mrm.api.maven;
 
+import java.io.Serial;
+
 /**
  * An exception that indicates that an artifact could not be found.
  *
@@ -27,6 +29,7 @@ public class ArchetypeCatalogNotFoundException extends Exception {
      *
      * @since 1.0
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

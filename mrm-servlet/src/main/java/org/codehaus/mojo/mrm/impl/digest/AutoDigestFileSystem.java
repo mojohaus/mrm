@@ -92,17 +92,17 @@ public class AutoDigestFileSystem extends BaseFileSystem {
         Entry[] entries = backing.listEntries(DefaultDirectoryEntry.equivalent(backing, directory));
         for (Entry entry : entries) {
             final String name = entry.getName();
-            if (entry instanceof FileEntry) {
+            if (entry instanceof FileEntry fileEntry) {
                 for (String type : digestFactories.keySet()) {
                     if (name.endsWith(type)) {
                         present.add(name);
                     } else {
-                        missing.put(name + type, (FileEntry) entry);
+                        missing.put(name + type, fileEntry);
                     }
                 }
-                result.put(name, new LinkFileEntry(this, directory, (FileEntry) entry));
-            } else if (entry instanceof DirectoryEntry) {
-                result.put(name, DefaultDirectoryEntry.equivalent(this, (DirectoryEntry) entry));
+                result.put(name, new LinkFileEntry(this, directory, fileEntry));
+            } else if (entry instanceof DirectoryEntry directoryEntry) {
+                result.put(name, DefaultDirectoryEntry.equivalent(this, directoryEntry));
             }
         }
         missing.keySet().removeAll(present);
@@ -165,17 +165,17 @@ public class AutoDigestFileSystem extends BaseFileSystem {
             for (int i = 0; i < parts.length - 1; i++) {
                 parent = new DefaultDirectoryEntry(this, parent, parts[i]);
             }
-            if (entry instanceof FileEntry) {
+            if (entry instanceof FileEntry fileEntry) {
                 // repair filesystems that lie to us because they are caching
                 for (DigestFileEntryFactory factory : digestFactories.values()) {
                     if (entry.getName().endsWith(factory.getType())) {
                         Entry shadow = backing.get(
                                 parent.toPath() + "/" + Strings.CS.removeEnd(entry.getName(), factory.getType()));
                         return new GenerateOnErrorFileEntry(
-                                this, parent, (FileEntry) entry, factory.create(this, parent, (FileEntry) shadow));
+                                this, parent, fileEntry, factory.create(this, parent, (FileEntry) shadow));
                     }
                 }
-                return new LinkFileEntry(this, parent, (FileEntry) entry);
+                return new LinkFileEntry(this, parent, fileEntry);
             } else if (entry instanceof DirectoryEntry) {
                 for (DigestFileEntryFactory factory : digestFactories.values()) {
                     if (entry.getName().endsWith(factory.getType())) {
