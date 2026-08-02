@@ -17,6 +17,7 @@ package org.codehaus.mojo.mrm.plugin;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.artifact.ArtifactUtils;
@@ -26,6 +27,7 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
+import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 
 /**
  * Common base class for the mojos that start a repository.
@@ -88,6 +90,13 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
     private boolean debugServer;
 
     /**
+     *
+     * @since 2.0.0
+     */
+    @Parameter
+    private User[] users = new User[0];
+
+    /**
      * Creates a new instance
      * @param factoryHelper injected {@link FactoryHelper} instance
      */
@@ -107,6 +116,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
                 Math.max(0, Math.min(port, 65535)),
                 basePath,
                 new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
+                Arrays.stream(users).map(AbstractStartMojo::toUser).toList(),
                 debugServer);
     }
 
@@ -131,5 +141,9 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
 
         ArtifactStore[] artifactStores = stores.toArray(new ArtifactStore[0]);
         return artifactStores.length == 1 ? artifactStores[0] : new CompositeArtifactStore(artifactStores);
+    }
+
+    private static org.codehaus.mojo.mrm.api.User toUser(User user) {
+        return org.codehaus.mojo.mrm.api.User.of(user.getUsername(), user.getPassword());
     }
 }
