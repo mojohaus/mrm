@@ -16,10 +16,9 @@
 package org.codehaus.mojo.mrm.jupiter;
 
 import io.restassured.RestAssured;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Based on /mrm-maven-plugin/src/it/custom-base-path/src/it/resolve/src/test/java/org/codehaus/mojo/mrm/plugin/it/resolve/CustomBasePathTest.java
@@ -34,14 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
                                         id = "central",
                                         type = "default",
                                         url = "https://repo.maven.apache.org/maven2")))
-public class CustomBasePathIT {
+class CustomBasePathIT {
 
     @Test
     void customBasePath(MockRepositoryManagerServer server) {
         final String mrmUri = server.getUrl();
 
         /* Make sure the repo ends with the base path we have set in mrm-maven-plugin/src/it/custom-base-path/pom.xml */
-        Assertions.assertThat(mrmUri).endsWith("foo/bar");
+        assertThat(mrmUri).endsWith("foo/bar");
 
         String artifactUrl = server.getArtifactUrl("org.apache.commons", "commons-lang3", "3.12.0", "pom");
 
@@ -53,7 +52,6 @@ public class CustomBasePathIT {
                 .response()
                 .asString();
 
-        assertTrue(body.contains("<artifactId>commons-lang3</artifactId>"));
-        assertTrue(body.contains("<version>3.12.0</version>"));
+        assertThat(body).contains("<artifactId>commons-lang3</artifactId>").contains("<version>3.12.0</version>");
     }
 }

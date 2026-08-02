@@ -17,12 +17,12 @@ package org.codehaus.mojo.mrm.api.maven;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ArtifactTest {
 
     @Test
     void smokes() throws Exception {
-        assertEquals(new Artifact("foo", "bar", "1.0", "jar"), new Artifact("foo", "bar", "1.0", null, "jar"));
+        assertThat(new Artifact("foo", "bar", "1.0", null, "jar")).isEqualTo(new Artifact("foo", "bar", "1.0", "jar"));
     }
 }

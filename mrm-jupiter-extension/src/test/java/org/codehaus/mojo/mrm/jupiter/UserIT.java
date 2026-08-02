@@ -3,8 +3,6 @@ package org.codehaus.mojo.mrm.jupiter;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @MockRepositoryManager(
         mockRepos = @MockRepo(source = @Directory("src/it/resources/mock-repo/user")),
         users = @User(username = "john.doe", password = "s3cr3t"))

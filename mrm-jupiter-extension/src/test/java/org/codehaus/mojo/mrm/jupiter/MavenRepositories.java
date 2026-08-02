@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
                                         id = "central",
                                         type = "default",
                                         url = "https://repo.maven.apache.org/maven2")))
-public class MavenRepositories {
+class MavenRepositories {
 
     @Test
     void mainArtifact(MockRepositoryManagerServer server) throws Exception {
