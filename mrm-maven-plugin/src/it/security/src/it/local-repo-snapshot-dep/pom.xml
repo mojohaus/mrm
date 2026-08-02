@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.mojohaus.mrm.hostedrepo.its</groupId>
+  <artifactId>local-repo-snapshot-dep</artifactId>
+  <version>1.0.0</version>
+
+  <description>Test snapshot dependencies from local repo</description>
+
+  <dependencies>
+    <dependency>
+      <!-- artifact exist local repo with SNAPSHOT in name -->
+      <groupId>org.group1</groupId>
+      <artifactId>artifact1</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <!-- artifact exist local repo with timestamps in name -->
+      <groupId>org.group1</groupId>
+      <artifactId>artifact2</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>

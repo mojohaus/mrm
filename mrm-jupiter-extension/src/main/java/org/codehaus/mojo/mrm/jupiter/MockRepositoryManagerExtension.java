@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,12 +161,16 @@ class MockRepositoryManagerExtension implements BeforeAllCallback, AfterAllCallb
         int port = mockRepositoryManager.port();
         String basePath = mockRepositoryManager.basePath();
         ArtifactStore artifactStore = createArtifactStore(mockRepositoryManager, repoSystemSupplier);
+        Collection<org.codehaus.mojo.mrm.api.User> users = Arrays.stream(mockRepositoryManager.users())
+                .map(MockRepositoryManagerExtension::toUser)
+                .toList();
 
         return new FileSystemServer(
                 "mrm-fileserver",
                 Math.max(0, Math.min(port, 65535)),
                 basePath,
                 new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
+                users,
                 true);
     }
 
@@ -288,6 +293,10 @@ class MockRepositoryManagerExtension implements BeforeAllCallback, AfterAllCallb
         Path targetDirectory = DirectoryResolver.resolve(cacheDirectory);
 
         return new LocalRepository(targetDirectory.toFile());
+    }
+
+    private static org.codehaus.mojo.mrm.api.User toUser(User user) {
+        return org.codehaus.mojo.mrm.api.User.of(user.username(), user.password());
     }
 
     private static final class ServerResource implements AutoCloseable {

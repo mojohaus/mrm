@@ -83,4 +83,12 @@ public @interface MockRepositoryManager {
             @RemoteArtifactSystem(
                     cacheDirectory = @Directory(value = ""),
                     repositories = {});
+
+    /**
+     * Add authorization to this repository.
+     * Once set, any connection must be done by an authorized user.
+     *
+     * @return the registered users
+     */
+    User[] users() default {};
 }

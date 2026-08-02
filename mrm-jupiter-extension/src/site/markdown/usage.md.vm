@@ -59,3 +59,26 @@ class ExampleTest {
   
   }
 }
+```
+
+Make sure to add at least 1 repository, see [Repository Types](./repositories.html) where every different type is explained.
+
+Security
+--------
+
+By default the Mock Repository Manager is not secured, meaning that every for every http call you don't need to be authorized or even authenticated.
+Every existing resource will be served.
+
+By adding users to the MockRepositoryManager annotation, every http call must contain a basic authorization header to access the resources.
+
+```java
+@MockRepositoryManager(
+        users = @User(username = "john.doe", password = "s3cr3t"))
+class ExampleTest {
+
+  @Test
+  void example(MockRepositoryManagerServer server) {
+  
+  }
+}
+```

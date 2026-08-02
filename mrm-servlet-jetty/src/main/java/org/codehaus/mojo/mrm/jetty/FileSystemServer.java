@@ -16,14 +16,24 @@ package org.codehaus.mojo.mrm.jetty;
  * limitations under the License.
  */
 
+import java.util.Collection;
+
 import org.codehaus.mojo.mrm.api.FileSystem;
+import org.codehaus.mojo.mrm.api.User;
 import org.codehaus.mojo.mrm.servlet.FileSystemServlet;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Credential;
 
 /**
  * A file system server.
@@ -99,6 +109,11 @@ public class FileSystemServer {
     private final String contextPath;
 
     /**
+     * In case there are users, authorization is activated
+     */
+    private final Collection<User> users;
+
+    /**
      * Indicate debug level by Jetty server
      */
     private final boolean debugServer;
@@ -110,13 +125,21 @@ public class FileSystemServer {
      * @param port        The port to server on or <code>0</code> to pick a random, but available, port.
      * @param contextPath The root context path for server
      * @param fileSystem  the file system to serve.
+     * @param users       the users required for authorization
      * @param debugServer the server debug mode
      */
-    public FileSystemServer(String name, int port, String contextPath, FileSystem fileSystem, boolean debugServer) {
+    public FileSystemServer(
+            String name,
+            int port,
+            String contextPath,
+            FileSystem fileSystem,
+            Collection<User> users,
+            boolean debugServer) {
         this.name = name;
         this.fileSystem = fileSystem;
         this.requestedPort = port;
         this.contextPath = sanitizeContextPath(contextPath);
+        this.users = users;
         this.debugServer = debugServer;
     }
 
@@ -253,10 +276,9 @@ public class FileSystemServer {
                 Server server = new Server(requestedPort);
 
                 try {
-                    ServletContextHandler context = new ServletContextHandler();
-                    context.setContextPath(contextPath);
-                    context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem)), "/*");
-                    server.setHandler(context);
+                    ServletContextHandler contextHandler = createContextHandler();
+                    server.setHandler(contextHandler);
+
                     server.start();
                     synchronized (lock) {
                         boundPort = ((ServerConnector) server.getConnectors()[0]).getLocalPort();
@@ -294,6 +316,40 @@ public class FileSystemServer {
                     lock.notifyAll();
                 }
             }
+        }
+
+        private ServletContextHandler createContextHandler() {
+            ServletContextHandler context = new ServletContextHandler();
+            context.setContextPath(contextPath);
+            context.addServlet(new ServletHolder(new FileSystemServlet(fileSystem)), "/*");
+
+            if (!users.isEmpty()) {
+                Constraint constraint = ConstraintSecurityHandler.createConstraint(
+                        Constraint.__BASIC_AUTH, true, new String[] {"mrm-user"}, Constraint.DC_NONE);
+
+                ConstraintMapping constraintMapping = new ConstraintMapping();
+                constraintMapping.setConstraint(constraint);
+                constraintMapping.setPathSpec("/*");
+
+                ConstraintSecurityHandler security = new ConstraintSecurityHandler();
+                security.setAuthenticator(new BasicAuthenticator());
+                security.setRealmName("MockRepository");
+                security.addConstraintMapping(constraintMapping);
+
+                UserStore userStore = new UserStore();
+                for (User user : users) {
+                    userStore.addUser(
+                            user.username(), Credential.getCredential(user.password()), new String[] {"mrm-user"});
+                }
+
+                HashLoginService loginService = new HashLoginService("MockRepository");
+                loginService.setUserStore(userStore);
+                security.setLoginService(loginService);
+
+                context.setSecurityHandler(security);
+            }
+
+            return context;
         }
     }
 }

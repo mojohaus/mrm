@@ -97,12 +97,20 @@
     <mavenVersion>3.9.16</mavenVersion>
     <minimalMavenBuildVersion>3.9.6</minimalMavenBuildVersion>
     <mojo.java.target>17</mojo.java.target>
-    <jetty.version>9.4.58.v20250814</jetty.version>
     <project.build.outputTimestamp>2026-07-10T10:08:48Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <!-- bom -->
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-bom</artifactId>
+        <version>9.4.58.v20250814</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <!-- Maven core -->
       <dependency>
         <groupId>javax.inject</groupId>
@@ -207,21 +215,6 @@
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
         <version>4.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>${jetty.version}</version>
       </dependency>
 
       <!-- commons -->
