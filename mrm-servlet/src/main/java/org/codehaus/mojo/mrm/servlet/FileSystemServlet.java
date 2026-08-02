@@ -73,8 +73,7 @@ public class FileSystemServlet extends HttpServlet {
         }
 
         Entry entry = fileSystem.get(path);
-        if (entry instanceof FileEntry) {
-            FileEntry fileEntry = (FileEntry) entry;
+        if (entry instanceof FileEntry fileEntry) {
             long size = fileEntry.getSize();
             if (size >= 0 && size < Integer.MAX_VALUE) {
                 resp.setContentLength((int) size);

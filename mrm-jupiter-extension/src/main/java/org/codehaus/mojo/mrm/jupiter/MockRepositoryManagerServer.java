@@ -150,7 +150,7 @@ public class MockRepositoryManagerServer {
         try (InputStream is = MockRepositoryManagerServer.class.getResourceAsStream(SETTINGS_TEMPLATE_RESOURCE);
                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(isr);
-                BufferedWriter writer = Files.newBufferedWriter(tempSettingsFile, StandardCharsets.UTF_8)) {
+                BufferedWriter writer = Files.newBufferedWriter(tempSettingsFile)) {
 
             String line;
             boolean isFirstLine = true;

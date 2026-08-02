@@ -16,7 +16,6 @@
 package org.codehaus.mojo.mrm.jupiter;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * A reference to a directory.
@@ -39,7 +38,7 @@ public @interface Directory {
      * This value must be relative and must give the same result after normalizing.
      *
      * @return the path
-     * @see Paths#get(String, String...)
+     * @see Path#of(String, String...)
      * @see Path#resolve(String)
      */
     String value();

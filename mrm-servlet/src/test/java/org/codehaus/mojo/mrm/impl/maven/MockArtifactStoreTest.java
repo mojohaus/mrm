@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.lang.module.ModuleDescriptor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -68,13 +67,13 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         Artifact pomArtifact = new Artifact("localhost", "mmockrm-7", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("src/test/resources/mmockrm-7/mmockrm-7-1.0.pom")),
+                Files.newInputStream(Path.of("src/test/resources/mmockrm-7/mmockrm-7-1.0.pom")),
                 artifactStore.get(pomArtifact)));
 
         Artifact siteArtifact = new Artifact("localhost", "mmockrm-7", "1.0", "site", "xml");
         assertNotNull(artifactStore.get(siteArtifact));
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("src/test/resources/mmockrm-7/mmockrm-7-1.0-site.xml")),
+                Files.newInputStream(Path.of("src/test/resources/mmockrm-7/mmockrm-7-1.0-site.xml")),
                 artifactStore.get(siteArtifact)));
     }
 
@@ -100,7 +99,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         Artifact pomArtifact = new Artifact("localhost", "mrm-15", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("target/test-classes/mrm-15/mrm-15-1.0.pom")),
+                Files.newInputStream(Path.of("target/test-classes/mrm-15/mrm-15-1.0.pom")),
                 artifactStore.get(pomArtifact)));
 
         Artifact mainArtifact = new Artifact("localhost", "mrm-15", "1.0", "jar");
@@ -134,8 +133,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
         assertNotNull(inputStreamPom);
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("target/test-classes/empty-jar/mrm-empty-jar-1.0.pom")),
-                inputStreamPom));
+                Files.newInputStream(Path.of("target/test-classes/empty-jar/mrm-empty-jar-1.0.pom")), inputStreamPom));
 
         Artifact mainArtifact = new Artifact("localhost", "mrm-empty-jar", "1.0", "jar");
         InputStream inputStreamJar = artifactStore.get(mainArtifact);
@@ -167,7 +165,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         InputStream inputStreamPom = artifactStore.get(pomArtifact);
         assertNotNull(inputStreamPom);
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("target/test-classes/empty-plugin-jar/mrm-empty-plugin-jar-1.0.pom")),
+                Files.newInputStream(Path.of("target/test-classes/empty-plugin-jar/mrm-empty-plugin-jar-1.0.pom")),
                 inputStreamPom));
 
         Artifact mainArtifact = new Artifact("localhost", "mrm-empty-plugin-jar", "1.0", "jar");
@@ -379,7 +377,7 @@ class MockArtifactStoreTest extends AbstractTestSupport {
         Artifact pomArtifact = new Artifact("localhost", "mrm-xx", "1.0", "pom");
         assertNotNull(artifactStore.get(pomArtifact));
         assertTrue(IOUtils.contentEquals(
-                Files.newInputStream(Paths.get("target/test-classes/mrm-xx/mrm-xx-1.0.pom")),
+                Files.newInputStream(Path.of("target/test-classes/mrm-xx/mrm-xx-1.0.pom")),
                 artifactStore.get(pomArtifact)));
 
         Artifact classifiedArtifact = new Artifact("localhost", "mrm-xx", "1.0", "javadoc-resources", "jar");
