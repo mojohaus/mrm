@@ -50,15 +50,10 @@ import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.supplier.RepositorySystemSupplier;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -127,15 +122,7 @@ class MockRepositoryManagerExtension implements BeforeAllCallback, AfterAllCallb
     }
 
     private RepositorySystemHandler createRepositorySystem() {
-        DefaultRepositorySystem repositorySystem = new DefaultRepositorySystem();
-        DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
-        serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-        // Registreer de HTTP transport factory
-        serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-
-        repositorySystem.initService(serviceLocator);
-
-        return new RepositorySystemHandler(repositorySystem);
+        return new RepositorySystemHandler(new RepositorySystemSupplier().get());
     }
 
     private ServerResource createServerSource(
@@ -326,9 +313,9 @@ class MockRepositoryManagerExtension implements BeforeAllCallback, AfterAllCallb
 
     private static final class RepositorySystemHandler implements Closeable, Supplier<RepositorySystem> {
 
-        private final DefaultRepositorySystem repositorySystem;
+        private final RepositorySystem repositorySystem;
 
-        public RepositorySystemHandler(DefaultRepositorySystem repositorySystem) {
+        public RepositorySystemHandler(RepositorySystem repositorySystem) {
             this.repositorySystem = repositorySystem;
         }
 

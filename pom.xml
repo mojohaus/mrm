@@ -187,6 +187,11 @@
         <artifactId>maven-resolver-transport-http</artifactId>
         <version>${resolverVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-supplier</artifactId>
+        <version>${resolverVersion}</version>
+      </dependency>
 
       <!-- Archetype -->
       <dependency>
