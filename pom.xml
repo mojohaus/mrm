@@ -95,6 +95,7 @@
   <properties>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>3.9.16</mavenVersion>
+    <resolverVersion>1.9.27</resolverVersion>
     <minimalMavenBuildVersion>3.9.6</minimalMavenBuildVersion>
     <mojo.java.target>17</mojo.java.target>
     <project.build.outputTimestamp>2026-07-10T10:08:48Z</project.build.outputTimestamp>
@@ -164,27 +165,27 @@
       <dependency>
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-api</artifactId>
-        <version>1.9.27</version>
+        <version>${resolverVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-spi</artifactId>
-        <version>1.9.27</version>
+        <version>${resolverVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-impl</artifactId>
-        <version>1.9.27</version>
+        <version>${resolverVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-connector-basic</artifactId>
-        <version>1.9.27</version>
+        <version>${resolverVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-transport-http</artifactId>
-        <version>1.9.27</version>
+        <version>${resolverVersion}</version>
       </dependency>
 
       <!-- Archetype -->
