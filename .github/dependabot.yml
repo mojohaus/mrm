@@ -8,6 +8,11 @@ updates:
       # Jetty >=10 requires Java 11+
       - dependency-name: "org.eclipse.jetty:*"
         versions: [">= 10.0"]
+      # The resolver line has to match mavenVersion: maven-resolver-provider
+      # 3.9.x pins resolver 1.9 transitively, and the supplier artifact is
+      # renamed across the boundary.
+      - dependency-name: "org.apache.maven.resolver:*"
+        versions: [">= 2.0"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
