@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.codehaus.mojo.mrm.api"},{"l":"org.codehaus.mojo.mrm.api.maven"},{"l":"org.codehaus.mojo.mrm.plugin"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"org.codehaus.mojo.mrm.api"},{"l":"org.codehaus.mojo.mrm.api.maven"},{"l":"org.codehaus.mojo.mrm.plugin"}];updateSearchResults();
