@@ -13,6 +13,9 @@ updates:
       # renamed across the boundary.
       - dependency-name: "org.apache.maven.resolver:*"
         versions: [">= 2.0"]
+      # plexus-xml 4.x depends on the Maven 4 XML API
+      - dependency-name: "org.codehaus.plexus:plexus-xml"
+        versions: [">= 4.0.0"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
