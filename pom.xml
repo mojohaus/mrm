@@ -94,7 +94,7 @@
 
   <properties>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
-    <mavenVersion>3.9.16</mavenVersion>
+    <mavenVersion>3.10.0</mavenVersion>
     <resolverVersion>1.9.27</resolverVersion>
     <minimalMavenBuildVersion>3.9.6</minimalMavenBuildVersion>
     <mojo.java.target>17</mojo.java.target>
