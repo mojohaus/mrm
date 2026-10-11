@@ -93,6 +93,8 @@
   </ciManagement>
 
   <properties>
+    <!-- run the ITs in parallel, one per CPU core -->
+    <invoker.parallelThreads>1C</invoker.parallelThreads>
     <scmpublish.content>${project.build.directory}/staging/mrm</scmpublish.content>
     <mavenVersion>3.9.16</mavenVersion>
     <resolverVersion>1.9.27</resolverVersion>
