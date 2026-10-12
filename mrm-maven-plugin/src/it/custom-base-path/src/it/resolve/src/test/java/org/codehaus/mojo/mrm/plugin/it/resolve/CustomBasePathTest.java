@@ -20,7 +20,6 @@ package org.codehaus.mojo.mrm.plugin.it.resolve;
  */
 
 import org.assertj.core.api.Assertions;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import io.restassured.RestAssured;
@@ -35,10 +34,13 @@ public class CustomBasePathTest {
         Assertions.assertThat(mrmUri).endsWith("foo/bar");
 
         /* Try to download something and make sure the content is as expected */
-        RestAssured
+        String body = RestAssured
             .get(mrmUri + "/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.pom")
             .then()
             .statusCode(200)
-            .body(Matchers.containsString("<artifactId>commons-lang3</artifactId>"), Matchers.containsString("<version>3.12.0</version>"));
+            .extract()
+            .asString();
+        Assertions.assertThat(body)
+            .contains("<artifactId>commons-lang3</artifactId>", "<version>3.12.0</version>");
     }
 }
