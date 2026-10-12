@@ -7,6 +7,8 @@ repository manager.
 [![Maven Central](https://img.shields.io/maven-central/v/org.codehaus.mojo/mrm.svg?label=Maven%20Central)](https://search.maven.org/artifact/org.codehaus.mojo/mrm)
 [![GitHub CI](https://github.com/mojohaus/mrm/actions/workflows/maven.yml/badge.svg)](https://github.com/mojohaus/mrm/actions/workflows/maven.yml)
 
+Conventions for contributors and agents are in [AGENTS.md](AGENTS.md).
+
 ## Releasing
 
 * Make sure `gpg-agent` is running.
