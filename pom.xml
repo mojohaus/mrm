@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>mrm</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager :: Project</name>
@@ -80,7 +80,7 @@
   <scm>
     <connection>scm:git:https://github.com/mojohaus/mrm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mojohaus/mrm.git</developerConnection>
-    <tag>2.1.0</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/mojohaus/mrm/tree/master</url>
   </scm>
   <issueManagement>
@@ -100,7 +100,7 @@
     <resolverVersion>1.9.27</resolverVersion>
     <minimalMavenBuildVersion>3.9.6</minimalMavenBuildVersion>
     <mojo.java.target>17</mojo.java.target>
-    <project.build.outputTimestamp>2026-11-09T20:46:50Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-11-09T20:47:42Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
