@@ -19,6 +19,7 @@ package org.codehaus.mojo.mrm.plugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,7 +28,6 @@ import org.codehaus.mojo.mrm.api.maven.ArtifactStore;
 import org.codehaus.mojo.mrm.impl.digest.AutoDigestFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.ArtifactStoreFileSystem;
 import org.codehaus.mojo.mrm.impl.maven.CompositeArtifactStore;
-import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 
 /**
  * Common base class for the mojos that start a repository.
@@ -116,7 +116,7 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
                 Math.max(0, Math.min(port, 65535)),
                 basePath,
                 new AutoDigestFileSystem(new ArtifactStoreFileSystem(artifactStore)),
-                Arrays.stream(users).map(AbstractStartMojo::toUser).toList(),
+                Arrays.stream(users).map(AbstractStartMojo::toUser).collect(Collectors.toList()),
                 debugServer);
     }
 

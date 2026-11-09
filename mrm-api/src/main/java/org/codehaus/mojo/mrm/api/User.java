@@ -24,8 +24,16 @@ public interface User {
     String password();
 
     static User of(String username, String password) {
-        record Impl(String username, String password) implements User {}
+        return new User() {
+            @Override
+            public String username() {
+                return username;
+            }
 
-        return new Impl(username, password);
+            @Override
+            public String password() {
+                return password;
+            }
+        };
     }
 }
