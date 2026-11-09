@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.function.UnaryOperator;
 
@@ -41,7 +42,7 @@ import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
  */
 public final class MetadataTransformDirective implements TransformDirectiveSource {
 
-    private final Path metadataFile = Path.of(".mrm-transform.properties");
+    private final Path metadataFile = Paths.get(".mrm-transform.properties");
 
     private final Properties properties;
 
