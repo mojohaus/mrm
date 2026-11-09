@@ -17,11 +17,18 @@
 
 name: GitHub CI
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
     name: Verify
-    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v4
+    uses: mojohaus/.github/.github/workflows/maven-verify.yml@master
     with:
-      maven4-enabled: true
+      matrix-exclude: >
+        [
+          {"os": "macos-latest", "jdk": "17"},
+          {"os": "macos-latest", "jdk": "21"},
+          {"os": "windows-latest", "jdk": "17"},
+          {"os": "windows-latest", "jdk": "21"}
+        ]
+      jdk-matrix: '[ "8", "17", "21", "25" ]'
