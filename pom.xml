@@ -24,7 +24,7 @@
   </parent>
 
   <artifactId>mrm</artifactId>
-  <version>1.7.2-SNAPSHOT</version>
+  <version>1.8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Mock Repository Manager :: Project</name>
@@ -96,7 +96,7 @@
     <minimalMavenBuildVersion>3.9.0</minimalMavenBuildVersion>
     <mojo.java.target>8</mojo.java.target>
     <mockito.version>4.11.0</mockito.version>
-    <project.build.outputTimestamp>2026-11-09T20:49:23Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-11-09T21:20:31Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>

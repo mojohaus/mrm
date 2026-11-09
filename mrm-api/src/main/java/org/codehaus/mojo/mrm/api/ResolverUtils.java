@@ -38,7 +38,7 @@ public class ResolverUtils {
      * @param artifactTypeRegistry registry of artifact types, may not be {@code null}
      * @param artifact object to read the data from, may not be {@code null}
      * @return new {@link org.eclipse.aether.artifact.Artifact} instance
-     * @since 1.7.2
+     * @since 1.8.0
      */
     public static org.eclipse.aether.artifact.Artifact createArtifact(
             ArtifactTypeRegistry artifactTypeRegistry, Artifact artifact) {
