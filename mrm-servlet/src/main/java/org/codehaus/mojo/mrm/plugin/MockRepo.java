@@ -82,11 +82,11 @@ public class MockRepo implements ArtifactStoreFactory {
         if (transformDirectiveSource == null) {
             tds = null;
         } else {
-            tds = switch (transformDirectiveSource) {
-                case "metadata" -> new MetadataTransformDirectiveFactory();
-                default ->
-                    throw new IllegalArgumentException("Unknown transformDirectiveSource: " + transformDirectiveSource);
-            };
+            if ("metadata".equals(transformDirectiveSource)) {
+                tds = new MetadataTransformDirectiveFactory();
+            } else {
+                throw new IllegalArgumentException("Unknown transformDirectiveSource: " + transformDirectiveSource);
+            }
         }
 
         return new MockArtifactStore(factoryHelper.getArchiverManager(), root, lazyArchiver, tds);
