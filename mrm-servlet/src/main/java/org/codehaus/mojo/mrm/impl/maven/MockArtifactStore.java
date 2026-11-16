@@ -344,15 +344,15 @@ public class MockArtifactStore extends BaseArtifactStore {
     @Override
     public Set<String> getVersions(String groupId, String artifactId) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
-        Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+        Map<String, Map<Artifact, Content>> versionMap = artifactMap == null ? null : artifactMap.get(artifactId);
         return versionMap == null ? Collections.emptySet() : new TreeSet<>(versionMap.keySet());
     }
 
     @Override
     public Set<Artifact> getArtifacts(String groupId, String artifactId, String version) {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
-        Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
-        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
+        Map<String, Map<Artifact, Content>> versionMap = artifactMap == null ? null : artifactMap.get(artifactId);
+        Map<Artifact, Content> filesMap = versionMap == null ? null : versionMap.get(version);
 
         return filesMap == null ? Collections.emptySet() : new HashSet<>(filesMap.keySet());
     }
@@ -380,9 +380,9 @@ public class MockArtifactStore extends BaseArtifactStore {
     private Content getContent(Artifact artifact) throws ArtifactNotFoundException {
         Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(artifact.getGroupId());
         Map<String, Map<Artifact, Content>> versionMap =
-                (artifactMap == null ? null : artifactMap.get(artifact.getArtifactId()));
-        Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(artifact.getVersion()));
-        Content content = (filesMap == null ? null : filesMap.get(artifact));
+                artifactMap == null ? null : artifactMap.get(artifact.getArtifactId());
+        Map<Artifact, Content> filesMap = versionMap == null ? null : versionMap.get(artifact.getVersion());
+        Content content = filesMap == null ? null : filesMap.get(artifact);
         if (content == null) {
             if (artifact.isSnapshot() && artifact.getTimestamp() == null && filesMap != null) {
                 Artifact best = null;
@@ -487,7 +487,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
         int index = path.lastIndexOf('/');
         groupId = (index == -1 ? groupId : groupId.substring(0, index)).replace('/', '.');
-        String artifactId = (index == -1 ? null : path.substring(index + 1));
+        String artifactId = index == -1 ? null : path.substring(index + 1);
         if (artifactId != null) {
             Set<String> artifactVersions = getVersions(groupId, artifactId);
             if (artifactVersions != null && !artifactVersions.isEmpty()) {
@@ -524,8 +524,8 @@ public class MockArtifactStore extends BaseArtifactStore {
         String version = index2 == -1 ? null : path.substring(index + 1);
         if (version != null && version.endsWith("-SNAPSHOT")) {
             Map<String, Map<String, Map<Artifact, Content>>> artifactMap = contents.get(groupId);
-            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
-            Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
+            Map<String, Map<Artifact, Content>> versionMap = artifactMap == null ? null : artifactMap.get(artifactId);
+            Map<Artifact, Content> filesMap = versionMap == null ? null : versionMap.get(version);
             if (filesMap != null) {
                 List<SnapshotVersion> snapshotVersions = new ArrayList<>();
                 int maxBuildNumber = 0;
@@ -594,10 +594,10 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
         int index = path.lastIndexOf('/');
         groupId = index == -1 ? groupId : groupId.substring(0, index).replace('/', '.');
-        String artifactId = (index == -1 ? null : path.substring(index + 1));
+        String artifactId = index == -1 ? null : path.substring(index + 1);
         if (artifactId != null) {
             artifactMap = contents.get(groupId);
-            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
+            Map<String, Map<Artifact, Content>> versionMap = artifactMap == null ? null : artifactMap.get(artifactId);
             if (versionMap != null) {
                 for (Map<Artifact, Content> filesMap : versionMap.values()) {
                     for (Content content : filesMap.values()) {
@@ -613,8 +613,8 @@ public class MockArtifactStore extends BaseArtifactStore {
         String version = index2 == -1 ? null : path.substring(index + 1);
         if (version != null && version.endsWith("-SNAPSHOT")) {
             artifactMap = contents.get(groupId);
-            Map<String, Map<Artifact, Content>> versionMap = (artifactMap == null ? null : artifactMap.get(artifactId));
-            Map<Artifact, Content> filesMap = (versionMap == null ? null : versionMap.get(version));
+            Map<String, Map<Artifact, Content>> versionMap = artifactMap == null ? null : artifactMap.get(artifactId);
+            Map<Artifact, Content> filesMap = versionMap == null ? null : versionMap.get(version);
             if (filesMap != null) {
                 for (Content content : filesMap.values()) {
                     haveResult = true;
@@ -734,7 +734,7 @@ public class MockArtifactStore extends BaseArtifactStore {
      *
      * @since 1.0
      */
-    private static class BytesContent implements Content {
+    private static final class BytesContent implements Content {
 
         /**
          * The last modified timestamp.
@@ -791,7 +791,7 @@ public class MockArtifactStore extends BaseArtifactStore {
      *
      * @since 1.0
      */
-    private static class FileContent implements Content {
+    private static final class FileContent implements Content {
 
         /**
          * The backing file.
@@ -842,7 +842,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         }
     }
 
-    private static class DirectoryContent implements Content {
+    private static final class DirectoryContent implements Content {
 
         private final Long lastModified;
 

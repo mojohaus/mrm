@@ -99,8 +99,7 @@ public abstract class AbstractEntry implements Entry {
     @Override
     public final int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + (parent != null ? parent.hashCode() : 0);
-        return result;
+        return 31 * result + (parent != null ? parent.hashCode() : 0);
     }
 
     @Override

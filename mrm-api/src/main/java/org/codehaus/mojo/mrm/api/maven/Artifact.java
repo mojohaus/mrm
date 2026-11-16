@@ -330,11 +330,7 @@ public final class Artifact implements Comparable<Artifact> {
         if (!Objects.equals(buildNumber, artifact.buildNumber)) {
             return false;
         }
-        if (!Objects.equals(timestamp, artifact.timestamp)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(timestamp, artifact.timestamp);
     }
 
     /**
@@ -362,11 +358,7 @@ public final class Artifact implements Comparable<Artifact> {
         if (!type.equals(artifact.type)) {
             return false;
         }
-        if (!Objects.equals(classifier, artifact.classifier)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(classifier, artifact.classifier);
     }
 
     /**
@@ -377,8 +369,7 @@ public final class Artifact implements Comparable<Artifact> {
         result = 31 * result + artifactId.hashCode();
         result = 31 * result + version.hashCode();
         result = 31 * result + type.hashCode();
-        result = 31 * result + (classifier != null ? classifier.hashCode() : 0);
-        return result;
+        return 31 * result + (classifier != null ? classifier.hashCode() : 0);
     }
 
     /**

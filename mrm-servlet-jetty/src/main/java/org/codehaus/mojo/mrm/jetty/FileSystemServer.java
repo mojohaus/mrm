@@ -51,42 +51,42 @@ public class FileSystemServer {
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private boolean starting = false;
+    private boolean starting;
 
     /**
      * Flag to indicate that the thread is ready to serve requests.
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private boolean started = false;
+    private boolean started;
 
     /**
      * Flag to indicate that the thread is terminated.
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private boolean finished = false;
+    private boolean finished;
 
     /**
      * Flag to indicate that the thread should terminate.
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private boolean finishing = false;
+    private boolean finishing;
 
     /**
      * The port that the server is bound to.
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private int boundPort = 0;
+    private int boundPort;
 
     /**
      * The port that the server is bound to.
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private Exception problem = null;
+    private Exception problem;
 
     /**
      * The name of the file system (used to name the thread).
@@ -151,7 +151,7 @@ public class FileSystemServer {
      * @return sanitized {@code contextPath}
      */
     static String sanitizeContextPath(String contextPath) {
-        if (contextPath == null || contextPath.isEmpty() || contextPath.equals("/")) {
+        if (contextPath == null || contextPath.isEmpty() || "/".equals(contextPath)) {
             return "/";
         }
         if (!contextPath.startsWith("/")) {
@@ -258,7 +258,7 @@ public class FileSystemServer {
      * @return the root url that the file system server is/will server on.
      */
     public String getUrl() {
-        return "http://localhost:" + getPort() + (contextPath.equals("/") ? "" : contextPath);
+        return "http://localhost:" + getPort() + ("/".equals(contextPath) ? "" : contextPath);
     }
 
     /**
