@@ -84,7 +84,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
      */
     public ProxyArtifactStore(FactoryHelper factoryHelper) {
         this.repositorySystem = Objects.requireNonNull(factoryHelper.getRepositorySystem());
-        this.archetypeManager = () -> factoryHelper.getArchetypeManager();
+        this.archetypeManager = factoryHelper::getArchetypeManager;
         this.repositorySystemSession = Objects.requireNonNull(factoryHelper.getRepositorySystemSession());
         this.remoteRepositories = factoryHelper.getRemoteRepositories();
     }

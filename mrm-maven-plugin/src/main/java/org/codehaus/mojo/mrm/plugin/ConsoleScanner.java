@@ -32,7 +32,7 @@ public class ConsoleScanner extends Thread {
      * <p/>
      * Guarded by {@link #lock}.
      */
-    private boolean finished = false;
+    private boolean finished;
 
     /**
      * creates a new instance.

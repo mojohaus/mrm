@@ -252,7 +252,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                     return new ArtifactFileEntry(
                             this, parent, new Artifact(groupId, artifactId, version, classifier, type), store);
                 }
-                if (matcher.group(1).equals("SNAPSHOT")) {
+                if ("SNAPSHOT".equals(matcher.group(1))) {
                     Artifact artifact = new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
                     try {
                         // check if artifact exist
@@ -394,7 +394,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                 }
                 return new Artifact(groupId, artifactId, version, classifier, type);
             }
-            if (matcher.group(1).equals("SNAPSHOT")) {
+            if ("SNAPSHOT".equals(matcher.group(1))) {
                 return new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
             }
             try {

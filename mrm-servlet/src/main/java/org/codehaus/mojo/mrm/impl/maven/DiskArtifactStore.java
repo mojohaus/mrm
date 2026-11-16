@@ -165,7 +165,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
                     if (!matcher.matches()) {
                         return null;
                     }
-                    if (matcher.group(1).equals("SNAPSHOT")) {
+                    if ("SNAPSHOT".equals(matcher.group(1))) {
                         return new Artifact(groupId, artifactId, version, matcher.group(9), matcher.group(10));
                     }
                     try {
@@ -513,7 +513,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         return artifactsList;
     }
 
-    private static class MetadataInfo {
+    private static final class MetadataInfo {
 
         private final Metadata metadata;
         private final long lastModified;

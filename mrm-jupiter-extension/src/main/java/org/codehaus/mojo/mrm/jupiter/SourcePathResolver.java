@@ -20,7 +20,7 @@ import java.nio.file.Path;
 /**
  * This is a placeholder class, to mark the output the same as the input
  */
-class SourcePathResolver implements PathResolver {
+final class SourcePathResolver implements PathResolver {
 
     private SourcePathResolver() {}
 

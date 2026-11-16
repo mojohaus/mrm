@@ -61,9 +61,9 @@ class DirectoryTransformIT {
             while ((entry = inputStream.getNextJarEntry()) != null) {
                 String name = entry.getName();
 
-                if (name.equals("module-info.class")) {
+                if ("module-info.class".equals(name)) {
                     hasClass = true;
-                } else if (name.equals("module-info.java")) {
+                } else if ("module-info.java".equals(name)) {
                     hasJava = true;
                 }
             }
