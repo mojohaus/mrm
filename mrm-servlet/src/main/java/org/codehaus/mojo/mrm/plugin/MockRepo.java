@@ -95,6 +95,7 @@ public class MockRepo implements ArtifactStoreFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         return "Mock content (source: " + source + ')';
     }

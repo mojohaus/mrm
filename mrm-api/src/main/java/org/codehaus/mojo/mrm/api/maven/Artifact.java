@@ -302,6 +302,7 @@ public final class Artifact implements Comparable<Artifact> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -364,6 +365,7 @@ public final class Artifact implements Comparable<Artifact> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode() {
         int result = groupId.hashCode();
         result = 31 * result + artifactId.hashCode();
@@ -375,6 +377,7 @@ public final class Artifact implements Comparable<Artifact> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer();
         sb.append("Artifact");
@@ -392,6 +395,7 @@ public final class Artifact implements Comparable<Artifact> {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(Artifact that) {
         int rv = this.getGroupId().compareTo(that.getGroupId());
         return rv == 0 ? getName().compareTo(that.getName()) : rv;
