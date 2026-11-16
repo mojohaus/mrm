@@ -31,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.mojo.mrm.api.DefaultDirectoryEntry;
 import org.codehaus.mojo.mrm.api.DirectoryEntry;
 import org.codehaus.mojo.mrm.api.Entry;
@@ -119,7 +118,7 @@ public class FileSystemServlet extends HttpServlet {
             return;
         }
         String name = parts[parts.length - 1];
-        if (StringUtils.isEmpty(name)) {
+        if (name == null || name.isEmpty()) {
             resp.sendError(HttpURLConnection.HTTP_BAD_METHOD);
             return;
         }

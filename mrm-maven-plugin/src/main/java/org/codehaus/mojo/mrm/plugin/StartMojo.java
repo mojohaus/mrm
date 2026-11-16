@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -62,7 +61,7 @@ public class StartMojo extends AbstractStartMojo {
         }
         String url = mrm.getUrl();
         getLog().info("Mock Repository Manager " + url + " is started.");
-        if (!StringUtils.isEmpty(propertyName)) {
+        if (!(propertyName == null || propertyName.isEmpty())) {
             getLog().info("Setting property '" + propertyName + "' to '" + url + "'.");
             project.getProperties().setProperty(propertyName, url);
         }
