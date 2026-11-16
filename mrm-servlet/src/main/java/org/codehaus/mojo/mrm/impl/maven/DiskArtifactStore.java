@@ -93,7 +93,9 @@ public class DiskArtifactStore extends BaseArtifactStore {
 
     @Override
     public Set<String> getGroupIds(String parentGroupId) {
-        File parentDir = StringUtils.isEmpty(parentGroupId) ? root : new File(root, parentGroupId.replace('.', '/'));
+        File parentDir = parentGroupId == null || parentGroupId.isEmpty()
+                ? root
+                : new File(root, parentGroupId.replace('.', '/'));
         if (!parentDir.isDirectory()) {
             return Collections.emptySet();
         }

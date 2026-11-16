@@ -114,7 +114,7 @@ public class ProxyArtifactStore extends BaseArtifactStore {
             Map<String, Artifact> artifactMapper = this.children.computeIfAbsent(path, k -> new HashMap<>());
             artifactMapper.put(name, null);
         }
-        if (!StringUtils.isEmpty(path)) {
+        if (!(path == null || path.isEmpty())) {
             Map<String, Artifact> artifactMapper = this.children.computeIfAbsent("", k -> new HashMap<>());
             artifactMapper.put(path, null);
         }
@@ -304,9 +304,10 @@ public class ProxyArtifactStore extends BaseArtifactStore {
     public long getMetadataLastModified(String path) throws MetadataNotFoundException {
         Metadata metadata = getMetadata(path);
         if (metadata != null) {
-            if (!StringUtils.isEmpty(metadata.getGroupId())
-                    || !StringUtils.isEmpty(metadata.getArtifactId())
-                    || !StringUtils.isEmpty(metadata.getVersion())
+            if (!(metadata.getGroupId() == null || metadata.getGroupId().isEmpty())
+                    || !(metadata.getArtifactId() == null
+                            || metadata.getArtifactId().isEmpty())
+                    || !(metadata.getVersion() == null || metadata.getVersion().isEmpty())
                     || (metadata.getPlugins() != null && !metadata.getPlugins().isEmpty())
                     || (metadata.getVersioning() != null
                             && (!StringUtils.isEmpty(metadata.getVersioning().getLastUpdated())
