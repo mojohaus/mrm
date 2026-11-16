@@ -162,6 +162,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
                     + "\\E-(SNAPSHOT|(\\d{4})(\\d{2})(\\d{2})\\.(\\d{2})(\\d{2})(\\d{2})-(\\d+)))(?:-([^.]+))?"
                     + "\\.([^/]*)");
             factory = new ArtifactFactory() {
+                @Override
                 public Artifact get(File file) {
                     Matcher matcher = rule.matcher(file.getName());
                     if (!matcher.matches()) {
@@ -197,6 +198,7 @@ public class DiskArtifactStore extends BaseArtifactStore {
         } else {
             rule = Pattern.compile("\\Q" + artifactId + "\\E-\\Q" + version + "\\E(?:-([^.]+))?\\.(.+)");
             factory = new ArtifactFactory() {
+                @Override
                 public Artifact get(File file) {
                     Matcher matcher = rule.matcher(file.getName());
                     if (!matcher.matches()) {

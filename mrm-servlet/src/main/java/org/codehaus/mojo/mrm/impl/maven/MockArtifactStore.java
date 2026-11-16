@@ -687,6 +687,7 @@ public class MockArtifactStore extends BaseArtifactStore {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compare(String o1, String o2) {
             ArtifactVersion v1 = new DefaultArtifactVersion(o1);
             ArtifactVersion v2 = new DefaultArtifactVersion(o2);

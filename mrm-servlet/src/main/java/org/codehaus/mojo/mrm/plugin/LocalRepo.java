@@ -30,6 +30,7 @@ public class LocalRepo implements ArtifactStoreFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         return "Locally hosted (source: " + source + ')';
     }
