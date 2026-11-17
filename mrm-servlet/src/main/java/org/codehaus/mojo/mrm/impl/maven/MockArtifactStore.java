@@ -173,8 +173,7 @@ public class MockArtifactStore extends BaseArtifactStore {
 
                 final String pomBasename = FilenameUtils.getBaseName(file.getName());
 
-                if ((model.getPackaging() == null || model.getPackaging().isEmpty())
-                        || "jar".equals(model.getPackaging())) {
+                if (StringUtils.isEmpty(model.getPackaging()) || "jar".equals(model.getPackaging())) {
                     File mainFile = new File(file.getParentFile(), pomBasename + ".jar");
 
                     Content content;
@@ -318,7 +317,7 @@ public class MockArtifactStore extends BaseArtifactStore {
     @Override
     public Set<String> getGroupIds(String parentGroupId) {
         TreeSet<String> result = new TreeSet<>();
-        if (parentGroupId == null || parentGroupId.isEmpty()) {
+        if (StringUtils.isEmpty(parentGroupId)) {
             for (String groupId : contents.keySet()) {
                 int index = groupId.indexOf('.');
                 result.add(index == -1 ? groupId : groupId.substring(0, index));

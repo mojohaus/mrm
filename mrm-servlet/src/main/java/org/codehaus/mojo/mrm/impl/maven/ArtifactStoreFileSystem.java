@@ -246,7 +246,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                     if (classifier != null) {
                         classifier = classifier.substring(1);
                     }
-                    if (classifier == null || classifier.isEmpty()) {
+                    if (StringUtils.isEmpty(classifier)) {
                         classifier = null;
                     }
                     return new ArtifactFileEntry(
@@ -298,7 +298,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                     if (classifier != null) {
                         classifier = classifier.substring(1);
                     }
-                    if (classifier == null || classifier.isEmpty()) {
+                    if (StringUtils.isEmpty(classifier)) {
                         classifier = null;
                     }
 
@@ -389,7 +389,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                 if (classifier != null) {
                     classifier = classifier.substring(1);
                 }
-                if (classifier == null || classifier.isEmpty()) {
+                if (StringUtils.isEmpty(classifier)) {
                     classifier = null;
                 }
                 return new Artifact(groupId, artifactId, version, classifier, type);
@@ -426,7 +426,7 @@ public class ArtifactStoreFileSystem extends BaseFileSystem {
                 if (classifier != null) {
                     classifier = classifier.substring(1);
                 }
-                if (classifier == null || classifier.isEmpty()) {
+                if (StringUtils.isEmpty(classifier)) {
                     classifier = null;
                 }
 
