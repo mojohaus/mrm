@@ -60,8 +60,7 @@ what the code and the POMs do not make obvious.
 
 ## Continuous integration
 
-- `.github/workflows/maven.yml` calls the shared `maven-verify.yml@v5` workflow from
-  `apache/maven-gh-actions-shared`.
+- `.github/workflows/maven.yml` calls the MojoHaus `maven-verify.yml` workflow in `mojohaus/.github`.
 - Branches pushed to this repository build under the `push` event.
 
 ## Dependencies
