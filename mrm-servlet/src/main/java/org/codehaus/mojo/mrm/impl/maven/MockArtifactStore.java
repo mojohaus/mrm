@@ -228,7 +228,7 @@ public class MockArtifactStore extends BaseArtifactStore {
                                 (dir, name) -> FilenameUtils.getBaseName(name).startsWith(pomBasename + '-'));
 
                 for (File classifiedFile : classifiedFiles) {
-                    String type = org.codehaus.plexus.util.FileUtils.extension(classifiedFile.getName());
+                    String type = FilenameUtils.getExtension(classifiedFile.getName());
                     String classifier =
                             FilenameUtils.getBaseName(classifiedFile.getName()).substring(pomBasename.length() + 1);
 
