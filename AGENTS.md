@@ -19,9 +19,10 @@ what the code and the POMs do not make obvious.
   before committing. It formats Java with palantir-java-format, sorts the POM, and also reformats
   Markdown, including this file and the README.
 - The build compiles with `mojo.java.target` 17.
-- The modules compile against `mavenVersion` (3.9.16) and `resolverVersion` (1.9.27). The root POM
-  sets `minimalMavenBuildVersion` to 3.9.6, and `mrm-maven-plugin` declares a literal Maven 3.9.0
-  as its `<prerequisites>`. Raising `mavenVersion` must not raise the prerequisite.
+- The modules compile against `mavenVersion` and `resolverVersion` from the root POM, which track
+  the Maven 3.9 line. The root POM sets `minimalMavenBuildVersion` for building the project, and
+  `mrm-maven-plugin` declares a literal Maven 3.9.0 as its `<prerequisites>`, the version users
+  need. Raising `mavenVersion` must not raise the prerequisite.
 - Fields of the mojo classes are plugin parameters; renaming one changes the plugin's
   configuration API.
 
@@ -60,7 +61,8 @@ what the code and the POMs do not make obvious.
 
 ## Continuous integration
 
-- `.github/workflows/maven.yml` calls the MojoHaus `maven-verify.yml` workflow in `mojohaus/.github`.
+- `.github/workflows/maven.yml` calls the shared MojoHaus verify workflow in `mojohaus/.github`
+  with JDK 17, 21 and 25; macOS and Windows run on fewer JDKs.
 - Branches pushed to this repository build under the `push` event.
 
 ## Dependencies
@@ -69,9 +71,32 @@ what the code and the POMs do not make obvious.
   reason in a comment there: Maven core artifacts stay below 3.10, Jetty below 10, Maven Resolver
   below 2 (the resolver line has to match `mavenVersion`), and `plexus-xml` below 4.
 
+## Documentation updates
+
+A change that users or contributors can notice ships with the documentation it affects, in the
+same pull request. A refactor with no visible effect needs none.
+
+- A new goal, parameter or default of `mrm-maven-plugin`: the mojo Javadoc, which becomes the goal
+  page, and the goal list in `mrm-maven-plugin/src/site/markdown/index.md`.
+- A new repository type or option: `repositories.md` in `mrm-maven-plugin/src/site/markdown` for
+  the XML configuration and in `mrm-jupiter-extension/src/site/markdown` for the annotations, and
+  the annotation Javadoc. Keep the two pages in step; their defaults can differ.
+- New or changed usage: `usage.md` of the module. Only the first plugin snippet carries a version,
+  written as `<version><!-- latest release --></version>`; the others leave it out, so no example
+  goes stale.
+- The invoker examples `examples/invoker-tests.md.vm` and `invoker-tests-dist.md.vm` stay Velocity
+  pages, because they read `maven-invoker-plugin.version` from the POM with `$context.get`. Escape a
+  literal `${...}` in them as `\${...}`.
+- A page added, removed or renamed: the menu in that module's `src/site/site.xml`. Never rename a
+  published page; its URL is linked from elsewhere.
+- The Maven or Java requirement, or how to build and release: `README.md`.
+- A new convention, build gate or test fixture: this file.
+
+Check the result with `mvn site` and open `target/site/index.html` of the module you changed.
+
 ## Pull requests
 
-- Squash and rebase merges are enabled; merge commits are not. Release Drafter, through the shared
-  `apache/maven-gh-actions-shared` workflow, builds the release notes from pull request titles
-  and labels, so the title should describe the change for a user.
+- Squash and rebase merges are enabled; merge commits are not. Release Drafter, through a shared
+  workflow, builds the release notes from pull request titles and labels, so the title should
+  describe the change for a user.
 

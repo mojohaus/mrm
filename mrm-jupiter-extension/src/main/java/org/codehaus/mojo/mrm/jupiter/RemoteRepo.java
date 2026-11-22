@@ -32,9 +32,18 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 public @interface RemoteRepo {
 
+    /**
+     * @return the id of the repository
+     */
     String id();
 
+    /**
+     * @return the layout of the repository, usually {@code default}
+     */
     String type();
 
+    /**
+     * @return the URL of the repository
+     */
     String url();
 }

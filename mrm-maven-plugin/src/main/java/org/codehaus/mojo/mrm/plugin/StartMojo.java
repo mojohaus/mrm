@@ -30,17 +30,18 @@ import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 import org.codehaus.mojo.mrm.jetty.FileSystemServerException;
 
 /**
- * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
- * <code>settings.xml</code> and still work behind a proxy.
+ * Starts a mock repository manager as part of a Maven build for use by integration tests, for example to let
+ * integration tests based on the Maven Invoker use a custom <code>settings.xml</code> and still work behind a proxy.
+ * The URL of the repository is stored in the project property named by <code>propertyName</code>. Stop it with
+ * <code>mrm:stop</code>, in the same execution.
  *
  * @author Stephen Connolly
- *
- * Starts a mock repository manager as part of a maven build for use by integration tests.
  */
 @Mojo(name = "start", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresProject = false, threadSafe = true)
 public class StartMojo extends AbstractStartMojo {
     /**
-     * The property to set the repository url to.
+     * The name of the project property that receives the URL of the started repository. If empty, no property is
+     * set.
      */
     @Parameter(property = "mrm.propertyName", defaultValue = "mrm.repository.url")
     private String propertyName;

@@ -34,7 +34,7 @@ A mock Maven repository that serves content from a local directory structure wit
 * `source` (required) - The directory containing the mock repository content
 * `cloneTo` (optional) - Clone the source to a specific directory (useful for directory-based archives)
 * `cloneClean` (optional) - Ensure the cloneTo folder is cleaned before every run (default: false)
-* `lazyArchiver` (optional) - Set to `false` to archive directories at startup, or `true` to archive when used (default: false)
+* `lazyArchiver` (optional) - Set to `false` to archive directories at startup, or `true` to archive when used (default: true)
 * `transformDirectiveSource` (optional) - Set the name of the mechanism to transform files in case of a directory based archive. Possible values: `metadata` (default: null)
 
 **Example:**
@@ -47,7 +47,6 @@ A mock Maven repository that serves content from a local directory structure wit
         cloneClean = true,
         lazyArchiver = false,
         transformDirectiveSource = MetadataTransformDirectiveFactory.class)
-    )
 )
 ```
 
@@ -98,7 +97,7 @@ A locally stored Maven repository that serves content from a directory on the fi
 
 A repository used for distribution management that accepts uploaded artifacts (writable repository).
 
-**Parameters:**
+**Fields:**
 
 * `target` (required) - The directory where uploaded files will be stored
 
@@ -127,9 +126,9 @@ A remoteArtifactSystem serves content from remote repositories.
 
 **Fields:**
 
-* `cacheDirectory` (required) - The directory where uploaded files will be stored
+* `cacheDirectory` (required) - The directory where the artifacts downloaded from the remote repositories are cached. Use `baseBathResolver = UserHomePathResolver.class` with `.m2/repository` to share Maven's own local repository
 
-* `repositories` (required) - The remote repositories to use when trying to locate an artifact
+* `repositories` (required) - The remote repositories to use when trying to locate an artifact. There is no default, not even Maven Central, so add it yourself as in the example. When the list is empty, no remote repository is served
 
 **Example:**
 

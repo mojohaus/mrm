@@ -25,13 +25,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.mojo.mrm.jetty.FileSystemServer;
 
 /**
- * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
- * <code>settings.xml</code> and still work behind a proxy.
+ * Stops the mock repository manager started by <code>mrm:start</code> as part of a Maven build for use
+ * by integration tests. It stops the repository started by the <code>start</code> goal with the same execution id.
  *
  * @author Stephen Connolly
- * <p>
- * Stops the mock repository manager started by <code>mrm:start</code> as part of a maven build for use
- * by integration tests.
  */
 @Mojo(name = "stop", defaultPhase = LifecyclePhase.POST_INTEGRATION_TEST, requiresProject = false, threadSafe = true)
 public class StopMojo extends AbstractMRMMojo {

@@ -21,11 +21,22 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * A user that may access the repository.
+ *
+ * @since 2.0.0
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface User {
 
+    /**
+     * @return the user name
+     */
     String username();
 
+    /**
+     * @return the password
+     */
     String password();
 }
