@@ -21,7 +21,8 @@ limitations under the License.
 # Mock Repository Manager Maven Plugin
 
 The Mock Repository Manager Plugin is used when you want to test Maven plugins against specific sets of dependencies
-in a repository.
+in a repository. This is the 1.x line, which requires Maven 3.9.0 or later and Java 8 or later; the 2.x line needs
+Java 17 or later.
 
 ## Goals Overview
 
@@ -37,16 +38,16 @@ General instructions on how to use the Mock Repository Manager Plugin can be fou
 For information about the different repository types and their configuration options, see [Repository Types](./repositories.html).
 Some more specific use cases are described in the examples given below.
 
-In case you still have questions regarding the plugin's usage, please have feel free to contact the [user mailing list](./mailing-lists.html). The posts to the mailing list are archived and could
+In case you still have questions regarding the plugin's usage, please feel free to contact the [user mailing list](./mailing-lists.html). The posts to the mailing list are archived and could
 already contain the answer to your question as part of an older thread. Hence, it is also worth browsing/searching the [mail archive](./mailing-lists.html).
 
 If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report in our [issue tracker](./issue-management.html). When creating a new issue, please provide a comprehensive description of your concern. Especially for fixing bugs it is crucial that the developers can reproduce your problem. For this reason, entire debug logs, POMs or most preferably little demo projects attached to the issue are very much appreciated.
 
-Of course, patches are welcome, too. Contributors can check out the project from our [guide to helping with Maven source repository](./scm.html) and will find supplementary information in the https://maven.apache.org/guides/development/guide-helping.html).
+Of course, patches are welcome, too. Contributors can check out the project from our [source repository](./scm.html) and will find supplementary information in the [Guide to helping with Maven](https://maven.apache.org/guides/development/guide-helping.html).
 
 ## Examples
 
-To provide you with better understanding of some usages of the Plugin Name,
+To provide you with a better understanding of some usages of the plugin,
 you can take a look into the following examples:
 
 * [Using with Maven Invoker with repositories](./examples/invoker-tests.html)

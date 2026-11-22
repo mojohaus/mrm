@@ -49,7 +49,7 @@ public class MockRepo implements ArtifactStoreFactory {
     /**
      * Define where the transformation directives are coming from. Supported values: metadata.
      *
-     * @since 2.0.0
+     * @since 1.8.0
      * @see MetadataTransformDirective
      */
     private String transformDirectiveSource;

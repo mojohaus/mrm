@@ -35,7 +35,7 @@ A mock Maven repository that serves content from a local directory structure wit
 * `cloneTo` (optional) - Clone the source to a specific directory (useful for directory-based archives)
 * `cloneClean` (optional) - Ensure the cloneTo folder is cleaned before every run (default: false)
 * `lazyArchiver` (optional) - Set to `false` to archive directories at startup, or `true` to archive when used (default: false)
-* `transformDirectiveSource` (optional) - Set the name of the mechanism to transform in case of a directory based archive. Possible values: `metadata` (default: null)
+* `transformDirectiveSource` (optional, since 1.8.0) - Set the name of the mechanism to transform in case of a directory based archive. Possible values: `metadata` (default: null)
 
 **Example:**
 
@@ -66,7 +66,9 @@ Supported archiver extensions include: `jar`, `zip`, `tar.gz`, `tgz`, `tar.xz`, 
 **Supported TransformDirectiveSource:**
 
 * metadata - Put a file called `.mrm-transform.properties` in the root of an archive directory (e.g. `artifactId-1.0.0.jar/.mrm-transform.properties`). This file supports the following entries
-  * [input].targetName = [output]
+  * `[input].targetName = [output]` serves the file `[input]` of the archive under the name `[output]`; other files keep their name
+
+The 2.x line adds content transformations to this mechanism (`javaToClass`); the 1.x line only renames files.
 
 ### localRepo
 
