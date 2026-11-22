@@ -38,7 +38,7 @@ public @interface MockRepo {
     /**
      * If set, the {@link #source()} directory will be cloned to this path before the server starts.
      * This is useful in case additional files are generated.
-     * Relative paths are resolved against the result of baseBathResolverm which defaults to the working directory.
+     * Relative paths are resolved against the result of baseBathResolver which defaults to the working directory.
      *
      * @return path to the clone target directory, or empty string to skip cloning
      */
@@ -60,6 +60,12 @@ public @interface MockRepo {
      */
     boolean lazyArchiver() default true;
 
+    /**
+     * The factory that reads transformation directives, such as file name and content transformations, from the
+     * source directory. Defaults to no transformation.
+     *
+     * @return the factory class, which needs a public no-argument constructor
+     */
     Class<? extends TransformDirectiveSourceFactory> transformDirectiveSource() default
             NoOpTransformDirectiveSourceFactory.class;
 }

@@ -90,6 +90,9 @@ public abstract class AbstractStartMojo extends AbstractMRMMojo {
     private boolean debugServer;
 
     /**
+     * The users that may access the repository, each with a <code>username</code> and a <code>password</code>. If at
+     * least one user is configured, every request must carry a matching HTTP basic authorization header. If none is
+     * configured, the repository is not secured.
      *
      * @since 2.0.0
      */

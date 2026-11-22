@@ -76,8 +76,8 @@ public @interface MockRepositoryManager {
      * The system for handling downloading artifacts from remote repositories. Within the Maven context these are
      * the repositories defined in the pom.xml, having central defined as the default.
      *
-     * @return the local repository configurations
-     * @see LocalRepo
+     * @return the remote artifact system configuration
+     * @see RemoteArtifactSystem
      */
     RemoteArtifactSystem remoteArtifactSystem() default
             @RemoteArtifactSystem(
@@ -89,6 +89,7 @@ public @interface MockRepositoryManager {
      * Once set, any connection must be done by an authorized user.
      *
      * @return the registered users
+     * @see User
      */
     User[] users() default {};
 }

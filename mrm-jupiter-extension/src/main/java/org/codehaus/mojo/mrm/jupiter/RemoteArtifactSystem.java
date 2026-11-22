@@ -36,7 +36,7 @@ public @interface RemoteArtifactSystem {
      *
      * For using Mavens default localRepository, set it to {@code @Directory( value = ".m2/repository", baseBathResolver = UserHomePathResolver.class ) }
      *
-     * @return the shared
+     * @return the shared cache directory
      *
      * @see UserHomePathResolver
      */
