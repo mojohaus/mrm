@@ -23,12 +23,10 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 /**
- * This goal is used in-situ on a Maven project to allow integration tests based on the Maven Invoker to use a custom
- * <code>settings.xml</code> and still work behind a proxy.
+ * Starts a mock repository manager for manual testing and serves it until you hit ENTER on the console. It needs an
+ * interactive Maven session and fails in batch mode; use <code>mrm:start</code> there.
  *
  * @author Stephen Connolly
- * <p>
- * Starts a mock repository manager for manual testing.
  */
 @Mojo(name = "run", requiresProject = false, requiresDirectInvocation = true, threadSafe = true)
 public class RunMojo extends AbstractStartMojo {

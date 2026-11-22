@@ -34,7 +34,7 @@ import org.codehaus.mojo.mrm.impl.transform.TransformDirectiveSource;
  *
  * Supports:
  * <dl>
- *   <dt>[inputName].target=[output]</dt>
+ *   <dt>[inputName].targetName=[output]</dt>
  *   <dd>Transform the filename  from input to output</dd>
  * </dl>
  *

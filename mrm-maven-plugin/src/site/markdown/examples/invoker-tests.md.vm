@@ -62,7 +62,6 @@ First we need to modify the `pom.xml` to reference both `mrm-maven-plugin` and t
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>mrm-maven-plugin</artifactId>
-        <version>${project.version}</version>
         <executions>
           <execution>
             <goals>
@@ -110,7 +109,7 @@ This will result in the following mojos being executed during the lifecycle as f
 | verify                | invoker:verify             | 
 
 Additionally, when `mrm:start` is invoked, it will bind to an available port and set the property
-`repository.proxy.url` to the URL on which the repository is being hosted, and the repository content
+`mrm.repository.url` to the URL on which the repository is being hosted, and the repository content
 will be based on the `mockRepo` content generated from the following files in `src/it/mrm/repository`:
 
 * `**/*.pom`
@@ -183,5 +182,5 @@ which will look something like:
 </settings>
 ```
 
-And we also have instructed the `maven-invoker-plugin` to filter in the property value `repository.proxy.url`
+And we also have instructed the `maven-invoker-plugin` to filter in the property value `mrm.repository.url`
 Thus when the integration tests run, they will use the mock repository manager that we have provisioned.
