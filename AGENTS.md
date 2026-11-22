@@ -91,6 +91,8 @@ same pull request. A refactor with no visible effect needs none.
   published page; its URL is linked from elsewhere.
 - The Maven or Java requirement, or how to build and release: `README.md`.
 - A new convention, build gate or test fixture: this file.
+- A fix that also applies to the 1.x line: port it to the `mrm-1.x` branch with its documentation,
+  so the docs of both lines stay consistent.
 
 Check the result with `mvn site` and open `target/site/index.html` of the module you changed.
 

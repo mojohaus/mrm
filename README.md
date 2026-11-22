@@ -8,8 +8,9 @@ The Mock Repository Manager (MRM) serves a Maven repository for integration test
 directories of test artifacts, an existing local repository or the repositories of the running build. It comes as the
 `mrm-maven-plugin`, with the `start`, `stop` and `run` goals, and as the `mrm-jupiter-extension` for JUnit 5 tests.
 
-The plugin requires Maven 3.9.0 or later, and all modules require Java 17 or later. To serve the repositories of the
-current build for manual testing and stop with ENTER:
+The plugin requires Maven 3.9.0 or later, and all modules require Java 17 or later. Projects that still build on
+Java 8 use the 1.x line, maintained on the [`mrm-1.x`](https://github.com/mojohaus/mrm/tree/mrm-1.x) branch. To serve
+the repositories of the current build for manual testing and stop with ENTER:
 
 ```shell
 mvn org.codehaus.mojo:mrm-maven-plugin:run -Dmrm.port=8080
